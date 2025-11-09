@@ -104,7 +104,7 @@ const Contact = () => {
                   >
                     <div className="relative overflow-hidden">
                       {/* Card container */}
-                      <div className="relative bg-black/60 backdrop-blur-sm border-2 border-red-900/40 rounded-2xl p-5 lg:p-6 group-hover:border-red-500/60 transition-all duration-500">
+                      <div className="relative bg-black/60 backdrop-blur-sm border-1 border-red-900/40 rounded-2xl p-5 lg:p-6 group-hover:border-red-500/60 transition-all duration-500">
 
                         {/* Starfield on hover */}
                         {hoveredCard === contact.id && (
@@ -127,7 +127,7 @@ const Contact = () => {
                         {/* Icon Box — rotates slightly on hover */}
                         <div className="relative mb-4 flex justify-center">
                           <div
-                            className={`relative bg-gradient-to-br from-${contact.color} to-red-900 w-14 h-14 rounded-xl flex items-center justify-center border-2 border-${contact.color}/30 transition-all duration-500 group-hover:rotate-[12deg] group-hover:scale-110 group-hover:border-${contact.color}`}
+                            className={`relative bg-gradient-to-br from-${contact.color} to-red-900 w-14 h-14 rounded-xl flex items-center justify-center border-1 border-${contact.color}/30 transition-all duration-500 group-hover:rotate-[12deg] group-hover:scale-110 group-hover:border-${contact.color}`}
                           >
                             <Icon className="w-7 h-7 text-white" />
                           </div>
@@ -135,7 +135,7 @@ const Contact = () => {
 
                         {/* Text */}
                         <div className="text-center">
-                          <h3 className={`text-lg font-bold text-${contact.color} mb-1`}>{contact.name}</h3>
+                          <h3 className={`text-lg font-semibold text-${contact.color} mb-1`}>{contact.name}</h3>
                           <p className="text-red-300/60 text-xs font-mono truncate">{contact.username}</p>
                         </div>
                       </div>
