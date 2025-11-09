@@ -33,7 +33,7 @@ const Skills = () => {
       icon: Code2,
       skills: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Tailwind CSS', 'React Native'],
       angle: 0,
-      color: 'red-500'
+      color: 'rose-500'
     },
     {
       id: 'backend',
