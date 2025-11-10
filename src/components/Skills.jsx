@@ -74,7 +74,7 @@ const Skills = () => {
   );
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to first page when category changes
+    setCurrentPage(1);
     if (selectedCategory === 'all') {
       setDisplayedSkills(allSkills);
     } else {
@@ -87,7 +87,6 @@ const Skills = () => {
     }
   }, [selectedCategory]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(displayedSkills.length / skillsPerPage);
   const startIndex = (currentPage - 1) * skillsPerPage;
   const endIndex = startIndex + skillsPerPage;
@@ -95,14 +94,6 @@ const Skills = () => {
 
   const goToPage = (page) => {
     setCurrentPage(page);
-  };
-
-  const getHexagonPosition = (angle, radius) => {
-    const radian = (angle * Math.PI) / 180;
-    return {
-      x: Math.cos(radian) * radius,
-      y: Math.sin(radian) * radius
-    };
   };
 
   return (
@@ -153,8 +144,6 @@ const Skills = () => {
             isVisible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
           }`}>
             <div className="relative w-[500px] h-[500px]">
-              
-
               {/* Outer Ring */}
               <div className="absolute inset-0 border-2 border-red-600/30 rounded-full"></div>
               <div className="absolute inset-8 border-2 border-red-600/20 rounded-full"></div>
@@ -165,8 +154,6 @@ const Skills = () => {
                 className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer group transition-all duration-300 ${selectedCategory === 'all' ? 'scale-110' : ''}`}
                 onClick={() => setSelectedCategory('all')}
               >
-                
-                
                 {/* Hexagon */}
                 <div 
                   className={`relative w-32 h-32 bg-gradient-to-br from-red-500 via-red-600 to-red-700 flex items-center justify-center border-4 transition-all duration-300 group-hover:scale-110 ${
@@ -185,7 +172,6 @@ const Skills = () => {
 
               {/* Category Nodes */}
               {categoriesData.map((category, idx) => {
-                const pos = getHexagonPosition(category.angle, 180);
                 const Icon = category.icon;
                 
                 return (
@@ -195,22 +181,25 @@ const Skills = () => {
                       isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
                     } ${selectedCategory === category.id ? 'scale-110 z-10' : ''}`}
                     style={{
-                      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) ${selectedCategory === category.id ? 'scale(1.1)' : 'scale(1)'}`
+                      animation: `revolve 20s linear infinite`,
+                      animationDelay: `${-idx * 4}s`,
+                      transform: selectedCategory === category.id ? 'scale(1.1)' : 'scale(1)'
                     }}
                     onClick={() => setSelectedCategory(category.id)}
                   >
-                    
                     {/* Hexagon */}
                     <div 
                       className={`relative w-24 h-24 bg-gradient-to-br from-${category.color} to-red-900 flex flex-col items-center justify-center border-4 transition-all duration-300 group-hover:scale-110 ${
                         selectedCategory === category.id ? 'border-red-300 shadow-2xl shadow-red-500/50' : 'border-red-400/30'
                       }`}
                       style={{
-                        clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)'
+                        clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                        animation: 'counterRevolve 20s linear infinite',
+                        animationDelay: `${-idx * 4}s`
                       }}
                     >
                       <Icon className="w-7 h-7 text-white mb-1" />
-                      <p className="text-white font-bold text-[10px] text-center leading-tight">{category.name}</p>
+                      <p className="text-white font-semibold text-[10px] text-center leading-tight">{category.name}</p>
                     </div>
 
                     {/* Selection pulse */}
@@ -311,8 +300,6 @@ const Skills = () => {
             isVisible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
           }`}>
             <div className="relative w-[320px] h-[320px]">
-              
-
               {/* Rings */}
               <div className="absolute inset-0 border-2 border-red-600/30 rounded-full"></div>
               <div className="absolute inset-6 border-2 border-red-600/20 rounded-full"></div>
@@ -339,7 +326,6 @@ const Skills = () => {
 
               {/* Category Nodes */}
               {categoriesData.map((category, idx) => {
-                const pos = getHexagonPosition(category.angle, 110);
                 const Icon = category.icon;
                 
                 return (
@@ -349,7 +335,9 @@ const Skills = () => {
                       isVisible ? 'opacity-100' : 'opacity-0'
                     } ${selectedCategory === category.id ? 'scale-110 z-10' : ''}`}
                     style={{
-                      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) ${selectedCategory === category.id ? 'scale(1.1)' : 'scale(1)'}`
+                      animation: `revolve 20s linear infinite`,
+                      animationDelay: `${-idx * 4}s`,
+                      transform: selectedCategory === category.id ? 'scale(1.1)' : 'scale(1)'
                     }}
                     onClick={() => setSelectedCategory(category.id)}
                   >
@@ -359,7 +347,9 @@ const Skills = () => {
                         selectedCategory === category.id ? 'border-red-300' : 'border-red-400/30'
                       }`}
                       style={{
-                        clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)'
+                        clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                        animation: 'counterRevolve 20s linear infinite',
+                        animationDelay: `${-idx * 4}s`
                       }}
                     >
                       <Icon className="w-5 h-5 text-white mb-0.5" />
@@ -482,6 +472,35 @@ const Skills = () => {
           to {
             opacity: 1;
             transform: translateX(0) scale(1);
+          }
+        }
+        
+        @keyframes revolve {
+          0% {
+            transform: translate(-50%, -50%) rotate(0deg) translateX(180px) rotate(0deg);
+          }
+          100% {
+            transform: translate(-50%, -50%) rotate(360deg) translateX(180px) rotate(-360deg);
+          }
+        }
+        
+        @keyframes counterRevolve {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        
+        @media (max-width: 1024px) {
+          @keyframes revolve {
+            0% {
+              transform: translate(-50%, -50%) rotate(0deg) translateX(110px) rotate(0deg);
+            }
+            100% {
+              transform: translate(-50%, -50%) rotate(360deg) translateX(110px) rotate(-360deg);
+            }
           }
         }
       `}</style>
