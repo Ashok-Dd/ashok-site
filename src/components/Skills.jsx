@@ -319,7 +319,7 @@ const Skills = () => {
                 >
                   <div className="text-center">
                     <Zap className="w-6 h-6 text-white mx-auto animate-pulse" />
-                    <p className="text-white font-bold text-[8px]">SKILLS</p>
+                    <p className="text-white  text-[8px]">SKILLS</p>
                   </div>
                 </div>
               </div>
@@ -353,7 +353,7 @@ const Skills = () => {
                       }}
                     >
                       <Icon className="w-5 h-5 text-white mb-0.5" />
-                      <p className="text-white font-bold text-[8px] text-center">{category.name}</p>
+                      <p className="text-white  text-[8px] text-center">{category.name}</p>
                     </div>
                     {selectedCategory === category.id && (
                       <div className="absolute inset-0 border-3 border-red-400 rounded-full animate-ping opacity-75"></div>
