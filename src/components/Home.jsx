@@ -93,8 +93,8 @@ const Home = () => {
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 pt-4">
               <a
-                href="/Ashok_Resume.pdf"
-                download="Ashok_Resume.pdf"
+                href="/AshokResume.pdf"
+                download="AshokResume.pdf"
                 className="px-8 py-3 border-2 border-red-600 rounded-lg font-semibold transition-all duration-300 hover:bg-red-600/10 hover:scale-105 hover:shadow-lg hover:shadow-red-600/30"
                 >
                 Download CV
