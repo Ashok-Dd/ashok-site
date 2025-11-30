@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ExternalLink, Github, Code2, Sparkles, Zap, Laptop } from 'lucide-react';
+import { ExternalLink, Github, Code2, Sparkles, Zap, Laptop, ToolCase } from 'lucide-react';
 
 const Projects = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -43,7 +43,18 @@ const Projects = () => {
         github: 'https://github.com/Ashok-Dd/code-space',
         live: 'https://code-space-beta-ten.vercel.app/',
         stats: {  rating: '4.7' }
-    }
+    },
+    {
+    title: 'DevTools Playground',
+    description: 'DevTools Playground is a powerful MERN-based developer toolkit offering multiple utilities such as API Tester, JSON ↔ CSV Converter, JWT Decoder, URL Encoder/Decoder, and Regex Tester — all in a clean, modern, theme-adaptive UI. It includes Google OAuth login, usage tracking, history, and a fully responsive dashboard.',
+    tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'TailwindCSS'],
+    icon: ToolCase,
+    color: 'from-red-500 to-orange-600',
+    github: 'https://github.com/Ashok-Dd/DevTools-Playground',
+    live: 'https://dev-tools-playground.vercel.app/',
+    stats: { rating: '4.8' }
+}
+
 
     
   ];
