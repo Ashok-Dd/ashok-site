@@ -1112,7 +1112,7 @@ export default function Skills() {
           </div>
 
           {/* Portal */}
-          <div className={`flex justify-center transition-all duration-1000 delay-500 ${isVisible?'opacity-100 translate-y-0':'opacity-0 translate-y-8'}`}>
+          <div className={`hidden md:flex justify-center transition-all duration-1000 delay-500 ${isVisible?'opacity-100 translate-y-0':'opacity-0 translate-y-8'}`}>
             <PortalTrigger onClick={enterGame} />
           </div>
 
