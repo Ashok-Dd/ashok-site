@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Github, Instagram, Mail, Linkedin, MessageCircle, Flame, Zap } from 'lucide-react';
+import { Github, Instagram, Mail, Linkedin, MessageCircle, Send } from 'lucide-react';
 
 const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,171 +10,454 @@ const Contact = () => {
       (entries) => entries.forEach((entry) => entry.isIntersecting && setIsVisible(true)),
       { threshold: 0.1 }
     );
-
     const element = document.getElementById('contact');
     if (element) observer.observe(element);
-
     return () => observer.disconnect();
   }, []);
 
   const contactData = [
-    { id: 'github', name: 'GitHub', username: '@Ashok-Dd', link: 'https://github.com/Ashok-Dd', icon: Github, color: 'rose-500' },
-    { id: 'linkedin', name: 'LinkedIn', username: 'Bongu Ashok', link: 'https://linkedin.com/in/ashok-bongu', icon: Linkedin, color: 'rose-500' },
-    { id: 'instagram', name: 'Instagram', username: '@ashok_devil_123', link: 'https://instagram.com/ashok_devil_123', icon: Instagram, color: 'rose-500' },
-    { id: 'email', name: 'Email', username: 'bonguashok86@email.com', link: 'mailto:bonguashok86@email.com', icon: Mail, color: 'rose-500' },
-    { id: 'whatsapp', name: 'WhatsApp', username: '+91 9392954525', link: 'https://wa.me/9392954525', icon: MessageCircle, color: 'rose-500' }
+    {
+      id: 'github',
+      name: 'GitHub',
+      username: '@Ashok-Dd',
+      link: 'https://github.com/Ashok-Dd',
+      icon: Github,
+      desc: 'View my source code',
+    },
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      username: 'Bongu Ashok',
+      link: 'https://linkedin.com/in/ashok-bongu',
+      icon: Linkedin,
+      desc: 'Let\'s connect professionally',
+    },
+    {
+      id: 'instagram',
+      name: 'Instagram',
+      username: '@ashok_devil_123',
+      link: 'https://instagram.com/ashok_devil_123',
+      icon: Instagram,
+      desc: 'Follow my journey',
+    },
+    {
+      id: 'email',
+      name: 'Email',
+      username: 'bonguashok86@email.com',
+      link: 'mailto:bonguashok86@email.com',
+      icon: Mail,
+      desc: 'Drop me a message',
+    },
+    {
+      id: 'whatsapp',
+      name: 'WhatsApp',
+      username: '+91 9392954525',
+      link: 'https://wa.me/9392954525',
+      icon: MessageCircle,
+      desc: 'Let\'s chat directly',
+    },
   ];
 
   return (
-    <section
-      id="contact"
-      className="min-h-[70vh] bg-black text-white relative overflow-hidden py-16 lg:py-20 flex items-center"
-    >
-      {/* Background gradient glow */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-red-950/30 to-black"></div>
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-red-800/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '1s' }}
-        ></div>
+    <section id="contact" className="contact-section">
+      {/* Background */}
+      <div className="contact-bg">
+        <div className="contact-glow contact-glow-1" />
+        <div className="contact-glow contact-glow-2" />
+        <div className="contact-grid" />
+        <span className="contact-glyph" style={{ top: '10%', right: '5%' }}>{'<>'}</span>
+        <span className="contact-glyph" style={{ bottom: '10%', left: '4%', animationDelay: '3s' }}>{'{ }'}</span>
       </div>
 
-      {/* Faint grid pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="contactGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#contactGrid)" />
-        </svg>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 lg:px-10 relative z-10 w-full">
+      <div className="contact-container">
         {/* Header */}
-        <div
-          className={`text-center mb-10 transition-all duration-1000 transform ${
-            isVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
-          }`}
-        >
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <Flame className="w-8 h-8 text-red-500 animate-pulse" />
-            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent">
-              GET IN TOUCH
-            </h2>
-            <Flame className="w-8 h-8 text-red-500 animate-pulse" />
+        <div className={`contact-header ${isVisible ? 'visible' : ''}`}>
+          <p className="contact-eyebrow">
+            <span className="eyebrow-dot" /> Let's work together
+          </p>
+          <h2 className="contact-title">Get In Touch</h2>
+          <p className="contact-subtitle">
+            Have a project in mind or just want to say hello? Pick your channel below.
+          </p>
+          <div className="contact-divider">
+            <div className="div-line" />
+            <div className="div-gem" />
+            <div className="div-line div-line-r" />
           </div>
-          <p className="text-red-300/80 text-base lg:text-lg">Let's create something amazing together</p>
         </div>
 
-        {/* Contact Cards */}
-        <div
-          className={`transition-all duration-1000 delay-200 transform ${
-            isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-          }`}
-        >
-          <div className="relative max-w-4xl mx-auto bg-gradient-to-br from-red-950/30 via-black/60 to-red-950/30 backdrop-blur-xl border-2 border-red-600/30 rounded-3xl p-8 lg:p-12 shadow-2xl shadow-red-900/30">
+        {/* Panel */}
+        <div className={`contact-panel ${isVisible ? 'visible' : ''}`}>
+          {/* Panel header */}
+          <div className="panel-label">
+            <Send size={13} style={{ color: '#1ABC9C' }} />
+            <span>Connect with me</span>
+            <Send size={13} style={{ color: '#1ABC9C', transform: 'scaleX(-1)' }} />
+          </div>
 
-            {/* CONNECT Title */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-black/40 border border-red-600/30 rounded-full mb-4">
-                <Zap className="w-5 h-5 text-red-500 animate-pulse" />
-                <span className="text-red-400 font-semibold text-sm">CONNECT WITH ME</span>
-                <Zap className="w-5 h-5 text-red-500 animate-pulse" />
-              </div>
-            </div>
+          {/* Cards */}
+          <div className="contact-grid-cards">
+            {contactData.map((contact, idx) => {
+              const Icon = contact.icon;
+              const isHovered = hoveredCard === contact.id;
+              return (
+                <a
+                  key={contact.id}
+                  href={contact.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`contact-card ${isVisible ? 'visible' : ''} ${isHovered ? 'hovered' : ''}`}
+                  style={{ transitionDelay: `${idx * 80 + 200}ms` }}
+                  onMouseEnter={() => setHoveredCard(contact.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  {/* Hover glow */}
+                  <div className="ccard-glow" />
 
-            {/* Cards Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
-              {contactData.map((contact, idx) => {
-                const Icon = contact.icon;
-                return (
-                  <a
-                    key={contact.id}
-                    href={contact.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onMouseEnter={() => setHoveredCard(contact.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    className={`group relative transition-all duration-500 delay-${(idx + 1) * 100} transform ${
-                      isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                    }`}
-                  >
-                    <div className="relative overflow-hidden">
-                      {/* Card container */}
-                      <div className="relative bg-black/60 backdrop-blur-sm border-1 border-red-900/40 rounded-2xl p-5 lg:p-6 group-hover:border-red-500/60 transition-all duration-500">
+                  {/* Icon */}
+                  <div className="ccard-icon-wrap">
+                    <Icon size={22} className="ccard-icon" />
+                  </div>
 
-                        {/* Starfield on hover */}
-                        {hoveredCard === contact.id && (
-                          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                            {[...Array(20)].map((_, i) => (
-                              <div
-                                key={i}
-                                className="absolute w-[2px] h-[2px] bg-white rounded-full animate-star"
-                                style={{
-                                  left: `${Math.random() * 100}%`,
-                                  top: `${Math.random() * 100}%`,
-                                  animationDelay: `${i * 0.001}s`,
-                                  animationDuration: `${0.5 + Math.random()}s`
-                                }}
-                              />
-                            ))}
-                          </div>
-                        )}
+                  {/* Info */}
+                  <div className="ccard-info">
+                    <span className="ccard-name">{contact.name}</span>
+                    <span className="ccard-username">{contact.username}</span>
+                    <span className="ccard-desc">{contact.desc}</span>
+                  </div>
 
-                        {/* Icon Box — rotates slightly on hover */}
-                        <div className="relative mb-4 flex justify-center">
-                          <div
-                            className={`relative bg-gradient-to-br from-${contact.color} to-red-900 w-14 h-14 rounded-xl flex items-center justify-center border-1 border-${contact.color}/30 transition-all duration-500 group-hover:rotate-[12deg] group-hover:scale-110 group-hover:border-${contact.color}`}
-                          >
-                            <Icon className="w-7 h-7 text-white" />
-                          </div>
-                        </div>
+                  {/* Hover arrow */}
+                  <div className={`ccard-arrow ${isHovered ? 'show' : ''}`}>→</div>
 
-                        {/* Text */}
-                        <div className="text-center">
-                          <h3 className={`text-lg font-semibold text-${contact.color} mb-1`}>{contact.name}</h3>
-                          <p className="text-red-300/60 text-xs font-mono truncate">{contact.username}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
+                  {/* Bottom line */}
+                  <div className="ccard-bottom" />
+                </a>
+              );
+            })}
+          </div>
 
-            {/* Footer */}
-            <div className="mt-8 flex items-center justify-center gap-2">
-              <div className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-red-600/50"></div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-black/40 border border-red-600/30 rounded-full">
-                {/* <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div> */}
-                <span className="text-red-400 text-xs font-medium animate-pulse">Available for opportunities</span>
-              </div>
-              <div className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-red-600/50"></div>
-            </div>
+          {/* Availability badge */}
+          <div className="avail-badge">
+            <span className="avail-dot" />
+            <span>Available for opportunities</span>
           </div>
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes star {
-          0% {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-          }
-          50% {
-            transform: translateY(-6px) scale(1.2);
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateY(6px) scale(0.9);
-            opacity: 1;
-          }
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap');
+
+        .contact-section {
+          min-height: 80vh;
+          background-color: #1E1E2F;
+          color: #F5F5F7;
+          position: relative;
+          overflow: hidden;
+          padding: 96px 0;
+          display: flex;
+          align-items: center;
         }
-        .animate-star {
-          animation: star 2s ease-in-out infinite alternate;
+
+        /* Background */
+        .contact-bg {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .contact-glow {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(100px);
+        }
+        .contact-glow-1 {
+          width: 500px; height: 500px;
+          top: -150px; right: -100px;
+          background: rgba(26,188,156,0.07);
+          animation: ctPulse 8s ease-in-out infinite;
+        }
+        .contact-glow-2 {
+          width: 400px; height: 400px;
+          bottom: -100px; left: -100px;
+          background: rgba(26,188,156,0.05);
+          animation: ctPulse 10s ease-in-out infinite 4s;
+        }
+        .contact-grid {
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(26,188,156,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(26,188,156,0.025) 1px, transparent 1px);
+          background-size: 56px 56px;
+        }
+        .contact-glyph {
+          position: absolute;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 5rem;
+          color: rgba(26,188,156,0.04);
+          user-select: none;
+          animation: ctFloat 7s ease-in-out infinite;
+        }
+
+        /* Container */
+        .contact-container {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 0 24px;
+          position: relative;
+          z-index: 1;
+          width: 100%;
+        }
+
+        /* Header */
+        .contact-header {
+          text-align: center;
+          margin-bottom: 52px;
+          opacity: 0;
+          transform: translateY(-20px);
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .contact-header.visible { opacity: 1; transform: translateY(0); }
+
+        .contact-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: #1ABC9C;
+          margin-bottom: 14px;
+        }
+        .eyebrow-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #1ABC9C;
+          box-shadow: 0 0 8px rgba(26,188,156,0.7);
+          display: inline-block;
+          animation: ctPulse 2s ease-in-out infinite;
+        }
+        .contact-title {
+          font-family: 'Orbitron', sans-serif;
+          font-size: clamp(2rem, 5vw, 3.2rem);
+          font-weight: 900;
+          letter-spacing: 0.05em;
+          background: linear-gradient(135deg, #F5F5F7 30%, #1ABC9C);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 12px;
+        }
+        .contact-subtitle {
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          color: #6B6B80;
+        }
+        .contact-divider {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 24px;
+        }
+        .div-line {
+          height: 1px; width: 80px;
+          background: linear-gradient(to right, transparent, rgba(26,188,156,0.5));
+        }
+        .div-line-r {
+          background: linear-gradient(to left, transparent, rgba(26,188,156,0.5));
+        }
+        .div-gem {
+          width: 8px; height: 8px;
+          background: #1ABC9C;
+          transform: rotate(45deg);
+          box-shadow: 0 0 10px rgba(26,188,156,0.6);
+        }
+
+        /* Panel */
+        .contact-panel {
+          background: rgba(37, 37, 56, 0.7);
+          border: 1px solid rgba(26,188,156,0.15);
+          border-radius: 24px;
+          padding: 40px;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+          opacity: 0;
+          transform: scale(0.97);
+          transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+        }
+        .contact-panel.visible { opacity: 1; transform: scale(1); }
+        @media (max-width: 600px) {
+          .contact-panel { padding: 24px 16px; }
+        }
+
+        /* Panel label */
+        .panel-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 32px;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          color: #1ABC9C;
+        }
+
+        /* Cards grid */
+        .contact-grid-cards {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        @media (min-width: 640px) {
+          .contact-grid-cards { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Individual card */
+        .contact-card {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 10px;
+          padding: 20px 14px 18px;
+          background: rgba(22, 22, 42, 0.6);
+          border: 1px solid rgba(26,188,156,0.1);
+          border-radius: 16px;
+          text-decoration: none;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(20px);
+          transition:
+            opacity 0.5s ease,
+            transform 0.5s ease,
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+        }
+        .contact-card.visible { opacity: 1; transform: translateY(0); }
+        .contact-card.hovered {
+          border-color: rgba(26,188,156,0.4);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(26,188,156,0.08);
+          transform: translateY(-5px);
+        }
+
+        /* Card glow */
+        .ccard-glow {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 0%, rgba(26,188,156,0.06) 0%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+        .contact-card.hovered .ccard-glow { opacity: 1; }
+
+        /* Icon */
+        .ccard-icon-wrap {
+          width: 48px; height: 48px;
+          border-radius: 14px;
+          background: rgba(26,188,156,0.1);
+          border: 1px solid rgba(26,188,156,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #1ABC9C;
+          transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .contact-card.hovered .ccard-icon-wrap {
+          background: rgba(26,188,156,0.2);
+          transform: scale(1.1) rotate(8deg);
+          box-shadow: 0 4px 16px rgba(26,188,156,0.2);
+        }
+
+        /* Info */
+        .ccard-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .ccard-name {
+          font-family: 'Orbitron', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #1ABC9C;
+          letter-spacing: 0.04em;
+        }
+        .ccard-username {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 0.65rem;
+          color: #A0A0B0;
+          word-break: break-all;
+        }
+        .ccard-desc {
+          font-family: 'Inter', sans-serif;
+          font-size: 0.68rem;
+          color: #6B6B80;
+          margin-top: 2px;
+        }
+
+        /* Arrow */
+        .ccard-arrow {
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          color: #1ABC9C;
+          opacity: 0;
+          transform: translateX(-6px);
+          transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .ccard-arrow.show { opacity: 1; transform: translateX(0); }
+
+        /* Bottom accent */
+        .ccard-bottom {
+          position: absolute;
+          bottom: 0; left: 0;
+          height: 2px; width: 0;
+          background: linear-gradient(90deg, #1ABC9C, #4DD9BC);
+          border-radius: 0 0 16px 16px;
+          transition: width 0.35s ease;
+        }
+        .contact-card.hovered .ccard-bottom { width: 100%; }
+
+        /* Availability */
+        .avail-badge {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 28px;
+          padding: 10px 24px;
+          background: rgba(26,188,156,0.05);
+          border: 1px solid rgba(26,188,156,0.18);
+          border-radius: 9999px;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.78rem;
+          color: #1ABC9C;
+          letter-spacing: 0.04em;
+          width: fit-content;
+          margin-inline: auto;
+        }
+        .avail-dot {
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          background: #1ABC9C;
+          box-shadow: 0 0 8px rgba(26,188,156,0.7);
+          animation: ctPulse 1.5s ease-in-out infinite;
+          flex-shrink: 0;
+        }
+
+        /* Keyframes */
+        @keyframes ctPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+        @keyframes ctFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-14px); }
         }
       `}</style>
     </section>

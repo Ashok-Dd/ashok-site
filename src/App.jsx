@@ -6,6 +6,7 @@ import Projects from './components/Projects';
 import Skills from './components/Skills';
 import Contact from './components/Contact';
 import SkillShooter from './components/SkillShooter';
+import Footer from './components/Footer';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -17,13 +18,14 @@ const App = () => {
 
       {/* Navbar */}
       <Navbar />
+      
 
       {/* Sections */}
       <div id="home"><Home /></div>
       <div id="skills"><Skills /></div>
       <div id="projects"><Projects /></div>
       <div id="contact"><Contact /></div>
-      {/* <div id="shooter"><SkillShooter /></div> */}
+      <div id="footer"><Footer /></div>
     </>
   );
 };

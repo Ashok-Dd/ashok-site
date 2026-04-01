@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ExternalLink, Github, Code2, Sparkles, Zap, Laptop, ToolCase } from 'lucide-react';
+import { ExternalLink, Github, Code2, Laptop, Wrench, Star } from 'lucide-react';
 
 const Projects = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -7,187 +7,138 @@ const Projects = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
+      (entries) => entries.forEach((entry) => entry.isIntersecting && setIsVisible(true)),
       { threshold: 0.1 }
     );
-
     const element = document.getElementById('projects');
     if (element) observer.observe(element);
-
     return () => observer.disconnect();
   }, []);
 
   const projects = [
     {
       title: 'Student Dashboard',
-      description: 'A comprehensive student management system with real-time analytics, Courses tracking, and with Admin panel. Built for educational institutions to streamline their operations.',
-      tech: ['React', 'Node.js', 'MongoDB', 'TailwindCSS' , "Express.js"],
+      description: 'A comprehensive student management system with real-time analytics, course tracking, and admin panel — built for educational institutions to streamline operations.',
+      tech: ['React', 'Node.js', 'MongoDB', 'TailwindCSS', 'Express.js'],
       icon: Laptop,
-      color: 'from-red-600 to-orange-600',
       github: 'https://github.com/Ashok-Dd/student-dashboard',
       live: 'https://student-dashboard-two-sandy.vercel.app/',
-      stats: {  rating: '4.8' }
+      rating: '4.8',
+      tag: 'Education',
     },
     {
-        title: 'Code Space',
-        description: 'Code Space is a web-based MERN project that allows users to save their code using a unique ID and retrieve it later by passing the ID as a parameter in the URL. It provides a simple and efficient way to store and share code snippets instantly.',
-        tech: ['MongoDB', 'Express.js', 'React', 'Node.js' , 'TailwindCSS'],
-        icon: Code2,
-        color: 'from-red-500 to-orange-600',
-        github: 'https://github.com/Ashok-Dd/code-space',
-        live: 'https://code-space-beta-ten.vercel.app/',
-        stats: {  rating: '4.7' }
+      title: 'Code Space',
+      description: 'Save code snippets via a unique ID and retrieve them via URL. A minimal, efficient MERN tool for storing and sharing code instantly.',
+      tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'TailwindCSS'],
+      icon: Code2,
+      github: 'https://github.com/Ashok-Dd/code-space',
+      live: 'https://code-space-beta-ten.vercel.app/',
+      rating: '4.7',
+      tag: 'Utility',
     },
     {
-    title: 'DevTools Playground',
-    description: 'DevTools Playground is a powerful MERN-based developer toolkit offering multiple utilities such as API Tester, JSON ↔ CSV Converter, JWT Decoder, URL Encoder/Decoder, and Regex Tester — all in a clean, modern, theme-adaptive UI. It includes Google OAuth login, usage tracking, history, and a fully responsive dashboard.',
-    tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'TailwindCSS'],
-    icon: ToolCase,
-    color: 'from-red-500 to-orange-600',
-    github: 'https://github.com/Ashok-Dd/DevTools-Playground',
-    live: 'https://dev-tools-playground.vercel.app/',
-    stats: { rating: '4.8' }
-}
-
-
-    
+      title: 'DevTools Playground',
+      description: 'A powerful MERN developer toolkit with API Tester, JSON ↔ CSV Converter, JWT Decoder, URL Encoder/Decoder, and Regex Tester — all in a clean, theme-adaptive UI with Google OAuth.',
+      tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'TailwindCSS'],
+      icon: Wrench,
+      github: 'https://github.com/Ashok-Dd/DevTools-Playground',
+      live: 'https://dev-tools-playground.vercel.app/',
+      rating: '4.8',
+      tag: 'Tooling',
+    },
   ];
 
   return (
-    <section id="projects" className="min-h-screen mt-[-30px] bg-black text-white relative overflow-hidden py-20">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-red-800/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
-        {/* Floating Code Elements */}
-        <div className="absolute top-20 left-10 text-red-600/10 text-8xl font-mono animate-float">&lt;/&gt;</div>
-        <div className="absolute bottom-20 right-20 text-red-600/10 text-8xl font-mono animate-float-delayed">{ }</div>
+    <section id="projects" className="projects-section">
+      {/* Background */}
+      <div className="projects-bg">
+        <div className="proj-glow proj-glow-tr" />
+        <div className="proj-glow proj-glow-bl" />
+        <div className="proj-dots" />
+        <span className="proj-glyph" style={{ top: '15%', left: '3%' }}>{'</>'}</span>
+        <span className="proj-glyph" style={{ bottom: '15%', right: '3%', animationDelay: '2s' }}>{'{ }'}</span>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-        {/* Section Header */}
-        <div className={`text-center mb-16 transition-all duration-1000 transform ${
-          isVisible ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
-        }`}>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Zap className="w-8 h-8 text-red-500 animate-pulse" />
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-red-400 bg-clip-text text-transparent">
-              MY PROJECTS
-            </h2>
-            <Zap className="w-8 h-8 text-red-500 animate-pulse" />
-          </div>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Crafted with precision, deployed with power. Each project is a masterpiece of code warfare.
+      <div className="projects-container">
+        {/* Header */}
+        <div className={`proj-header ${isVisible ? 'visible' : ''}`}>
+          <p className="proj-eyebrow">
+            <span className="eyebrow-dot" /> What I've built
           </p>
-          
-          {/* Decorative Line */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <div className="h-px w-20 bg-gradient-to-r from-transparent to-red-600"></div>
-            <div className="w-2 h-2 bg-red-600 rounded-full animate-ping"></div>
-            <div className="h-px w-20 bg-gradient-to-l from-transparent to-red-600"></div>
+          <h2 className="proj-title">My Projects</h2>
+          <p className="proj-subtitle">
+            Crafted with precision, deployed with purpose. Each project solves a real problem.
+          </p>
+          <div className="proj-divider">
+            <div className="divider-line" />
+            <div className="divider-gem" />
+            <div className="divider-line divider-line-r" />
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Grid */}
+        <div className="proj-grid">
           {projects.map((project, index) => {
             const Icon = project.icon;
+            const isHovered = hoveredIndex === index;
             return (
               <div
                 key={index}
+                className={`proj-card ${isVisible ? 'visible' : ''} ${isHovered ? 'hovered' : ''}`}
+                style={{ transitionDelay: `${index * 150}ms` }}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className={`group relative transition-all duration-700 transform ${
-                  isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-                }`}
-                style={{ transitionDelay: `${index * 200}ms` }}
               >
-                {/* Glowing Border Effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${project.color} rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500 animate-pulse`}></div>
-                
-                {/* Card */}
-                <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-red-900/30 rounded-2xl p-6 h-full flex flex-col overflow-hidden group-hover:border-red-600/50 transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:shadow-red-600/20">
-                  
-                  {/* Animated Background Pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-transparent animate-pulse"></div>
+                {/* Glow overlay */}
+                <div className="card-glow" />
+
+                {/* Header row */}
+                <div className="card-head">
+                  <div className="card-icon-wrap">
+                    <Icon className="card-icon" size={22} />
                   </div>
-
-                  {/* Icon Header */}
-                  <div className="relative mb-4 flex items-center justify-between">
-                    <div className={`p-3 bg-gradient-to-br ${project.color} rounded-xl group-hover:scale-110 transition-transform duration-300 group-hover:rotate-6`}>
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                    
-                    {/* Stats */}
-                    <div className="flex gap-2">
-                      
-                      <div className="px-3 py-1 bg-red-900/30 rounded-full border border-red-600/30 text-xs font-semibold text-red-400 flex items-center gap-1">
-                        ⭐ {project.stats.rating}
-                      </div>
-                    </div>
+                  <div className="card-meta">
+                    <span className="card-tag">{project.tag}</span>
+                    <span className="card-rating">
+                      <Star size={11} fill="currentColor" />
+                      {project.rating}
+                    </span>
                   </div>
-
-                  {/* Title */}
-                  <h3 className="relative text-2xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-red-600 transition-all duration-300">
-                    {project.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="relative text-gray-400 text-sm leading-relaxed mb-4 flex-grow group-hover:text-gray-300 transition-colors duration-300">
-                    {project.description}
-                  </p>
-
-                  {/* Tech Stack */}
-                  <div className="relative flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((tech, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-black/50 border border-red-900/40 rounded-lg text-xs font-mono text-red-400 group-hover:border-red-600/60 group-hover:bg-red-900/20 transition-all duration-300"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="relative flex gap-3">
-                    <a
-                      href={project.github}
-                      target='_blank'
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 rounded-lg font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-red-500/50 hover:scale-105 group/btn"
-                    >
-                      <Github className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
-                      Code
-                    </a>
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-600 rounded-lg font-semibold text-sm transition-all duration-300 hover:bg-red-600/10 hover:scale-105 group/btn"
-                    >
-                      <ExternalLink className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
-                      Live
-                    </a>
-                  </div>
-
-                  {/* Hover Indicator */}
-                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${project.color} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 rounded-full`}></div>
                 </div>
 
-                {/* Floating Particles */}
-                {hoveredIndex === index && (
+                {/* Title */}
+                <h3 className="card-title">{project.title}</h3>
+
+                {/* Description */}
+                <p className="card-desc">{project.description}</p>
+
+                {/* Tech */}
+                <div className="card-tech">
+                  {project.tech.map((t, i) => (
+                    <span key={i} className="tech-chip">{t}</span>
+                  ))}
+                </div>
+
+                {/* Actions */}
+                <div className="card-actions">
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="btn-card-primary">
+                    <Github size={14} />
+                    Code
+                  </a>
+                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="btn-card-outline">
+                    <ExternalLink size={14} />
+                    Live Demo
+                  </a>
+                </div>
+
+                {/* Bottom accent line */}
+                <div className="card-bottom-line" />
+
+                {/* Hover particles */}
+                {isHovered && (
                   <>
-                    <div className="absolute -top-2 -right-2 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
-                    <div className="absolute -bottom-2 -left-2 w-2 h-2 bg-red-400 rounded-full animate-ping delay-300"></div>
+                    <div className="hover-particle hp1" />
+                    <div className="hover-particle hp2" />
                   </>
                 )}
               </div>
@@ -196,31 +147,368 @@ const Projects = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(5deg); }
-        }
-        
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(-5deg); }
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap');
+
+        .projects-section {
+          min-height: 100vh;
+          background-color: #16162A;
+          color: #F5F5F7;
+          position: relative;
+          overflow: hidden;
+          padding: 96px 0;
         }
 
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
+        /* Background */
+        .projects-bg {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .proj-glow {
+          position: absolute;
+          width: 500px; height: 500px;
+          border-radius: 50%;
+          filter: blur(100px);
+        }
+        .proj-glow-tr {
+          top: -100px; right: -100px;
+          background: rgba(26,188,156,0.06);
+          animation: projPulse 7s ease-in-out infinite;
+        }
+        .proj-glow-bl {
+          bottom: -100px; left: -100px;
+          background: rgba(26,188,156,0.04);
+          animation: projPulse 9s ease-in-out infinite 3s;
+        }
+        .proj-dots {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(26,188,156,0.07) 1px, transparent 1px);
+          background-size: 32px 32px;
+        }
+        .proj-glyph {
+          position: absolute;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 5rem;
+          color: rgba(26,188,156,0.04);
+          user-select: none;
+          animation: glyphFloat 6s ease-in-out infinite;
         }
 
-        .animate-float-delayed {
-          animation: float-delayed 8s ease-in-out infinite;
+        /* Container */
+        .projects-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 24px;
+          position: relative;
+          z-index: 1;
         }
 
-        .delay-300 {
-          animation-delay: 300ms;
+        /* Header */
+        .proj-header {
+          text-align: center;
+          margin-bottom: 64px;
+          opacity: 0;
+          transform: translateY(-20px);
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .proj-header.visible { opacity: 1; transform: translateY(0); }
+
+        .proj-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: #1ABC9C;
+          margin-bottom: 14px;
+        }
+        .eyebrow-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #1ABC9C;
+          box-shadow: 0 0 8px rgba(26,188,156,0.7);
+          display: inline-block;
+          animation: projPulse 2s ease-in-out infinite;
+          flex-shrink: 0;
+        }
+        .proj-title {
+          font-family: 'Orbitron', sans-serif;
+          font-size: clamp(2rem, 5vw, 3.5rem);
+          font-weight: 900;
+          letter-spacing: 0.05em;
+          background: linear-gradient(135deg, #F5F5F7 30%, #1ABC9C);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 14px;
+        }
+        .proj-subtitle {
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          color: #6B6B80;
+          max-width: 480px;
+          margin: 0 auto;
+        }
+        .proj-divider {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 28px;
+        }
+        .divider-line {
+          height: 1px; width: 80px;
+          background: linear-gradient(to right, transparent, rgba(26,188,156,0.5));
+        }
+        .divider-line-r {
+          background: linear-gradient(to left, transparent, rgba(26,188,156,0.5));
+        }
+        .divider-gem {
+          width: 8px; height: 8px;
+          background: #1ABC9C;
+          transform: rotate(45deg);
+          box-shadow: 0 0 10px rgba(26,188,156,0.6);
         }
 
-        .delay-1000 {
-          animation-delay: 1000ms;
+        /* Grid */
+        .proj-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        @media (min-width: 768px) {
+          .proj-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+          .proj-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Card */
+        .proj-card {
+          position: relative;
+          background: linear-gradient(145deg, #252538, #1a1a2e);
+          border: 1px solid rgba(26,188,156,0.12);
+          border-radius: 18px;
+          padding: 28px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          overflow: hidden;
+          cursor: default;
+          opacity: 0;
+          transform: translateY(28px);
+          transition:
+            opacity 0.6s ease,
+            transform 0.6s ease,
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+        }
+        .proj-card.visible { opacity: 1; transform: translateY(0); }
+        .proj-card.hovered {
+          border-color: rgba(26,188,156,0.4);
+          box-shadow:
+            0 0 0 1px rgba(26,188,156,0.1),
+            0 8px 40px rgba(0,0,0,0.5),
+            0 0 30px rgba(26,188,156,0.08);
+          transform: translateY(-6px);
+        }
+
+        /* Glow overlay inside card */
+        .card-glow {
+          position: absolute;
+          top: -60px; right: -60px;
+          width: 200px; height: 200px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(26,188,156,0.08) 0%, transparent 70%);
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+          opacity: 0;
+        }
+        .proj-card.hovered .card-glow { opacity: 1; }
+
+        /* Card head */
+        .card-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .card-icon-wrap {
+          width: 44px; height: 44px;
+          border-radius: 12px;
+          background: rgba(26,188,156,0.1);
+          border: 1px solid rgba(26,188,156,0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #1ABC9C;
+          transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .proj-card.hovered .card-icon-wrap {
+          background: rgba(26,188,156,0.18);
+          transform: rotate(6deg) scale(1.05);
+        }
+        .card-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .card-tag {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 0.65rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: #1ABC9C;
+          background: rgba(26,188,156,0.1);
+          border: 1px solid rgba(26,188,156,0.2);
+          border-radius: 9999px;
+          padding: 2px 10px;
+        }
+        .card-rating {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #1ABC9C;
+        }
+
+        /* Card content */
+        .card-title {
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: #F5F5F7;
+          letter-spacing: 0.02em;
+          transition: color 0.3s ease;
+        }
+        .proj-card.hovered .card-title { color: #4DD9BC; }
+
+        .card-desc {
+          font-family: 'Inter', sans-serif;
+          font-size: 0.875rem;
+          line-height: 1.65;
+          color: #A0A0B0;
+          flex: 1;
+          transition: color 0.3s ease;
+        }
+        .proj-card.hovered .card-desc { color: #C0C0C8; }
+
+        /* Tech */
+        .card-tech {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .tech-chip {
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 0.65rem;
+          letter-spacing: 0.08em;
+          color: #A0A0B0;
+          background: rgba(213,213,213,0.06);
+          border: 1px solid rgba(213,213,213,0.1);
+          border-radius: 6px;
+          padding: 3px 10px;
+          transition: all 0.25s ease;
+        }
+        .proj-card.hovered .tech-chip {
+          color: #1ABC9C;
+          border-color: rgba(26,188,156,0.25);
+          background: rgba(26,188,156,0.06);
+        }
+
+        /* Actions */
+        .card-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 4px;
+        }
+        .btn-card-primary {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 9px 0;
+          background: linear-gradient(135deg, #1ABC9C, #148F77);
+          color: #1E1E2F;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 700;
+          border-radius: 9px;
+          text-decoration: none;
+          transition: all 0.25s ease;
+        }
+        .btn-card-primary:hover {
+          background: linear-gradient(135deg, #4DD9BC, #1ABC9C);
+          box-shadow: 0 4px 16px rgba(26,188,156,0.3);
+          transform: translateY(-2px);
+          color: #1E1E2F;
+        }
+        .btn-card-outline {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 9px 0;
+          background: transparent;
+          color: #1ABC9C;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 600;
+          border-radius: 9px;
+          border: 1.5px solid rgba(26,188,156,0.35);
+          text-decoration: none;
+          transition: all 0.25s ease;
+        }
+        .btn-card-outline:hover {
+          background: rgba(26,188,156,0.08);
+          border-color: #1ABC9C;
+          box-shadow: 0 4px 16px rgba(26,188,156,0.15);
+          transform: translateY(-2px);
+          color: #4DD9BC;
+        }
+
+        /* Bottom accent */
+        .card-bottom-line {
+          position: absolute;
+          bottom: 0; left: 0;
+          height: 2px; width: 0;
+          background: linear-gradient(90deg, #1ABC9C, #4DD9BC);
+          border-radius: 0 0 18px 18px;
+          transition: width 0.4s ease;
+        }
+        .proj-card.hovered .card-bottom-line { width: 100%; }
+
+        /* Hover particles */
+        .hover-particle {
+          position: absolute;
+          border-radius: 50%;
+          background: #1ABC9C;
+          animation: particlePing 1.2s ease-in-out infinite;
+        }
+        .hp1 { width: 8px; height: 8px; top: -4px; right: 10%; }
+        .hp2 { width: 6px; height: 6px; bottom: -3px; left: 10%; animation-delay: 0.4s; }
+
+        /* Keyframes */
+        @keyframes projPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+        @keyframes glyphFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-16px); }
+        }
+        @keyframes particlePing {
+          0% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(2.5); opacity: 0.3; }
+          100% { transform: scale(1); opacity: 0.8; }
         }
       `}</style>
     </section>

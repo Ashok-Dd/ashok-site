@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Target } from "lucide-react";
+import { Crosshair } from "lucide-react";
 
 function PortalTrigger({ onClick }) {
   const [hovered, setHovered] = useState(false);
@@ -8,14 +8,11 @@ function PortalTrigger({ onClick }) {
   useEffect(() => {
     let raf;
     let t = 0;
-
     const animate = () => {
-      t += 0.05;
-      const pulse = 1 + Math.sin(t) * 0.03;
-      setScale(pulse);
+      t += 0.04;
+      setScale(1 + Math.sin(t) * 0.025);
       raf = requestAnimationFrame(animate);
     };
-
     animate();
     return () => cancelAnimationFrame(raf);
   }, []);
@@ -26,179 +23,111 @@ function PortalTrigger({ onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 18,
-        cursor: "pointer",
-        userSelect: "none",
-        marginTop: 60,
+        display: "flex", flexDirection: "column", alignItems: "center",
+        gap: 20, cursor: "pointer", userSelect: "none", marginTop: 56,
       }}
     >
-      {/* TOP LABEL */}
-      <div
-        style={{
-          fontFamily: "'Share Tech Mono', monospace",
-          color: "rgba(255,80,0,.5)",
-          fontSize: 11,
-          letterSpacing: ".5em",
-        }}
-      >
-        ◈ INTERACTIVE EXPERIENCE ◈
+      {/* Label */}
+      <div style={{
+        fontFamily: "'Share Tech Mono', monospace",
+        color: "rgba(26,188,156,0.5)",
+        fontSize: 10, letterSpacing: ".55em", textTransform: "uppercase",
+      }}>
+        ◈ interactive experience ◈
       </div>
 
-      {/* PORTAL */}
-      <div
-        style={{
-          position: "relative",
-          width: 240,
-          height: 240,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {/* 🔥 OUTER ENERGY GLOW */}
-        <div
-          style={{
-            position: "absolute",
-            width: 180,
-            height: 180,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(255,80,0,0.6) 0%, rgba(255,40,0,0.15) 50%, transparent 75%)",
-            filter: "blur(25px)",
-            transform: `scale(${scale * (hovered ? 1.2 : 1)})`,
-            transition: "all .4s ease",
-          }}
-        />
+      {/* Portal */}
+      <div style={{ position: "relative", width: 220, height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
 
-        {/* 🔥 CORE ENERGY */}
-        <div
-          style={{
-            position: "absolute",
-            width: 110,
-            height: 110,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(255,120,0,0.9), rgba(255,40,0,0.3))",
-            filter: "blur(10px)",
-            opacity: hovered ? 1 : 0.7,
-            transform: `scale(${scale})`,
-            transition: "all .3s ease",
-          }}
-        />
+        {/* Outer energy glow */}
+        <div style={{
+          position: "absolute", width: 180, height: 180, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(26,188,156,0.45) 0%, rgba(26,188,156,0.08) 55%, transparent 75%)",
+          filter: "blur(22px)",
+          transform: `scale(${scale * (hovered ? 1.18 : 1)})`,
+          transition: "transform .4s ease",
+        }} />
 
-        {/* RINGS */}
-        <div
-          style={{
-            position: "absolute",
-            width: 210,
-            height: 210,
-            borderRadius: "50%",
-            border: "2px dashed rgba(255,70,0,.5)",
-            animation: "spin 10s linear infinite",
-            transform: hovered ? "scale(1.1)" : "scale(1)",
-          }}
-        />
+        {/* Core energy */}
+        <div style={{
+          position: "absolute", width: 100, height: 100, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(77,217,188,0.7), rgba(26,188,156,0.2))",
+          filter: "blur(10px)",
+          opacity: hovered ? 1 : 0.65,
+          transform: `scale(${scale})`,
+          transition: "opacity .3s ease",
+        }} />
 
-        <div
-          style={{
-            position: "absolute",
-            width: 170,
-            height: 170,
-            borderRadius: "50%",
-            border: "1.5px solid rgba(255,100,30,.3)",
-            animation: "spinReverse 6s linear infinite",
-          }}
-        />
+        {/* Outer dashed ring */}
+        <div style={{
+          position: "absolute", width: 200, height: 200, borderRadius: "50%",
+          border: "1.5px dashed rgba(26,188,156,0.4)",
+          animation: "ptSpin 12s linear infinite",
+          transform: hovered ? "scale(1.08)" : "scale(1)",
+          transition: "transform .4s ease",
+        }} />
 
-        {/* ⚡ ELECTRIC ARC EFFECT */}
-        <div
-          style={{
-            position: "absolute",
-            width: 200,
-            height: 200,
-            borderRadius: "50%",
-            border: hovered
-              ? "2px solid rgba(255,150,80,0.8)"
-              : "2px solid transparent",
-            boxShadow: hovered
-              ? "0 0 25px rgba(255,120,0,0.7)"
-              : "none",
-            transition: "all .3s",
-          }}
-        />
+        {/* Inner solid ring */}
+        <div style={{
+          position: "absolute", width: 158, height: 158, borderRadius: "50%",
+          border: "1px solid rgba(77,217,188,0.22)",
+          animation: "ptSpinR 8s linear infinite",
+        }} />
 
-        {/* CENTER CORE */}
-        <div
-          style={{
-            width: 90,
-            height: 90,
-            background:
-              "linear-gradient(135deg,#7f0000,#ff1a00 60%,#ff6a00)",
-            clipPath:
-              "polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: hovered
-              ? "0 0 50px rgba(255,50,0,.9)"
-              : "0 0 25px rgba(255,50,0,.5)",
-            transform: hovered ? "scale(1.1)" : "scale(1)",
-            transition: "all .3s ease",
-            zIndex: 2,
-          }}
-        >
-          <Target size={28} color="white" />
-          <span
-            style={{
-              fontFamily: "'Orbitron', monospace",
-              fontSize: 8,
-              letterSpacing: ".15em",
-              marginTop: 4,
-              color: "white",
-            }}
-          >
+        {/* Electric arc on hover */}
+        <div style={{
+          position: "absolute", width: 190, height: 190, borderRadius: "50%",
+          border: hovered ? "1.5px solid rgba(26,188,156,0.65)" : "1.5px solid transparent",
+          boxShadow: hovered ? "0 0 22px rgba(26,188,156,0.5), inset 0 0 22px rgba(26,188,156,0.1)" : "none",
+          transition: "all .35s ease",
+        }} />
+
+        {/* Center octagon */}
+        <div style={{
+          width: 84, height: 84,
+          background: "linear-gradient(135deg, #0e2e2a, #1ABC9C 55%, #4DD9BC)",
+          clipPath: "polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          boxShadow: hovered
+            ? "0 0 40px rgba(26,188,156,0.8), 0 0 80px rgba(26,188,156,0.3)"
+            : "0 0 20px rgba(26,188,156,0.4)",
+          transform: hovered ? "scale(1.08) rotate(22.5deg)" : "scale(1) rotate(0deg)",
+          transition: "all .35s ease",
+          zIndex: 2,
+        }}>
+          <Crosshair size={24} color="white" strokeWidth={1.5} />
+          <span style={{ fontFamily: "'Orbitron', monospace", fontSize: 7, letterSpacing: ".18em", marginTop: 4, color: "rgba(255,255,255,0.85)" }}>
             ARENA
           </span>
         </div>
       </div>
 
-      {/* MAIN TEXT */}
-      <div
-        style={{
-          fontFamily: "'Orbitron', monospace",
-          fontWeight: 900,
-          fontSize: "clamp(16px,2.5vw,26px)",
-          letterSpacing: hovered ? ".3em" : ".15em",
-          color: "#FF4500",
-          textShadow: hovered
-            ? "0 0 35px rgba(255,80,0,1), 0 0 80px rgba(255,50,0,.6)"
-            : "0 0 15px rgba(255,80,0,.5)",
-          transition: "all .35s ease",
-        }}
-      >
+      {/* Main CTA text */}
+      <div style={{
+        fontFamily: "'Orbitron', monospace", fontWeight: 900,
+        fontSize: "clamp(14px,2.2vw,22px)",
+        letterSpacing: hovered ? ".28em" : ".14em",
+        color: "#1ABC9C",
+        textShadow: hovered
+          ? "0 0 30px rgba(26,188,156,0.9), 0 0 60px rgba(26,188,156,0.4)"
+          : "0 0 12px rgba(26,188,156,0.4)",
+        transition: "all .35s ease",
+      }}>
         ENTER SKILL ARENA →
       </div>
 
-      {/* SUBTEXT */}
-      <div
-        style={{
-          fontFamily: "'Share Tech Mono', monospace",
-          fontSize: 11,
-          color: "rgba(255,100,50,.4)",
-          letterSpacing: ".3em",
-        }}
-      >
-        CLICK TO BEGIN · PRECISION MODE
+      {/* Sub label */}
+      <div style={{
+        fontFamily: "'Share Tech Mono', monospace",
+        fontSize: 10, color: "rgba(26,188,156,0.35)",
+        letterSpacing: ".3em", textTransform: "uppercase",
+      }}>
+        click to begin · precision mode
       </div>
 
-      {/* ANIMATIONS */}
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes spinReverse { to { transform: rotate(-360deg); } }
+        @keyframes ptSpin  { to { transform: rotate(360deg); } }
+        @keyframes ptSpinR { to { transform: rotate(-360deg); } }
       `}</style>
     </div>
   );
