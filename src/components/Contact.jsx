@@ -22,7 +22,7 @@ const Contact = () => {
     { id: 'linkedin', name: 'LinkedIn', username: 'Bongu Ashok', link: 'https://linkedin.com/in/ashok-bongu', icon: Linkedin, color: 'rose-500' },
     { id: 'instagram', name: 'Instagram', username: '@ashok_devil_123', link: 'https://instagram.com/ashok_devil_123', icon: Instagram, color: 'rose-500' },
     { id: 'email', name: 'Email', username: 'bonguashok86@email.com', link: 'mailto:bonguashok86@email.com', icon: Mail, color: 'rose-500' },
-    { id: 'whatsapp', name: 'WhatsApp', username: '+9392954525', link: 'https://wa.me/9392954525', icon: MessageCircle, color: 'rose-500' }
+    { id: 'whatsapp', name: 'WhatsApp', username: '+91 9392954525', link: 'https://wa.me/9392954525', icon: MessageCircle, color: 'rose-500' }
   ];
 
   return (
