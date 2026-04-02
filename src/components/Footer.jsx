@@ -1,15 +1,11 @@
 import { Github, Linkedin, Mail, MessageCircle, Instagram, ArrowUp } from "lucide-react";
+import { links } from '../../data'
+
 
 const Footer = () => {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  const links = [
-    { icon: Github,      href: "https://github.com/Ashok-Dd",           label: "GitHub" },
-    { icon: Linkedin,    href: "https://linkedin.com/in/ashok-bongu",    label: "LinkedIn" },
-    { icon: Instagram,   href: "https://instagram.com/ashok_devil_123",  label: "Instagram" },
-    { icon: Mail,        href: "mailto:bonguashok86@email.com",          label: "Email" },
-    { icon: MessageCircle, href: "https://wa.me/9392954525",            label: "WhatsApp" },
-  ];
+
 
   const navLinks = ["Home", "Projects", "Skills", "Contact"];
 

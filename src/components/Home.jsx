@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, MeshWobbleMaterial } from '@react-three/drei';
+import { roles } from '../../data';
 
 const Home = () => {
   const [typedText, setTypedText] = useState('');
@@ -9,12 +10,7 @@ const Home = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  const roles = [
-    'Full Stack Developer',
-    'Code Ninja',
-    'Problem Solver',
-    'Tech Enthusiast'
-  ];
+
 
   useEffect(() => { setIsVisible(true); }, []);
 
@@ -129,42 +125,42 @@ const Home = () => {
           </div>
 
           {/* ── Right: Avatar ── */}
-{/* Paste this inside your Hero component where the avatar goes */}
+          {/* Paste this inside your Hero component where the avatar goes */}
 
-<div className={`home-avatar-wrap ${isVisible ? 'visible' : ''}`}>
+          <div className={`home-avatar-wrap ${isVisible ? 'visible' : ''}`}>
 
-  {/* Spinning orbit rings */}
-  <div className="orbit-ring orbit-ring-1" />
-  <div className="orbit-ring orbit-ring-2" />
+            {/* Spinning orbit rings */}
+            <div className="orbit-ring orbit-ring-1" />
+            <div className="orbit-ring orbit-ring-2" />
 
-  {/* Soft glow behind image */}
-  <div className="avatar-halo" />
+            {/* Soft glow behind image */}
+            <div className="avatar-halo" />
 
-  {/* Circular frame — overflow:hidden clips image cleanly */}
-  <div className="avatar-frame">
-    <img
-      src="/profil.png"
-      alt="Ashok Bongu"
-      className="avatar-img"
-    />
-  </div>
+            {/* Circular frame — overflow:hidden clips image cleanly */}
+            <div className="avatar-frame">
+              <img
+                src="/profile.png"
+                alt="Ashok Bongu"
+                className="avatar-img"
+              />
+            </div>
 
-  {/* Floating code badges */}
-  <div className="float-badge badge-top">
-    <span className="badge-dot" />
-    <span className="badge-text font-mono">const ninja = true</span>
-  </div>
-  <div className="float-badge badge-bot">
-    <span className="badge-dot" />
-    <span className="badge-text font-mono">{'<Coding />'}</span>
-  </div>
+            {/* Floating code badges */}
+            <div className="float-badge badge-top">
+              <span className="badge-dot" />
+              <span className="badge-text font-mono">const ninja = true</span>
+            </div>
+            <div className="float-badge badge-bot">
+              <span className="badge-dot" />
+              <span className="badge-text font-mono">{'<Coding />'}</span>
+            </div>
 
-  {/* Accent particles */}
-  <div className="particle p1" />
-  <div className="particle p2" />
-  <div className="particle p3" />
+            {/* Accent particles */}
+            <div className="particle p1" />
+            <div className="particle p2" />
+            <div className="particle p3" />
 
-</div>
+          </div>
         </div>
 
         {/* Scroll hint */}

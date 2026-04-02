@@ -2,15 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Flame, Code2, Server, Cpu, Brain, Wrench, Zap, X, Target } from 'lucide-react';
 import PortalTrigger from './PortalTrigger';
 import SkillShooter from './SkillShooter';
+import { categoriesData } from '../../data';
 
 // ─── SHARED DATA ─────────────────────────────────────────────────────────────
-const categoriesData = [
-  { id: 'frontend',  name: 'Frontend',  icon: Code2,  skills: ['HTML','CSS','JavaScript','TypeScript','React','Next.js','Tailwind CSS','React Native'] },
-  { id: 'backend',   name: 'Backend',   icon: Server, skills: ['Node.js','Express','Socket.IO','MongoDB','PostgreSQL'] },
-  { id: 'languages', name: 'Languages', icon: Cpu,    skills: ['C','Python','Java'] },
-  { id: 'ai',        name: 'AI & Data', icon: Brain,  skills: ['Machine Learning','Data Visualization','Data Analysis'] },
-  { id: 'tools',     name: 'Tools',     icon: Wrench, skills: ['Git','GitBash','VS Code','Postman','Firebase','Vercel'] },
-];
+
 
 const allSkills = categoriesData.flatMap(cat =>
   cat.skills.map(skill => ({ skill, category: cat.id }))
@@ -215,7 +210,7 @@ export default function Skills() {
 
             {/* SKILLS PANEL */}
             <div>
-              <div className='max-sm:hidden' style={{
+              <div className='max-md:hidden' style={{
                 background:'var(--color-bg-glass)',
                 backdropFilter:'blur(var(--blur-lg))',
                 WebkitBackdropFilter:'blur(var(--blur-lg))',

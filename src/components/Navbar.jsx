@@ -9,7 +9,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [active, setActive] = useState("home");
 
-  const navItems = ["Home", "Skills", "Projects", "Contact"];
+  const navItems = ["Home", "Skills", "Projects" , "Leetcode", "Contact"];
 
   const scrollToSection = (item) => {
     setIsMobileMenuOpen(false);

@@ -6,6 +6,8 @@ import {
   MessageCircle, Send, User, AtSign,
   FileText, CheckCircle2, Loader2, ChevronRight,
 } from 'lucide-react';
+import { SOCIALS } from '../../data'
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,13 +22,7 @@ const WHATSAPP_NUMBER     = '919392954525';
 /* ─────────────────────────────────────────
    SOCIAL DATA
    ───────────────────────────────────────── */
-const SOCIALS = [
-  { id: 'github',    label: 'GitHub',    sub: '@Ashok-Dd',              href: 'https://github.com/Ashok-Dd',           Icon: Github        },
-  { id: 'linkedin',  label: 'LinkedIn',  sub: 'Bongu Ashok',            href: 'https://linkedin.com/in/ashok-bongu',   Icon: Linkedin      },
-  { id: 'instagram', label: 'Instagram', sub: '@ashok_devil_123',       href: 'https://instagram.com/ashok_devil_123', Icon: Instagram     },
-  { id: 'email',     label: 'Email',     sub: 'bonguashok86@gmail.com', href: 'mailto:bonguashok86@gmail.com',         Icon: Mail          },
-  { id: 'whatsapp',  label: 'WhatsApp',  sub: '+91 9392954525',         href: 'https://wa.me/9392954525',              Icon: MessageCircle },
-];
+
 
 /* =========================================================
    CONTACT

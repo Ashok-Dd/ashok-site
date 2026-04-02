@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const Loader = ({ onComplete }) => {
@@ -8,6 +8,11 @@ const Loader = ({ onComplete }) => {
   const nameRef = useRef();
   const lineRef = useRef();
   const tagRef = useRef();
+
+
+  const [animationDone, setAnimationDone] = useState(false);
+
+
 
   useEffect(() => {
     if (!document.getElementById("loader-font")) {
@@ -24,47 +29,49 @@ const Loader = ({ onComplete }) => {
 
     gsap.set([topRef.current, botRef.current], { yPercent: 0 });
     gsap.set(letters, { yPercent: 120, opacity: 0 });
-    gsap.set(lineRef.current, { scaleX: 0, transformOrigin: "left" });
+    gsap.set(lineRef.current, { scaleX: 0 });
     gsap.set(tagRef.current, { opacity: 0, y: 12 });
-    gsap.set(counter, { opacity: 1 });
 
     const tl = gsap.timeline();
 
     tl.to({}, {
       duration: 2,
-      ease: "power1.inOut",
       onUpdate() {
         const val = Math.round(this.progress() * 100);
         counter.textContent = String(val).padStart(3, "0");
       },
     })
-    .to(counter, { opacity: 0, y: -20, duration: 0.35, ease: "power2.in" }, "-=0.1")
-    .to(lineRef.current, { scaleX: 1, duration: 0.55, ease: "expo.out" }, "-=0.1")
+    .to(counter, { opacity: 0, y: -20, duration: 0.3 })
+    .to(lineRef.current, { scaleX: 1, duration: 0.5 })
     .to(letters, {
       yPercent: 0,
       opacity: 1,
-      stagger: 0.055,
-      duration: 0.65,
-      ease: "expo.out",
-    }, "-=0.3")
-    .to(tagRef.current, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2")
+      stagger: 0.05,
+      duration: 0.6,
+    })
+    .to(tagRef.current, { opacity: 1, y: 0, duration: 0.4 })
     .to({}, { duration: 0.6 })
     .to(letters, {
       yPercent: -120,
       opacity: 0,
       stagger: 0.04,
-      duration: 0.45,
-      ease: "power3.in",
+      duration: 0.4,
     })
-    .to(lineRef.current, {
-      scaleX: 0,
-      transformOrigin: "right",
-      duration: 0.35,
-      ease: "expo.in",
-    }, "-=0.3")
-    .to(topRef.current, { yPercent: -100, duration: 0.9, ease: "expo.inOut" }, "-=0.1")
-    .to(botRef.current, { yPercent: 100, duration: 0.9, ease: "expo.inOut", onComplete }, "<");
+    .to(lineRef.current, { scaleX: 0, duration: 0.3 })
+    .to(topRef.current, { yPercent: -100, duration: 0.3 })
+    .to(botRef.current, {
+      yPercent: 100,
+      duration: 0.8,
+      onComplete: () => setAnimationDone(true),
+    });
+
   }, []);
+
+  useEffect(() => {
+    if (animationDone) {
+      onComplete();
+    }
+  }, [animationDone]);
 
   const NAME = "ASHOK";
 

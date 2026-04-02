@@ -1,4 +1,54 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
+import { GAME_SKILLS } from '../../data';
+
+import { FaHtml5, FaCss3Alt, FaJs, FaReact, FaNodeJs , FaJava, FaGitAlt } from 'react-icons/fa';
+import {
+  SiTypescript, SiNextdotjs, SiTailwindcss, SiExpress,
+  SiSocketdotio, SiMongodb, SiPostgresql, SiPython,
+  SiPostman, SiFirebase, SiVercel, SiGreensock,
+} from 'react-icons/si';
+
+import { VscVscode } from 'react-icons/vsc';
+import ReactDOMServer from 'react-dom/server';
+
+// Call this once at the top of your component
+
+
+const CIcon       = () => <span style={{ fontSize: 12, fontWeight: 700 }}>C</span>;
+const MLIcon      = () => <span style={{ fontSize: 10, fontWeight: 700 }}>ML</span>;
+const DataVizIcon = () => <span style={{ fontSize: 12 }}>📊</span>;
+const DataIcon    = () => <span style={{ fontSize: 12 }}>📈</span>;
+const DSAIcon     = () => <span style={{ fontSize: 12 }}>∑</span>;
+
+const ICON_MAP = {
+  html: FaHtml5,
+  css: FaCss3Alt,
+  js: FaJs,
+  ts: SiTypescript,
+  react: FaReact,
+  next: SiNextdotjs,
+  tailwind: SiTailwindcss,
+  node: FaNodeJs,
+  express: SiExpress,
+  socket: SiSocketdotio,
+  mongo: SiMongodb,
+  postgres: SiPostgresql,
+  python: SiPython,
+  java: FaJava,
+  git: FaGitAlt,
+  gitbash: FaGitAlt ,
+  vscode: VscVscode ,
+  postman: SiPostman,
+  firebase: SiFirebase,
+  vercel: SiVercel,
+  gsap: SiGreensock,
+  c:       CIcon,
+  ml:      MLIcon,
+  dataviz: DataVizIcon,
+  data:    DataIcon,
+  dsa:     DSAIcon,
+};
+
 
 /* ── helpers ── */
 const rand = (a, b) => Math.random() * (b - a) + a;
@@ -17,36 +67,6 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
-
-const GAME_SKILLS = [
-  { name: 'HTML',               color: '#E34F26', icon: '<>' },
-  { name: 'CSS',                color: '#1572B6', icon: '{}' },
-  { name: 'JavaScript',         color: '#F7DF1E', icon: 'JS' },
-  { name: 'TypeScript',         color: '#3178C6', icon: 'TS' },
-  { name: 'React',              color: '#61DAFB', icon: '⚛'  },
-  { name: 'Next.js',            color: '#ffffff', icon: '▲'  },
-  { name: 'Tailwind CSS',       color: '#38BDF8', icon: '💨' },
-  { name: 'React Native',       color: '#61DAFB', icon: '📱' },
-  { name: 'Node.js',            color: '#68A063', icon: '⬢'  },
-  { name: 'Express',            color: '#aaaaaa', icon: 'EX' },
-  { name: 'Socket.IO',          color: '#ffffff', icon: '⚡' },
-  { name: 'MongoDB',            color: '#47A248', icon: '🍃' },
-  { name: 'PostgreSQL',         color: '#336791', icon: '🐘' },
-  { name: 'C',                  color: '#A8B9CC', icon: 'C'  },
-  { name: 'Python',             color: '#FFD43B', icon: '🐍' },
-  { name: 'Java',               color: '#f89820', icon: '☕' },
-  { name: 'Machine Learning',   color: '#FF6F00', icon: '🤖' },
-  { name: 'Data Visualization', color: '#FF4081', icon: '📊' },
-  { name: 'Data Analysis',      color: '#00C853', icon: '📈' },
-  { name: 'Git',                color: '#F05032', icon: '🔀' },
-  { name: 'GitBash',            color: '#4EAA25', icon: '💻' },
-  { name: 'VS Code',            color: '#007ACC', icon: '🧩' },
-  { name: 'Postman',            color: '#FF6C37', icon: '📮' },
-  { name: 'Firebase',           color: '#FFCA28', icon: '🔥' },
-  { name: 'Vercel',             color: '#ffffff', icon: '▲'  },
-  { name: 'DSA',                color: '#FF6B6B', icon: '∑'  },
-  { name: 'GSAP',               color: '#88CE02', icon: 'G'  },
-];
 
 function spawnTarget(s, W, H) {
   const skill = GAME_SKILLS[randI(0, GAME_SKILLS.length)];
@@ -105,11 +125,38 @@ function SkillShooter({ onExit }) {
   const canvasRef = useRef(null);
   const gsRef     = useRef(null);
   const rafRef    = useRef(null);
+  const iconImagesRef = useRef({});
+
+
 
   const [hud, setHud]               = useState({ score: 0, ammo: 30, kills: 0, phase: "entry" });
   const [reloading, setReloading]   = useState(false);
   const [comboItems, setComboItems] = useState([]);
   const [entryStep, setEntryStep]   = useState(0);
+
+  useEffect(() => {
+  GAME_SKILLS.forEach((sk) => {
+    const IconComp = ICON_MAP[sk.icon];
+    if (!IconComp) return;
+
+    // Render the icon to an SVG string
+    const svgString = ReactDOMServer.renderToStaticMarkup(
+      <IconComp size={24} color={sk.color} />
+    );
+
+    const blob = new Blob(
+      [`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">${svgString}</svg>`],
+      { type: 'image/svg+xml' }
+    );
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      iconImagesRef.current[sk.icon] = img;
+      URL.revokeObjectURL(url);
+    };
+  });
+}, []);
 
   const syncHud = useCallback(() => {
     const s = gsRef.current; if (!s) return;
@@ -305,11 +352,20 @@ function SkillShooter({ onExit }) {
 
           /* Icon & label */
           ctx.globalAlpha = 1;
-          ctx.font = `bold ${Math.floor(R * .55)}px monospace`;
-          ctx.textAlign = "center"; ctx.textBaseline = "middle";
-          ctx.fillStyle = t.skill.color; ctx.shadowColor = t.skill.color; ctx.shadowBlur = 12;
-          ctx.fillText(t.skill.icon, t.x, t.y - R * .08); ctx.shadowBlur = 0;
+          const iconImg = iconImagesRef.current[t.skill.icon];
+          if (iconImg) {
+            const iconSize = R * 0.9;
+            ctx.shadowColor = t.skill.color; ctx.shadowBlur = 12;
+            ctx.drawImage(iconImg, t.x - iconSize / 2, t.y - R * 0.55, iconSize, iconSize);
+            ctx.shadowBlur = 0;
+          } else {
+            ctx.font = `bold ${Math.floor(R * .55)}px monospace`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillStyle = t.skill.color; ctx.shadowColor = t.skill.color; ctx.shadowBlur = 12;
+            ctx.fillText(t.skill.name.slice(0, 2).toUpperCase(), t.x, t.y - R * .08); ctx.shadowBlur = 0;
+          }
           ctx.font = "bold 11px 'Courier New',monospace"; ctx.fillStyle = "#F5F5F7"; ctx.globalAlpha = 0.75;
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
           ctx.fillText(t.skill.name, t.x, t.y + R * .56);
           ctx.globalAlpha = 1; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
         });
@@ -433,7 +489,7 @@ function SkillShooter({ onExit }) {
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 10 }}>
           {entryStep >= 1 && (
             <div style={{ animation: "ssGlitch .65s ease forwards", textAlign: "center" }}>
-              <div className="ss-orb" style={{ fontSize: "clamp(24px,5.5vw,66px)", fontWeight: 900, letterSpacing: ".12em", color: "#1ABC9C", textShadow: "0 0 40px rgba(26,188,156,0.6)" }}>TEST MY SKILLS</div>
+              <div className="ss-orb" style={{ fontSize: "clamp(24px,5.5vw,66px)", fontWeight: 900, letterSpacing: ".12em", color: "#1ABC9C"}}>TEST MY SKILLS</div>
               <div className="ss-mono" style={{ color: "rgba(26,188,156,0.45)", letterSpacing: ".4em", fontSize: "clamp(9px,1.1vw,12px)", marginTop: 10 }}>◈ INTERACTIVE ARENA ◈</div>
             </div>
           )}
@@ -532,9 +588,33 @@ function SkillShooter({ onExit }) {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", marginBottom: 24 }}>
-              {GAME_SKILLS.map(sk => (
-                <div key={sk.name} className="ss-mono" style={{ padding: "3px 10px", border: `1px solid ${sk.color}40`, color: sk.color, fontSize: 10, letterSpacing: ".1em", background: `${sk.color}0d`, borderRadius: 6 }}>{sk.icon} {sk.name}</div>
-              ))}
+              {GAME_SKILLS.map((sk) => {
+                console.log(ICON_MAP[sk.icon] ? "present in map" : "absent in map");
+                const Icon = ICON_MAP[sk.icon] || (() => <span>{sk.icon}</span>);
+
+
+                return (
+                  <div
+                    key={sk.name}
+                    className="ss-mono"
+                    style={{
+                      padding: "3px 10px",
+                      border: `1px solid ${sk.color}40`,
+                      color: sk.color,
+                      fontSize: 10,
+                      letterSpacing: ".1em",
+                      background: `${sk.color}0d`,
+                      borderRadius: 6,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6
+                    }}
+                  >
+                    <Icon size={14} />
+                    {sk.name}
+                  </div>
+                );
+              })}
             </div>
 
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
