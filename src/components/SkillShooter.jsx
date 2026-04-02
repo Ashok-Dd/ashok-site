@@ -158,6 +158,7 @@ function SkillShooter({ onExit }) {
   });
 }, []);
 
+
   const syncHud = useCallback(() => {
     const s = gsRef.current; if (!s) return;
     setHud({ score: s.score, ammo: s.ammo, kills: s.kills, phase: s.phase });
