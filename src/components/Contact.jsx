@@ -14,10 +14,10 @@ gsap.registerPlugin(ScrollTrigger);
 /* ─────────────────────────────────────────
    CONFIG — swap in your real IDs
    ───────────────────────────────────────── */
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
-const WHATSAPP_NUMBER     = '919392954525';
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const WHATSAPP_NUMBER     = import.meta.env.VITE_WHATSAPP_NUMBER;
 
 /* ─────────────────────────────────────────
    SOCIAL DATA
