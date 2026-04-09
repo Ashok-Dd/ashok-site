@@ -170,10 +170,10 @@ export const PROJECTS = [
 
 
 export const LEETCODE_DATA = {
-  total: 560,
+  total: 563,
   easy: 302,
-  medium: 236,
-  hard: 22,
+  medium: 238,
+  hard: 23,
 };
 
 export const SOCIALS = [
