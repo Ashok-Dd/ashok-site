@@ -1,4 +1,4 @@
-import { Brain, Code2, Cpu, Github, Instagram,Wrench, HeartPulse, Sprout, Laptop, Linkedin, ShieldAlert ,Mail, MessageCircle, Server } from "lucide-react";
+import { Brain, Code2, Cpu, Github, ShoppingCart , Instagram, Wrench, HeartPulse, Sprout, Laptop, Linkedin, ShieldAlert ,Mail, MessageCircle, Server } from "lucide-react";
 import {
   FaHtml5, FaCss3Alt, FaJs, FaReact, FaNodeJs, FaJava, FaGitAlt
 } from "react-icons/fa";
@@ -60,6 +60,35 @@ export const GAME_SKILLS = [
 export const PROJECTS = [
   {
     id: 0,
+    title: 'Karta Shopping Platform',
+    short: 'E-Commerce Platform',
+    tag: 'E-Commerce',
+    rating: '4.9',
+    icon: ShoppingCart,
+    accentColor: '#ff4d6d',
+    year: '2025',
+    description:
+      'A full-featured e-commerce platform with product listings, cart system, authentication, and secure checkout flow.',
+    longDesc:
+      'Built a scalable and modern e-commerce platform with product filtering, user authentication, cart management, and order tracking. Designed for performance and smooth UX with a responsive UI and optimized API calls.',
+    tech: ['Next.js', 'Postgres', 'NeonDB', 'TailwindCSS', 'Razor pay'],
+    features: [
+      'Product Catalog',
+      'Cart & Checkout',
+      'Auth System',
+      'Order Tracking',
+    ],
+    github: 'https://github.com/Ashok-Dd/karta-shopping-kart',
+    live: 'https://karta-ecommerce.vercel.app/',
+    num: '01',
+    stats: [
+      { label: 'Users', val: '1.8K' },
+      { label: 'Orders', val: '5K+' },
+      { label: 'Conversion', val: '12%' },
+    ],
+  },
+  {
+    id: 1,
     title: 'Student Dashboard',
     short: 'Education Platform',
     tag: 'Education',
@@ -77,7 +106,7 @@ export const PROJECTS = [
     stats: [{ label: 'Users', val: '2.4K' }, { label: 'Uptime', val: '99.9%' }, { label: 'Speed', val: '<2s' }],
   },
   {
-    id: 1,
+    id: 2,
     title: 'Code Space',
     short: 'Snippet Storage',
     tag: 'Utility',
@@ -95,7 +124,7 @@ export const PROJECTS = [
     stats: [{ label: 'Snippets', val: '10K+' }, { label: 'Langs', val: '40+' }, { label: 'Avg Load', val: '0.3s' }],
   },
   {
-    id: 2,
+    id: 3,
     title: 'DevTools Playground',
     short: 'Developer Toolkit',
     tag: 'Tooling',
@@ -113,7 +142,7 @@ export const PROJECTS = [
     stats: [{ label: 'Tools', val: '8' }, { label: 'OAuth', val: 'Google' }, { label: 'Requests', val: '50K+' }],
   },
   {
-    id: 3,
+    id: 4,
     title: 'HealVerse',
     short: 'AI Health Companion',
     tag: 'Health',
@@ -131,7 +160,7 @@ export const PROJECTS = [
     stats: [{ label: 'AI Modules', val: '3' }, { label: 'Platform', val: 'Mobile' }, { label: 'Stack', val: 'Full' }],
   },
   {
-    id: 4,
+    id: 5,
     title: 'AgriAssist',
     short: 'Smart Farming Platform',
     tag: 'AgriTech',
@@ -149,7 +178,7 @@ export const PROJECTS = [
     stats: [{ label: 'DL Model', val: 'Custom' }, { label: 'Platform', val: 'Mobile' }, { label: 'Users', val: 'Farmers' }],
   },
   {
-    id: 5,
+    id: 6,
     title: 'RAT3',
     short: 'Cyber Security Shield',
     tag: 'Security',
