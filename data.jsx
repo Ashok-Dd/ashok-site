@@ -325,10 +325,10 @@ export const PROJECTS = [
 ];
 
 export const LEETCODE_DATA = {
-  total: 569,
-  easy: 304,
-  medium: 240,
-  hard: 25,
+  total: 665,
+  easy: 337,
+  medium: 297,
+  hard: 31,
 };
 
 export const SOCIALS = [
@@ -363,8 +363,8 @@ export const SOCIALS = [
   {
     id: "whatsapp",
     label: "WhatsApp",
-    sub: "+91 9014256401",
-    href: "https://wa.me/9014256401",
+    sub: "+91 9392954525",
+    href: "https://wa.me/9392954525",
     Icon: MessageCircle,
   },
 ];
@@ -382,5 +382,5 @@ export const links = [
     label: "Instagram",
   },
   { icon: Mail, href: "mailto:bonguashok86@email.com", label: "Email" },
-  { icon: MessageCircle, href: "https://wa.me/9014256401", label: "WhatsApp" },
+  { icon: MessageCircle, href: "https://wa.me/9392954525", label: "WhatsApp" },
 ];
