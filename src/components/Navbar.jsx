@@ -1,15 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import gsap from "gsap";
+import { navItems } from "../../data";
+import { useTheme } from "../context/ThemeContext";
+
+const THEMES = [
+  { id: 'cyberpunk', color: '#1abc9c', label: 'Cyberpunk' },
+  { id: 'synthwave', color: '#f72585', label: 'Synthwave' },
+  { id: 'retro',     color: '#00ff41', label: 'Retro Terminal' },
+];
 
 const Navbar = () => {
+  const { theme, setTheme } = useTheme();
   const navRef = useRef();
   const underlineRef = useRef();
   const mobileMenuRef = useRef();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [active, setActive] = useState("home");
-
-  const navItems = ["Home", "Skills", "Projects" , "Leetcode", "Contact"];
 
   const scrollToSection = (item) => {
     setIsMobileMenuOpen(false);
@@ -110,11 +117,31 @@ const Navbar = () => {
             ))}
           </nav>
 
+          {/* Theme switcher dots */}
+          <div className="theme-switcher">
+            {THEMES.map((t) => (
+              <button
+                key={t.id}
+                title={t.label}
+                onClick={() => setTheme(t.id)}
+                className="theme-dot-btn"
+                style={{
+                  '--dot-color': t.color,
+                  boxShadow: theme === t.id
+                    ? `0 0 0 2px ${t.color}, 0 0 10px ${t.color}`
+                    : 'none',
+                  background: t.color,
+                  opacity: theme === t.id ? 1 : 0.38,
+                }}
+              />
+            ))}
+          </div>
+
           {/* Mobile Hamburger */}
           <button
             className="hamburger"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{ color: "#1ABC9C" }}
+            style={{ color: "var(--color-accent)" }}
           >
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>

@@ -6,7 +6,7 @@ import {
   MessageCircle, Send, User, AtSign,
   FileText, CheckCircle2, Loader2, ChevronRight,
 } from 'lucide-react';
-import { SOCIALS } from '../../data'
+import { SOCIALS, footerData } from '../../data'
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -168,7 +168,7 @@ const Contact = () => {
       from_name:  form.name,
       from_email: form.email,
       message:    form.message,
-      to_email:   'bonguashok86@email.com',
+      to_email:   footerData.contact.email,
     });
   };
 
@@ -188,7 +188,7 @@ const Contact = () => {
       const body = encodeURIComponent(
         `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
       );
-      window.location.href = `mailto:bonguashok86@email.com?subject=Message from ${form.name}&body=${body}`;
+      window.location.href = `mailto:${footerData.contact.email}?subject=Message from ${form.name}&body=${body}`;
       setStatus('success');
       setForm({ name: '', email: '', message: '' });
       setTimeout(animateSuccess, 50);

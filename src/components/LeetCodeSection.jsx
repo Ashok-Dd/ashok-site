@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SiLeetcode } from "react-icons/si";
-import { LEETCODE_DATA } from '../../data'
+import { LEETCODE_DATA, leetcodeProfile } from '../../data'
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -686,12 +686,12 @@ const LeetCodeSection = () => {
         <div style={s.wrapper}>
 
           {/* ════ LEFT — YOUR UNTOUCHED AVATAR ════ */}
-          <div className="home-avatar-wrap visible" ref={imageRef}>
+          <div className="home-avatar-wrap" style={{ opacity: 1 }} ref={imageRef}>
             <div className="orbit-ring orbit-ring-1" />
             <div className="orbit-ring orbit-ring-2" />
             <div className="avatar-halo" />
             <div className="avatar-frame">
-              <img src="/me1.png" alt="Ashok Bongu" className="avatar-img" />
+              <img src={leetcodeProfile.avatarImage} alt="Ashok Bongu" className="avatar-img" />
             </div>
           </div>
 
@@ -718,10 +718,10 @@ const LeetCodeSection = () => {
                 </div>
                 <div>
                   <p style={s.cardTitle}>LEETCODE</p>
-                  <p style={s.cardHandle}>@b_ashok</p>
+                  <p style={s.cardHandle}>{leetcodeProfile.username}</p>
                 </div>
               </div>
-              <span style={s.rankBadge}>Guardian</span>
+              <span style={s.rankBadge}>{leetcodeProfile.rankBadge}</span>
             </div>
 
             {/* ── donut ring + total ── */}
@@ -788,7 +788,7 @@ const LeetCodeSection = () => {
             {/* ── visit button ── */}
             <a
               ref={btnRef}
-              href="https://leetcode.com/u/b_ashok"
+              href={leetcodeProfile.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
               style={{ ...s.visitBtn, opacity: 0 }}

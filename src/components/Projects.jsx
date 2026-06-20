@@ -46,7 +46,7 @@ const ProjectDrawer = ({ project, onClose }) => {
       }} />
       <div ref={drawerRef} style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
-        background: 'linear-gradient(180deg, #16162e 0%, #0d0d1e 100%)',
+        background: 'linear-gradient(180deg, var(--color-bg-elevated) 0%, var(--color-bg-primary) 100%)',
         borderTop: `1px solid ${accent}33`,
         borderRadius: '28px 28px 0 0',
         maxHeight: '92vh',
@@ -72,7 +72,7 @@ const ProjectDrawer = ({ project, onClose }) => {
                   <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: accent }}>{project.tag} · {project.year}</span>
                 </div>
                 <h2 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(1.2rem,4vw,1.8rem)', fontWeight: 900, background: `linear-gradient(135deg, #f5f5f7, ${accent})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', margin: 0, lineHeight: 1.2 }}>{project.title}</h2>
-                <p style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4b4b70', margin: '5px 0 0' }}>{project.short}</p>
+                <p style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: '5px 0 0' }}>{project.short}</p>
               </div>
             </div>
             <button onClick={handleClose} style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#707090', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.25s', flexShrink: 0 }}
@@ -86,7 +86,7 @@ const ProjectDrawer = ({ project, onClose }) => {
             {project.stats.map((s, i) => (
               <div key={i} style={{ flex: '1 1 80px', padding: '12px 16px', background: `${accent}08`, border: `1px solid ${accent}20`, borderRadius: 14, textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: accent }}>{s.val}</div>
-                <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5a5a80', marginTop: 3 }}>{s.label}</div>
+                <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: 3 }}>{s.label}</div>
               </div>
             ))}
             <div style={{ flex: '1 1 80px', padding: '12px 16px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.18)', borderRadius: 14, textAlign: 'center' }}>
@@ -94,7 +94,7 @@ const ProjectDrawer = ({ project, onClose }) => {
                 <Star size={12} fill="#f59e0b" color="#f59e0b" />
                 <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>{project.rating}</span>
               </div>
-              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#5a5a80', marginTop: 3 }}>Rating</div>
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: 3 }}>Rating</div>
             </div>
           </div>
 
@@ -108,7 +108,7 @@ const ProjectDrawer = ({ project, onClose }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10, fontFamily: "'Share Tech Mono', monospace", fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: accent }}>
               <Terminal size={11} /> Overview
             </div>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', lineHeight: 1.8, color: '#a0a0c0', marginBottom: 24 }}>{project.longDesc}</p>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', lineHeight: 1.8, color: 'var(--color-text-secondary)', marginBottom: 24 }}>{project.longDesc}</p>
           </div>
 
           <div className="drawer-animate">
@@ -211,20 +211,20 @@ const ProjectCard = ({ project, onOpen }) => {
         <div style={{ width: 56, height: 56, borderRadius: 18, background: `${accent}10`, border: `1px solid ${accent}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent, marginBottom: 16, boxShadow: `0 4px 20px ${accent}20`, transition: 'transform 0.4s ease, box-shadow 0.4s ease' }} className="card-icon-enhanced">
           <Icon size={24} />
         </div>
-        <h3 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: '#f0f0f8', letterSpacing: '0.03em', marginBottom: 4, lineHeight: 1.2, transition: 'color 0.3s' }} className="card-title-enhanced">{project.title}</h3>
-        <p style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4b4b70', marginBottom: 14 }}>{project.short}</p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.83rem', lineHeight: 1.65, color: '#888898', marginBottom: 18, flex: 1 }}>{project.description}</p>
+        <h3 style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '0.03em', marginBottom: 4, lineHeight: 1.2, transition: 'color 0.3s' }} className="card-title-enhanced">{project.title}</h3>
+        <p style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 14 }}>{project.short}</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.83rem', lineHeight: 1.65, color: 'var(--color-text-secondary)', marginBottom: 18, flex: 1 }}>{project.description}</p>
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
           {project.stats.slice(0, 2).map((s, i) => (
             <div key={i} style={{ flex: 1, padding: '7px 10px', background: `${accent}06`, border: `1px solid ${accent}15`, borderRadius: 10, textAlign: 'center' }}>
               <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '0.75rem', fontWeight: 800, color: accent }}>{s.val}</div>
-              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4a4a65', marginTop: 2 }}>{s.label}</div>
+              <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.5rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: 2 }}>{s.label}</div>
             </div>
           ))}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
           {project.tech.slice(0, 3).map(t => (
-            <span key={t} style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.07em', color: '#8080a0', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, padding: '3px 9px', transition: 'all 0.25s' }} className="card-chip-enhanced">{t}</span>
+            <span key={t} style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.55rem', letterSpacing: '0.07em', color: 'var(--color-text-muted)', background: 'var(--color-accent-subtle)', border: '1px solid var(--color-accent-faint)', borderRadius: 7, padding: '3px 9px', transition: 'all 0.25s' }} className="card-chip-enhanced">{t}</span>
           ))}
           {project.tech.length > 3 && <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.55rem', color: `${accent}80`, background: `${accent}08`, border: `1px solid ${accent}20`, borderRadius: 7, padding: '3px 9px' }}>+{project.tech.length - 3}</span>}
         </div>
@@ -464,7 +464,11 @@ const Projects = () => {
     const pBox = cont.getBoundingClientRect();
     const cx = (cBox?.left ?? 0) + (cBox?.width ?? 0) / 2 - pBox.left;
     const cy = (cBox?.top  ?? 0) + (cBox?.height ?? 0) / 2 - pBox.top;
-    const colors = ['#1abc9c', '#4dd9bc', '#00fff0', '#148f77', '#7fffd4'];
+    const cs = getComputedStyle(document.documentElement);
+    const ca = cs.getPropertyValue('--color-accent').trim();
+    const cl = cs.getPropertyValue('--color-accent-light').trim();
+    const cd = cs.getPropertyValue('--color-accent-dark').trim();
+    const colors = [ca, cl, cd, 'rgba(255,255,255,0.85)', ca];
     for (let i = 0; i < 44; i++) {
       const p   = document.createElement('div');
       const sz  = 3 + Math.random() * 9;
@@ -702,8 +706,8 @@ const Projects = () => {
           50%     { transform: translateY(-16px) rotate(3deg); opacity: 0.07; }
         }
         @keyframes dot-pulse {
-          0%,100% { box-shadow: 0 0 6px #1abc9c; opacity: 1; }
-          50%     { box-shadow: 0 0 14px #1abc9c, 0 0 28px rgba(26,188,156,0.5); opacity: 0.7; }
+          0%,100% { box-shadow: 0 0 6px var(--color-accent); opacity: 1; }
+          50%     { box-shadow: 0 0 14px var(--color-accent), 0 0 28px var(--color-accent-glow); opacity: 0.7; }
         }
         @keyframes hint-slide {
           0%,100% { transform: translateX(0); }
@@ -716,8 +720,8 @@ const Projects = () => {
 
         /* ── SECTION ── */
         .proj-section-enhanced {
-          background: #0d0d1e;
-          color: #f0f0f8;
+          background: var(--color-bg-primary);
+          color: var(--color-text-primary);
           position: relative;
           overflow: hidden;
           /* NO min-height — section shrinks to content */
@@ -732,28 +736,28 @@ const Projects = () => {
         .proj-bg-enhanced { position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden; }
         .bg-grid-e {
           position:absolute;inset:0;
-          background-image: linear-gradient(rgba(26,188,156,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(26,188,156,0.025) 1px, transparent 1px);
+          background-image: linear-gradient(var(--color-border) 1px, transparent 1px),
+            linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
           background-size: 56px 56px;
         }
-        .bg-blob-1 { position:absolute;width:580px;height:580px;top:-140px;right:-110px;border-radius:50%;background:radial-gradient(circle,rgba(26,188,156,0.06) 0%,transparent 70%);animation:float-blob 11s ease-in-out infinite; }
-        .bg-blob-2 { position:absolute;width:460px;height:460px;bottom:-90px;left:-75px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,255,0.04) 0%,transparent 70%);animation:float-blob 15s ease-in-out infinite 5s; }
-        .bg-scan-lines { position:absolute;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(26,188,156,0.007) 3px, rgba(26,188,156,0.007) 4px);pointer-events:none; }
-        .bg-glyph { position:absolute;font-family:'Share Tech Mono',monospace;color:rgba(26,188,156,1);font-size:5.5rem;user-select:none;animation:glyph-drift 8s ease-in-out infinite; }
+        .bg-blob-1 { position:absolute;width:580px;height:580px;top:-140px;right:-110px;border-radius:50%;background:radial-gradient(circle,var(--color-accent-muted) 0%,transparent 70%);animation:float-blob 11s ease-in-out infinite; }
+        .bg-blob-2 { position:absolute;width:460px;height:460px;bottom:-90px;left:-75px;border-radius:50%;background:radial-gradient(circle,var(--color-accent-muted) 0%,transparent 70%);animation:float-blob 15s ease-in-out infinite 5s; }
+        .bg-scan-lines { position:absolute;inset:0;background:repeating-linear-gradient(0deg, transparent, transparent 3px, var(--color-border) 3px, var(--color-border) 4px);pointer-events:none; }
+        .bg-glyph { position:absolute;font-family:'Share Tech Mono',monospace;color:var(--color-accent);font-size:5.5rem;user-select:none;animation:glyph-drift 8s ease-in-out infinite; }
         .bg-g1 { top:10%;left:1.5%;animation-delay:0s; }
         .bg-g2 { bottom:10%;right:2%;animation-delay:3.5s; }
         .bg-g3 { top:48%;left:48%;font-size:3rem;animation-delay:6s; }
 
         /* ── HEADER ── */
         .proj-header-enhanced { text-align:center;margin-bottom:40px;position:relative;z-index:2;padding:0 24px; }
-        .proj-eyebrow-e { display:inline-flex;align-items:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:0.4em;text-transform:uppercase;color:#1abc9c;margin-bottom:14px; }
-        .eyebrow-dot-e  { width:5px;height:5px;border-radius:50%;background:#1abc9c;animation:dot-pulse 2s infinite; }
-        .proj-title-e   { font-family:'Orbitron',sans-serif;font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:900;letter-spacing:0.06em;background:linear-gradient(135deg,#f5f5f7 30%,#1abc9c 70%,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px; }
-        .proj-sub-e     { font-family:'Inter',sans-serif;font-size:0.9rem;color:#5a5a80;max-width:400px;margin:0 auto; }
+        .proj-eyebrow-e { display:inline-flex;align-items:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:0.4em;text-transform:uppercase;color:var(--color-accent);margin-bottom:14px; }
+        .eyebrow-dot-e  { width:5px;height:5px;border-radius:50%;background:var(--color-accent);animation:dot-pulse 2s infinite; }
+        .proj-title-e   { font-family:'Orbitron',sans-serif;font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:900;letter-spacing:0.06em;background:linear-gradient(135deg,var(--color-text-primary) 30%,var(--color-accent) 70%,var(--color-accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px; }
+        .proj-sub-e     { font-family:'Inter',sans-serif;font-size:0.9rem;color:var(--color-text-muted);max-width:400px;margin:0 auto; }
         .proj-divider-e { display:flex;align-items:center;justify-content:center;gap:14px;margin-top:24px; }
-        .div-line-e     { width:100px;height:1px;background:linear-gradient(to right,rgba(26,188,156,0.5),transparent); }
-        .div-line-r-e   { background:linear-gradient(to left,rgba(26,188,156,0.5),transparent); }
-        .div-gem-e      { width:8px;height:8px;background:#1abc9c;transform:rotate(45deg);box-shadow:0 0 14px rgba(26,188,156,0.8); }
+        .div-line-e     { width:100px;height:1px;background:linear-gradient(to right,var(--color-accent-border),transparent); }
+        .div-line-r-e   { background:linear-gradient(to left,var(--color-accent-border),transparent); }
+        .div-gem-e      { width:8px;height:8px;background:var(--color-accent);transform:rotate(45deg);box-shadow:0 0 14px var(--color-accent-glow); }
 
         /* ── PARTICLES ── */
         .particles-layer-e { position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden; }
@@ -767,23 +771,23 @@ const Projects = () => {
           padding: 8px 24px 48px;
         }
         .chest-wrap-e       { display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:420px; }
-        .chest-badge-e      { display:inline-flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.45em;text-transform:uppercase;color:rgba(26,188,156,0.55);background:rgba(26,188,156,0.05);border:1px solid rgba(26,188,156,0.15);border-radius:999px;padding:5px 14px;margin-bottom:4px; }
-        .chest-badge-dot    { width:5px;height:5px;border-radius:50%;background:#1abc9c;animation:dot-pulse 1.8s infinite; }
-        .chest-status-e     { display:flex;align-items:center;gap:7px;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.35em;text-transform:uppercase;color:rgba(26,188,156,0.45); }
-        .status-dot-e       { width:6px;height:6px;border-radius:50%;background:#1abc9c;animation:dot-pulse 2s infinite; }
+        .chest-badge-e      { display:inline-flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.45em;text-transform:uppercase;color:var(--color-accent);opacity:0.7;background:var(--color-accent-muted);border:1px solid var(--color-accent-border);border-radius:999px;padding:5px 14px;margin-bottom:4px; }
+        .chest-badge-dot    { width:5px;height:5px;border-radius:50%;background:var(--color-accent);animation:dot-pulse 1.8s infinite; }
+        .chest-status-e     { display:flex;align-items:center;gap:7px;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.35em;text-transform:uppercase;color:var(--color-accent);opacity:0.55; }
+        .status-dot-e       { width:6px;height:6px;border-radius:50%;background:var(--color-accent);animation:dot-pulse 2s infinite; }
 
         /* ── SLOT GLOW ── */
-        .slot-glow-e { position:absolute;width:76px;height:76px;border-radius:12px;border:2.5px solid #1abc9c;box-shadow:0 0 22px rgba(26,188,156,0.65),inset 0 0 12px rgba(26,188,156,0.15);top:50%;left:50%;transform:translate(-50%,-14%);pointer-events:none; }
+        .slot-glow-e { position:absolute;width:76px;height:76px;border-radius:12px;border:2.5px solid var(--color-accent);box-shadow:0 0 22px var(--color-accent-glow),inset 0 0 12px var(--color-accent-muted);top:50%;left:50%;transform:translate(-50%,-14%);pointer-events:none; }
 
         /* ── KEY ── */
         .key-wrap-e   { position:relative;cursor:grab;user-select:none;z-index:10; }
         .key-wrap-e:active { cursor:grabbing; }
         .key-inner-e  { display:flex;flex-direction:column;align-items:center;gap:6px;position:relative; }
-        .key-near-pulse { position:absolute;inset:-18px;border-radius:18px;background:rgba(26,188,156,0.06);border:1px solid rgba(26,188,156,0.35);pointer-events:none;animation:near-pulse 0.6s ease-in-out infinite; }
+        .key-near-pulse { position:absolute;inset:-18px;border-radius:18px;background:var(--color-accent-muted);border:1px solid var(--color-accent-border);pointer-events:none;animation:near-pulse 0.6s ease-in-out infinite; }
 
         /* ── DRAG HINT ── */
-        .drag-hint-e    { display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:rgba(26,188,156,0.5); }
-        .hint-arr-wrap  { animation:hint-slide 1.1s ease-in-out infinite;color:#1abc9c; }
+        .drag-hint-e    { display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--color-accent);opacity:0.55; }
+        .hint-arr-wrap  { animation:hint-slide 1.1s ease-in-out infinite;color:var(--color-accent); }
 
         /* ── CARDS AREA ── */
         .cards-area-e { display:flex;justify-content:center;flex-wrap:wrap;gap:24px;padding:16px 32px 8px;position:relative;z-index:2;max-width:1200px;margin:0 auto; }
@@ -791,15 +795,15 @@ const Projects = () => {
         /* ── CARD ── */
         .proj-card-enhanced {
           position:relative;width:340px;min-height:510px;
-          background:linear-gradient(150deg,#1e1e35 0%,#161628 60%,#111120 100%);
-          border:1px solid rgba(26,188,156,0.1);border-radius:22px;
+          background:linear-gradient(150deg,var(--color-bg-elevated) 0%,var(--color-bg-sunken) 60%,var(--color-bg-primary) 100%);
+          border:1px solid var(--color-border);border-radius:22px;
           padding:26px 24px 24px;display:flex;flex-direction:column;
           cursor:pointer;overflow:hidden;
           box-shadow:0 10px 50px rgba(0,0,0,0.5);
           transform-style:preserve-3d;will-change:transform;
           transition:border-color 0.32s ease, box-shadow 0.32s ease;
         }
-        .proj-card-enhanced:hover { border-color:rgba(26,188,156,0.32);box-shadow:0 16px 60px rgba(0,0,0,0.6),0 0 40px var(--accent,rgba(26,188,156,0.1)); }
+        .proj-card-enhanced:hover { border-color:var(--color-accent-border);box-shadow:0 16px 60px rgba(0,0,0,0.6),0 0 40px var(--accent,var(--color-accent-muted)); }
         .proj-card-enhanced:hover .card-icon-enhanced  { transform:rotate(10deg) scale(1.1);box-shadow:0 6px 28px var(--accent,rgba(26,188,156,0.3)); }
         .proj-card-enhanced:hover .card-title-enhanced { color:var(--accent,#4dd9bc); }
         .proj-card-enhanced:hover .card-chip-enhanced  { color:var(--accent,#1abc9c);border-color:var(--accent,rgba(26,188,156,0.25)); }
@@ -808,8 +812,8 @@ const Projects = () => {
         .proj-card-enhanced:hover .card-bottom-line    { transform:scaleX(1) !important; }
 
         /* ── HIDE BTN ── */
-        .hide-btn-e { position:relative;overflow:hidden;display:flex;align-items:center;gap:9px;padding:13px 32px;background:rgba(255,255,255,0.03);border:1px solid rgba(26,188,156,0.25);border-radius:14px;color:#1abc9c;font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 24px rgba(0,0,0,0.3); }
-        .hide-btn-e:hover { background:rgba(26,188,156,0.08);border-color:rgba(26,188,156,0.5);box-shadow:0 0 28px rgba(26,188,156,0.2),0 4px 24px rgba(0,0,0,0.4);transform:translateY(-2px); }
+        .hide-btn-e { position:relative;overflow:hidden;display:flex;align-items:center;gap:9px;padding:13px 32px;background:var(--color-bg-glass);border:1px solid var(--color-accent-border);border-radius:14px;color:var(--color-accent);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 24px rgba(0,0,0,0.3); }
+        .hide-btn-e:hover { background:var(--color-accent-muted);border-color:var(--color-accent);box-shadow:var(--shadow-accent),0 4px 24px rgba(0,0,0,0.4);transform:translateY(-2px); }
         .hide-btn-shine   { position:absolute;inset:0;border-radius:inherit;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.06) 50%,transparent 70%);pointer-events:none; }
 
         @media(max-width:768px){

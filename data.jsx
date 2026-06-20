@@ -325,10 +325,10 @@ export const PROJECTS = [
 ];
 
 export const LEETCODE_DATA = {
-  total: 665,
-  easy: 337,
-  medium: 297,
-  hard: 31,
+  total: 702,
+  easy: 346,
+  medium: 318,
+  hard: 38,
 };
 
 export const SOCIALS = [
@@ -381,6 +381,52 @@ export const links = [
     href: "https://instagram.com/ashok_devil_123",
     label: "Instagram",
   },
-  { icon: Mail, href: "mailto:bonguashok86@email.com", label: "Email" },
+  { icon: Mail, href: "mailto:bonguashok86@gmail.com", label: "Email" },
   { icon: MessageCircle, href: "https://wa.me/9392954525", label: "WhatsApp" },
 ];
+
+export const heroData = {
+  eyebrow: "Welcome to my world",
+  availableText: "Open to Work",
+  name: "Ashok",
+  bio: "Crafting elegant solutions to complex problems. Turning caffeine into code and ideas into reality. Master of the digital realm, wielding keyboards like katanas.",
+  stats: [
+    { num: "6+", label: "Projects Built" },
+    { num: "2+", label: "Years Coding" },
+    { num: "20+", label: "Tech Mastered" },
+  ],
+  profileImage: "/profile.png",
+  cvUrl: "/AshokResume .pdf",
+  badges: [
+    { text: "const ninja = true", pos: "top" },
+    { text: "<Coding />", pos: "bot" },
+  ],
+};
+
+export const navItems = ["Home", "Skills", "Projects", "Leetcode", "Contact"];
+
+export const footerData = {
+  tagline: "Full Stack Developer · Code Ninja",
+  taglineSub: "Building the web, one commit at a time.",
+  statusBadge: "Available for hire",
+  statusDesc: "Open to full-time roles, freelance projects & collabs.",
+  resumeUrl: "/AshokResume .pdf",
+  navLinks: ["Home", "Projects", "Skills", "Contact"],
+  contact: {
+    email: "bonguashok86@gmail.com",
+    emailHref: "mailto:bonguashok86@gmail.com",
+    phone: "+91 9392954525",
+    phoneHref: "https://wa.me/9392954525",
+    github: "github.com/Ashok-Dd",
+    githubHref: "https://github.com/Ashok-Dd",
+  },
+  builtWith: "Built with React · TailwindCSS · Node.js",
+  copyright: "Ashok Bongu",
+};
+
+export const leetcodeProfile = {
+  username: "@b_ashok",
+  profileUrl: "https://leetcode.com/u/b_ashok",
+  avatarImage: "/me1.png",
+  rankBadge: "Guardian",
+};

@@ -1,27 +1,33 @@
-import { useState, useEffect } from 'react';
-import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, MeshWobbleMaterial } from '@react-three/drei';
-import { roles } from '../../data';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowDown, Download, FolderOpen } from 'lucide-react';
+import gsap from 'gsap';
+import { roles, heroData, SOCIALS } from '../../data';
+import { useTheme } from '../context/ThemeContext';
+
+const HERO_SOCIAL_IDS = ['github', 'linkedin', 'email'];
+
+const THEME_PROFILE = {
+  cyberpunk: '/profile-cyber.png',
+  synthwave: '/profile-pink.png',
+  retro:     '/profile-green.png',
+};
 
 const Home = () => {
+  const { theme } = useTheme();
+  const profileImage = THEME_PROFILE[theme] || heroData.profileImage;
   const [typedText, setTypedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
 
-
-
-  useEffect(() => { setIsVisible(true); }, []);
-
+  /* ── Typing animation ── */
   useEffect(() => {
     const currentRole = roles[currentIndex];
-    const typingSpeed = isDeleting ? 50 : 100;
-    const pauseTime = 2000;
+    const speed = isDeleting ? 50 : 100;
 
     if (!isDeleting && typedText === currentRole) {
-      setTimeout(() => setIsDeleting(true), pauseTime);
-      return;
+      const t = setTimeout(() => setIsDeleting(true), 2000);
+      return () => clearTimeout(t);
     }
     if (isDeleting && typedText === '') {
       setIsDeleting(false);
@@ -29,48 +35,108 @@ const Home = () => {
       return;
     }
 
-    const timeout = setTimeout(() => {
+    const t = setTimeout(() => {
       setTypedText(
         isDeleting
           ? currentRole.substring(0, typedText.length - 1)
           : currentRole.substring(0, typedText.length + 1)
       );
-    }, typingSpeed);
+    }, speed);
 
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(t);
   }, [typedText, isDeleting, currentIndex]);
 
+  /* ── GSAP intro animation ── */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* Make text container visible; GSAP animates children */
+      gsap.set('.home-text', { opacity: 1, x: 0 });
+
+      const tl = gsap.timeline({ delay: 0.25, defaults: { ease: 'power3.out' } });
+
+      tl
+        .fromTo('.hero-eyebrow-wrap',
+          { y: -28, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65 })
+        .fromTo('.hero-h1',
+          { y: 60, opacity: 0, skewY: 1.5 },
+          { y: 0, opacity: 1, skewY: 0, duration: 0.9 },
+          '-=0.4')
+        .fromTo('.hero-role-wrap',
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.65 },
+          '-=0.6')
+        .fromTo('.hero-bio-p',
+          { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.55 },
+          '-=0.45')
+        .fromTo('.hero-soc-wrap',
+          { x: -18, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5 },
+          '-=0.38')
+        .fromTo('.hero-cta-wrap',
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5 },
+          '-=0.35')
+        .fromTo('.hero-stats-wrap',
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5 },
+          '-=0.32')
+        .fromTo('.home-avatar-wrap',
+          { scale: 0.72, opacity: 0, y: 32 },
+          { scale: 1, opacity: 1, y: 0, duration: 1.15, ease: 'back.out(1.2)' },
+          '-=1.4')
+        .fromTo('.hero-scroll-hint',
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5 },
+          '-=0.35');
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const heroSocials = SOCIALS.filter((s) => HERO_SOCIAL_IDS.includes(s.id));
+
   return (
-    <section id="home" className="portfolio-home ">
-      {/* Background layers */}
+    <section id="home" ref={containerRef} className="portfolio-home">
+
+      {/* ── Background ── */}
       <div className="home-bg">
         <div className="home-glow home-glow-1" />
         <div className="home-glow home-glow-2" />
         <div className="home-grid" />
-        {/* Floating code glyphs */}
         <span className="code-glyph" style={{ top: '22%', left: '8%', animationDelay: '0s' }}>{'</>'}</span>
         <span className="code-glyph" style={{ top: '35%', right: '10%', animationDelay: '1.2s' }}>{'{ }'}</span>
         <span className="code-glyph" style={{ bottom: '25%', left: '15%', animationDelay: '2.4s' }}>{'[ ]'}</span>
         <span className="code-glyph" style={{ top: '15%', right: '25%', animationDelay: '0.6s', fontSize: '3rem' }}>{'()'}</span>
       </div>
 
-      <div className="home-container ">
-        <div className="home-inner ">
+      <div className="home-container">
+        <div className="home-inner">
 
-          {/* ── Left: Text ── */}
-          <div className={`home-text ${isVisible ? 'visible' : ''}`}>
+          {/* ── LEFT: Text ── */}
+          <div className="home-text">
 
-            <div className="home-eyebrow">
+            {/* Eyebrow */}
+            <div className="hero-eyebrow-wrap home-eyebrow">
               <span className="eyebrow-dot" />
-              <span>Welcome to my world</span>
+              <span>{heroData.eyebrow}</span>
+              {heroData.availableText && (
+                <span className="hero-available-badge">
+                  <span className="hero-avail-dot" />
+                  {heroData.availableText}
+                </span>
+              )}
             </div>
 
-            <h1 className="home-heading">
-              Hi, I'm{' '}
-              <span className="home-name">Ashok</span>
+            {/* Heading */}
+            <h1 className="hero-h1 home-heading">
+              Hi, I&apos;m{' '}
+              <span className="home-name">{heroData.name}</span>
             </h1>
 
-            <div className="home-role-wrap">
+            {/* Typing role */}
+            <div className="hero-role-wrap home-role-wrap">
               <span className="home-role-prefix">a </span>
               <span className="home-role-text">
                 {typedText}
@@ -78,44 +144,45 @@ const Home = () => {
               </span>
             </div>
 
-            <p className="home-bio">
-              Crafting elegant solutions to complex problems. Turning caffeine into code 
-              and ideas into reality. Master of the digital realm, wielding keyboards like katanas.
-            </p>
+            {/* Bio */}
+            <p className="hero-bio-p home-bio">{heroData.bio}</p>
 
-            {/* Socials */}
-            <div className="home-socials">
-              <a href="https://github.com/Ashok-Dd" target="_blank" rel="noopener noreferrer" className="social-btn" title="GitHub">
-                <Github size={18} />
-              </a>
-              <a href="https://linkedin.com/in/ashok-bongu" target="_blank" rel="noopener noreferrer" className="social-btn" title="LinkedIn">
-                <Linkedin size={18} />
-              </a>
-              <a href="mailto:bonguashok86@email.com" className="social-btn" title="Email">
-                <Mail size={18} />
-              </a>
+            {/* Social buttons */}
+            <div className="hero-soc-wrap home-socials">
+              {heroSocials.map(({ id, Icon, href, label }) => (
+                <a
+                  key={id}
+                  href={href}
+                  target={id !== 'email' ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  className="social-btn"
+                  title={label}
+                >
+                  <Icon size={18} />
+                </a>
+              ))}
             </div>
 
-            {/* CTA */}
-            <div className="home-ctas">
-              <a href="/AshokResume .pdf" download className="btn-cta-primary">
+            {/* CTAs */}
+            <div className="hero-cta-wrap home-ctas">
+              <a href={heroData.cvUrl} download className="btn-cta-primary">
+                <Download size={15} />
                 Download CV
               </a>
               <button
                 className="btn-cta-outline"
-                onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+                }
               >
+                <FolderOpen size={15} />
                 View Projects
               </button>
             </div>
 
-            {/* Stats row */}
-            <div className="home-stats">
-              {[
-                { num: '3+', label: 'Projects Built' },
-                { num: '2+', label: 'Years Coding' },
-                { num: '10+', label: 'Tech Mastered' },
-              ].map((s) => (
+            {/* Stats */}
+            <div className="hero-stats-wrap home-stats">
+              {heroData.stats.map((s) => (
                 <div key={s.label} className="stat-item">
                   <span className="stat-num">{s.num}</span>
                   <span className="stat-label">{s.label}</span>
@@ -124,53 +191,32 @@ const Home = () => {
             </div>
           </div>
 
-          {/* ── Right: Avatar ── */}
-          {/* Paste this inside your Hero component where the avatar goes */}
-
-          <div className={`home-avatar-wrap ${isVisible ? 'visible' : ''}`}>
-
-            {/* Spinning orbit rings */}
+          {/* ── RIGHT: Avatar ── */}
+          <div className="home-avatar-wrap">
             <div className="orbit-ring orbit-ring-1" />
             <div className="orbit-ring orbit-ring-2" />
-
-            {/* Soft glow behind image */}
             <div className="avatar-halo" />
-
-            {/* Circular frame — overflow:hidden clips image cleanly */}
             <div className="avatar-frame">
-              <img
-                src="/profile.png"
-                alt="Ashok Bongu"
-                className="avatar-img"
-              />
+              <img src={profileImage} alt={heroData.name} className="avatar-img" />
             </div>
-
-            {/* Floating code badges */}
-            <div className="float-badge badge-top">
-              <span className="badge-dot" />
-              <span className="badge-text font-mono">const ninja = true</span>
-            </div>
-            <div className="float-badge badge-bot">
-              <span className="badge-dot" />
-              <span className="badge-text font-mono">{'<Coding />'}</span>
-            </div>
-
-            {/* Accent particles */}
+            {heroData.badges.map((b) => (
+              <div key={b.text} className={`float-badge badge-${b.pos}`}>
+                <span className="badge-dot" />
+                <span className="badge-text font-mono">{b.text}</span>
+              </div>
+            ))}
             <div className="particle p1" />
             <div className="particle p2" />
             <div className="particle p3" />
-
           </div>
         </div>
 
         {/* Scroll hint */}
-        <div className="scroll-hint">
+        <div className="hero-scroll-hint scroll-hint">
           <ArrowDown size={14} />
           <span>scroll</span>
         </div>
       </div>
-
-
     </section>
   );
 };

@@ -1,8 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Flame, Code2, Server, Cpu, Brain, Wrench, Zap, X, Target } from 'lucide-react';
+import { Flame, Code2, Server, Cpu, Brain, Wrench, Zap, X, Target, Crosshair, Terminal } from 'lucide-react';
 import PortalTrigger from './PortalTrigger';
 import SkillShooter from './SkillShooter';
+import EndlessRunner from './EndlessRunner';
+import SnakeGame from './SnakeGame';
+import { useTheme } from '../context/ThemeContext';
 import { categoriesData } from '../../data';
+
+const THEME_GAME_META = {
+  cyberpunk: { label: 'arena', Icon: Crosshair },
+  synthwave: { label: 'run',   Icon: Zap },
+  retro:     { label: 'snake', Icon: Terminal },
+};
 
 // ─── SHARED DATA ─────────────────────────────────────────────────────────────
 
@@ -16,6 +25,8 @@ const allSkills = categoriesData.flatMap(cat =>
 // SKILLS SECTION
 // ═══════════════════════════════════════════════════════════════════════════
 export default function Skills() {
+  const { theme } = useTheme();
+  const gameMeta = THEME_GAME_META[theme] || THEME_GAME_META.cyberpunk;
   const [isVisible,        setIsVisible]       = useState(false);
   const [selectedCategory, setSelectedCategory]= useState('all');
   const [displayedSkills,  setDisplayedSkills] = useState(allSkills);
@@ -87,7 +98,13 @@ export default function Skills() {
       <div ref={overlayRef} style={{display:'none',position:'fixed',inset:0,zIndex:9998,background:'var(--color-bg-primary)',clipPath:'circle(0% at 50% 50%)',pointerEvents:'none'}}/>
 
       {/* ── GAME LAYER ── */}
-      {gameActive&&(<div style={{position:'fixed',inset:0,zIndex:9999}}><SkillShooter onExit={exitGame}/></div>)}
+      {gameActive && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
+          {theme === 'cyberpunk' && <SkillShooter onExit={exitGame} />}
+          {theme === 'synthwave' && <EndlessRunner onExit={exitGame} />}
+          {theme === 'retro'     && <SnakeGame     onExit={exitGame} />}
+        </div>
+      )}
 
       {/* ════════════════════════════════════════
           SECTION
@@ -327,7 +344,7 @@ export default function Skills() {
             opacity:isVisible?1:0,transform:isVisible?'translateY(0)':'translateY(18px)',
             transition:'opacity 1s ease .5s,transform 1s ease .5s',
           }}>
-            <PortalTrigger onClick={enterGame}/>
+            <PortalTrigger onClick={enterGame} label={gameMeta.label} GameIcon={gameMeta.Icon} />
           </div>
         </div>
       </section>

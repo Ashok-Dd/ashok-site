@@ -1,17 +1,8 @@
-import {
-  Github,
-  Linkedin,
-  Mail,
-  MessageCircle,
-  Instagram,
-  ArrowUp,
-} from "lucide-react";
-import { links } from "../../data";
+import { Github, Mail, MessageCircle, ArrowUp } from "lucide-react";
+import { links, footerData } from "../../data";
 
 const Footer = () => {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-
-  const navLinks = ["Home", "Projects", "Skills", "Contact"];
 
   const scrollToSection = (item) => {
     const el = document.getElementById(item.toLowerCase());
@@ -26,17 +17,17 @@ const Footer = () => {
       <div className="ft-container">
         {/* Main row */}
         <div className="ft-main">
+
           {/* Brand column */}
           <div className="ft-brand">
             <div className="ft-logo">
               ASH<span>OK</span>
             </div>
             <p className="ft-tagline">
-              Full Stack Developer · Code Ninja
+              {footerData.tagline}
               <br />
-              Building the web, one commit at a time.
+              {footerData.taglineSub}
             </p>
-            {/* Social icons */}
             <div className="ft-socials">
               {links.map(({ icon: Icon, href, label }) => (
                 <a
@@ -57,7 +48,7 @@ const Footer = () => {
           <div className="ft-col">
             <h4 className="ft-col-title">Navigation</h4>
             <nav className="ft-nav">
-              {navLinks.map((item) => (
+              {footerData.navLinks.map((item) => (
                 <button
                   key={item}
                   className="ft-nav-link"
@@ -74,30 +65,27 @@ const Footer = () => {
           <div className="ft-col">
             <h4 className="ft-col-title">Contact</h4>
             <div className="ft-contact-list">
-              <a
-                href="mailto:bonguashok86@email.com"
-                className="ft-contact-item"
-              >
+              <a href={footerData.contact.emailHref} className="ft-contact-item">
                 <Mail size={13} />
-                bonguashok86@email.com
+                {footerData.contact.email}
               </a>
               <a
-                href="https://wa.me/9014256401"
+                href={footerData.contact.phoneHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ft-contact-item"
               >
                 <MessageCircle size={13} />
-                +91 9014256401
+                {footerData.contact.phone}
               </a>
               <a
-                href="https://github.com/Ashok-Dd"
+                href={footerData.contact.githubHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ft-contact-item"
               >
                 <Github size={13} />
-                github.com/Ashok-Dd
+                {footerData.contact.github}
               </a>
             </div>
           </div>
@@ -108,14 +96,10 @@ const Footer = () => {
             <div className="ft-status">
               <div className="ft-status-badge">
                 <span className="ft-status-dot" />
-                Available for hire
+                {footerData.statusBadge}
               </div>
-              <p className="ft-status-desc">
-                Open to full-time roles,
-                <br />
-                freelance projects &amp; collabs.
-              </p>
-              <a href="/AshokResume .pdf" download className="ft-resume-btn">
+              <p className="ft-status-desc">{footerData.statusDesc}</p>
+              <a href={footerData.resumeUrl} download className="ft-resume-btn">
                 Download Resume ↓
               </a>
             </div>
@@ -133,21 +117,19 @@ const Footer = () => {
         <div className="ft-bottom">
           <span className="ft-copy">
             © {new Date().getFullYear()}{" "}
-            <span className="ft-copy-accent">Ashok Bongu</span>. Crafted with
+            <span className="ft-copy-accent">{footerData.copyright}</span>. Crafted with
             precision &amp; caffeine.
           </span>
-          <span className="ft-built">
-            Built with React · TailwindCSS · Node.js
-          </span>
-          {/* Back to top */}
-          <button
-            className="ft-top-btn"
-            onClick={scrollTop}
-            title="Back to top"
-          >
+          <span className="ft-built">{footerData.builtWith}</span>
+          <button className="ft-top-btn" onClick={scrollTop} title="Back to top">
             <ArrowUp size={14} />
           </button>
         </div>
+      </div>
+
+      {/* ASHOK watermark — below all content, in normal flow */}
+      <div className="ft-watermark-wrap">
+        <div className="ft-watermark" aria-hidden="true">ASHOK</div>
       </div>
     </footer>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import Loader from './components/Loader';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -12,22 +13,16 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   return (
-    <>
-      {/* Loader */}
+    <ThemeProvider>
       {loading && <Loader onComplete={() => setLoading(false)} />}
-
-      {/* Navbar */}
       <Navbar />
-      
-
-      {/* Sections */}
       <div id="home"><Home /></div>
       <div id="skills"><Skills /></div>
       <div id="projects"><Projects /></div>
       <div id="leetcode"><LeetCodeSection /></div>
       <div id="contact"><Contact /></div>
       <div id="footer"><Footer /></div>
-    </>
+    </ThemeProvider>
   );
 };
 
