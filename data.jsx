@@ -42,6 +42,7 @@ import {
 } from "react-icons/si";
 
 import { DiGit } from "react-icons/di";
+
 export const roles = [
   "Full Stack Developer",
   "Code Ninja",
@@ -87,7 +88,7 @@ export const categoriesData = [
     id: "tools",
     name: "Tools",
     icon: Wrench,
-    skills: ["Git", "GitBash", "VS Code", "Postman", "Firebase", "Vercel"],
+    skills: ["Git", "GitBash", "VS Code", "Postman", "Vercel"],
   },
 ];
 

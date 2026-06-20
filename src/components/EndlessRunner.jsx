@@ -14,9 +14,16 @@ function EndlessRunner({ onExit }) {
   const rafRef     = useRef(null);
   const [phase, setPhase]     = useState('entry');
   const [bootLines, setBootLines] = useState([]);
+  const [countdown, setCountdown] = useState(3);
   const [score, setScore]     = useState(0);
   const [best, setBest]       = useState(() => parseInt(localStorage.getItem('runner-best') || '0', 10));
   const [dead, setDead]       = useState(false);
+
+  useEffect(() => {
+    if (phase !== 'countdown') return;
+    if (countdown > 0) { const t = setTimeout(() => setCountdown(c => c - 1), 800); return () => clearTimeout(t); }
+    const t = setTimeout(() => setPhase('play'), 600); return () => clearTimeout(t);
+  }, [phase, countdown]);
 
   /* ── Boot sequence ── */
   useEffect(() => {
@@ -31,7 +38,7 @@ function EndlessRunner({ onExit }) {
       setBootLines(prev => [...prev, lines[i]]);
       i++;
       if (i < lines.length) setTimeout(show, 700);
-      else setTimeout(() => setPhase('play'), 900);
+      else setTimeout(() => { setCountdown(3); setPhase('countdown'); }, 900);
     };
     const t = setTimeout(show, 400);
     return () => clearTimeout(t);
@@ -52,7 +59,7 @@ function EndlessRunner({ onExit }) {
 
     /* Initial state */
     stateRef.current = {
-      speed:      6,
+      speed:      7,
       speedTimer: 0,
       score:      0,
       groundY:    0,
@@ -65,6 +72,7 @@ function EndlessRunner({ onExit }) {
       },
       obstacles: [],
       spawnTimer: 0,
+      lastObstacleX: -999,
       particles: [],
       shaking: 0,
       dead: false,
@@ -255,12 +263,14 @@ function EndlessRunner({ onExit }) {
           s.runner.jumps = 0;
         }
 
-        /* spawn obstacles */
-        s.spawnTimer++;
-        const spawnRate = Math.max(55, 100 - s.speed * 4);
-        if (s.spawnTimer >= spawnRate) {
+        /* spawn obstacles at fixed distance spacing */
+        const SPACING = 420;
+        const lastX = s.obstacles.length > 0
+          ? s.obstacles[s.obstacles.length - 1].x
+          : s.lastObstacleX;
+        if (s.obstacles.length === 0 || lastX < cw - SPACING) {
           spawnObstacle(cw, s.groundY);
-          s.spawnTimer = 0;
+          s.lastObstacleX = cw + 60;
         }
 
         /* move obstacles */
@@ -281,7 +291,7 @@ function EndlessRunner({ onExit }) {
         /* score + speed */
         s.score++;
         s.speedTimer++;
-        if (s.speedTimer >= 600) {
+        if (s.speedTimer >= 500) {
           s.speed    += 0.5;
           s.speedTimer = 0;
         }
@@ -338,7 +348,8 @@ function EndlessRunner({ onExit }) {
     stateRef.current = null;
     setScore(0);
     setDead(false);
-    setPhase('play');
+    setCountdown(3);
+    setPhase('countdown');
   }, []);
 
   /* ─── Entry screen ─── */
@@ -358,6 +369,16 @@ function EndlessRunner({ onExit }) {
         EXIT
       </button>
       <style>{`@keyframes blink { 50% { opacity: 0; } }`}</style>
+    </div>
+  );
+
+  /* ─── Countdown screen ─── */
+  if (phase === 'countdown') return (
+    <div style={{ position: 'fixed', inset: 0, background: `${BG}ee`, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+      <div key={countdown} style={{ fontSize: 'clamp(5rem,22vw,13rem)', fontWeight: 900, color: countdown > 0 ? ACCENT : CYAN, textShadow: `0 0 60px ${ACCENT}`, fontFamily: '"Orbitron", sans-serif', animation: 'cntP 0.75s ease-out forwards' }}>
+        {countdown > 0 ? countdown : 'GO!'}
+      </div>
+      <style>{`@keyframes cntP { from { transform: scale(2.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
     </div>
   );
 

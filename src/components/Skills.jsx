@@ -1,16 +1,24 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Flame, Code2, Server, Cpu, Brain, Wrench, Zap, X, Target, Crosshair, Terminal } from 'lucide-react';
+import { Flame, Code2, Server, Cpu, Brain, Wrench, Zap, X, Target, Crosshair, Sun, TreePine, Waves, Telescope, Terminal, Bug } from 'lucide-react';
 import PortalTrigger from './PortalTrigger';
 import SkillShooter from './SkillShooter';
 import EndlessRunner from './EndlessRunner';
+import SunsetGame from './SunsetGame';
+import LavaGame from './LavaGame';
+import ForestGame from './ForestGame';
 import SnakeGame from './SnakeGame';
+import GalaxyGame from './GalaxyGame';
 import { useTheme } from '../context/ThemeContext';
 import { categoriesData } from '../../data';
 
 const THEME_GAME_META = {
-  cyberpunk: { label: 'arena', Icon: Crosshair },
-  synthwave: { label: 'run',   Icon: Zap },
-  retro:     { label: 'snake', Icon: Terminal },
+  cyberpunk: { label: 'arena',  Icon: Crosshair },
+  synthwave: { label: 'run',    Icon: Zap       },
+  sunset:    { label: 'glide',  Icon: Sun       },
+  lava:      { label: 'meteor', Icon: Flame     },
+  forest:    { label: 'snake',  Icon: Terminal  },
+  ocean:     { label: 'hunt',   Icon: Bug       },
+  galaxy:    { label: 'blast',  Icon: Telescope },
 };
 
 // ─── SHARED DATA ─────────────────────────────────────────────────────────────
@@ -102,7 +110,11 @@ export default function Skills() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
           {theme === 'cyberpunk' && <SkillShooter onExit={exitGame} />}
           {theme === 'synthwave' && <EndlessRunner onExit={exitGame} />}
-          {theme === 'retro'     && <SnakeGame     onExit={exitGame} />}
+          {theme === 'sunset'    && <SunsetGame    onExit={exitGame} />}
+          {theme === 'lava'      && <LavaGame      onExit={exitGame} />}
+          {theme === 'forest'    && <SnakeGame     onExit={exitGame} />}
+          {theme === 'ocean'     && <ForestGame    onExit={exitGame} />}
+          {theme === 'galaxy'    && <GalaxyGame    onExit={exitGame} />}
         </div>
       )}
 

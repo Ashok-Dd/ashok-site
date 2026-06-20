@@ -1,22 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Crosshair, Zap, Sun, Flame, TreePine, Waves, Telescope } from "lucide-react";
 import gsap from "gsap";
 import { navItems } from "../../data";
 import { useTheme } from "../context/ThemeContext";
 
 const THEMES = [
-  { id: 'cyberpunk', color: '#1abc9c', label: 'Cyberpunk' },
-  { id: 'synthwave', color: '#f72585', label: 'Synthwave' },
-  { id: 'retro',     color: '#00ff41', label: 'Retro Terminal' },
+  { id: 'cyberpunk', color: '#1abc9c', label: 'Cyberpunk',   gameLabel: 'Arena Shooter',  GameIcon: Crosshair },
+  { id: 'synthwave', color: '#f72585', label: 'Synthwave',   gameLabel: 'Endless Runner', GameIcon: Zap       },
+  { id: 'lava',      color: '#ef4444', label: 'Lava',        gameLabel: 'Meteor Strike',  GameIcon: Flame     },
+  { id: 'forest',    color: '#22c55e', label: 'Forest',      gameLabel: 'Snake',          GameIcon: TreePine  },
+  { id: 'ocean',     color: '#0ea5e9', label: 'Ocean',       gameLabel: 'Firefly Hunt',   GameIcon: Waves     },
+  { id: 'sunset',    color: '#f97316', label: 'Sunset',      gameLabel: 'Paper Glider',   GameIcon: Sun       },
+  { id: 'galaxy',    color: '#7c3aed', label: 'Galaxy',      gameLabel: 'Asteroid Blast', GameIcon: Telescope },
 ];
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
-  const navRef = useRef();
-  const underlineRef = useRef();
-  const mobileMenuRef = useRef();
+  const navRef         = useRef();
+  const underlineRef   = useRef();
+  const mobileMenuRef  = useRef();
+  const dropdownRef    = useRef();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen,   setIsDropdownOpen]   = useState(false);
   const [active, setActive] = useState("home");
+
+  const currentTheme = THEMES.find(t => t.id === theme) || THEMES[0];
 
   const scrollToSection = (item) => {
     setIsMobileMenuOpen(false);
@@ -31,7 +39,6 @@ const Navbar = () => {
       gsap.from(".nav-logo", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
       gsap.from(".nav-item", { y: -30, opacity: 0, stagger: 0.15, delay: 0.2, duration: 0.8, ease: "power3.out" });
 
-      // Desktop hover tilt
       document.querySelectorAll(".nav-item").forEach((el) => {
         el.addEventListener("mousemove", (e) => {
           const rect = el.getBoundingClientRect();
@@ -42,7 +49,6 @@ const Navbar = () => {
         el.addEventListener("mouseleave", () => gsap.to(el, { x: 0, y: 0, duration: 0.4 }));
       });
 
-      // Underline animation
       const underline = underlineRef.current;
       document.querySelectorAll(".nav-item").forEach((el) => {
         el.addEventListener("mouseenter", () => {
@@ -54,7 +60,6 @@ const Navbar = () => {
         gsap.to(underline, { opacity: 0, duration: 0.3 });
       });
 
-      // Section tracking
       const sections = document.querySelectorAll("section, div[id]");
       const scrollHandler = () => {
         let current = "home";
@@ -65,7 +70,6 @@ const Navbar = () => {
       };
       window.addEventListener("scroll", scrollHandler);
 
-      // Hide navbar on scroll down
       let lastScroll = window.scrollY;
       const hideNavHandler = () => {
         const current = window.scrollY;
@@ -78,7 +82,6 @@ const Navbar = () => {
       };
       window.addEventListener("scroll", hideNavHandler);
 
-      // Mobile menu animation
       if (isMobileMenuOpen && mobileMenuRef.current) {
         gsap.fromTo(
           mobileMenuRef.current,
@@ -96,15 +99,31 @@ const Navbar = () => {
     return () => ctx.revert();
   }, [isMobileMenuOpen]);
 
+  /* close dropdown on outside click */
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isDropdownOpen]);
+
+  /* close on Escape */
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setIsDropdownOpen(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   return (
     <>
-
-
       <header ref={navRef} className="nav-root">
         <div className="nav-container">
           <h1 className="nav-logo"><span className="logo-dim">ASH</span>OK</h1>
 
-          {/* Desktop Nav only visible >= md */}
+          {/* Desktop Nav */}
           <nav className="nav-links">
             {navItems.map((item) => (
               <button
@@ -117,24 +136,36 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Theme switcher dots */}
-          <div className="theme-switcher">
-            {THEMES.map((t) => (
-              <button
-                key={t.id}
-                title={t.label}
-                onClick={() => setTheme(t.id)}
-                className="theme-dot-btn"
-                style={{
-                  '--dot-color': t.color,
-                  boxShadow: theme === t.id
-                    ? `0 0 0 2px ${t.color}, 0 0 10px ${t.color}`
-                    : 'none',
-                  background: t.color,
-                  opacity: theme === t.id ? 1 : 0.38,
-                }}
-              />
-            ))}
+          {/* Theme dot trigger + dropdown */}
+          <div className="theme-dot-wrap" ref={dropdownRef}>
+            <button
+              className="theme-dot-trigger"
+              style={{
+                background: currentTheme.color,
+                boxShadow: `0 0 0 2px ${currentTheme.color}55, 0 0 10px ${currentTheme.color}88`,
+              }}
+              onClick={() => setIsDropdownOpen(prev => !prev)}
+              title={`Theme: ${currentTheme.label}`}
+            />
+
+            {isDropdownOpen && (
+              <div className="theme-dropdown">
+                {THEMES.map((t) => {
+                  const isActive = theme === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      className={`theme-dropdown-item ${isActive ? 'active' : ''}`}
+                      style={isActive ? { borderColor: t.color, background: `${t.color}12` } : {}}
+                      onClick={() => { setTheme(t.id); setIsDropdownOpen(false); }}
+                    >
+                      <span className="tdi-dot" style={{ background: t.color, boxShadow: isActive ? `0 0 6px ${t.color}` : 'none' }} />
+                      
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Mobile Hamburger */}

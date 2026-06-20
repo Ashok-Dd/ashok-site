@@ -9,7 +9,11 @@ const HERO_SOCIAL_IDS = ['github', 'linkedin', 'email'];
 const THEME_PROFILE = {
   cyberpunk: '/profile-cyber.png',
   synthwave: '/profile-pink.png',
-  retro:     '/profile-green.png',
+  sunset:    '/profile-orange.png',
+  lava:      '/profile-red.png',
+  forest:    '/profile-green.png',
+  ocean:     '/profile-skyblue.png',
+  galaxy:    '/profile-violet.png',
 };
 
 const Home = () => {

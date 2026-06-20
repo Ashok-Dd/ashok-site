@@ -3,7 +3,14 @@ import { ExternalLink, Github, Code2, Laptop, Wrench, Star, X, ArrowRight, Zap, 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Draggable } from 'gsap/all';
-import { PROJECTS } from '../../data'
+import { PROJECTS } from '../../data';
+import { useTheme } from '../context/ThemeContext';
+
+const hexAlpha = (hex, a) => {
+  if (!hex || hex.length < 7) return `rgba(26,188,156,${a})`;
+  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+};
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
 
@@ -238,94 +245,125 @@ const ProjectCard = ({ project, onOpen }) => {
   );
 };
 
-/* ─── SVGs (unchanged) ──────────────────────────────────── */
-const ArmorChestSVG = ({ unlocked, lidOpen }) => (
-  <svg viewBox="0 0 360 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxWidth: '380px', height: 'auto', filter: 'drop-shadow(0 12px 32px rgba(26,188,156,0.15))' }}>
+/* ─── SVGs ──────────────────────────────────────────────── */
+const ArmorChestSVG = ({ unlocked, lidOpen, accent = '#1abc9c' }) => {
+  const a0  = hexAlpha(accent, 0);
+  const a04 = hexAlpha(accent, 0.04);
+  const a06 = hexAlpha(accent, 0.06);
+  const a08 = hexAlpha(accent, 0.08);
+  const a10 = hexAlpha(accent, 0.10);
+  const a12 = hexAlpha(accent, 0.12);
+  const a15 = hexAlpha(accent, 0.15);
+  const a18 = hexAlpha(accent, 0.18);
+  const a20 = hexAlpha(accent, 0.20);
+  const a22 = hexAlpha(accent, 0.22);
+  const a25 = hexAlpha(accent, 0.25);
+  const a28 = hexAlpha(accent, 0.28);
+  const a30 = hexAlpha(accent, 0.30);
+  const a35 = hexAlpha(accent, 0.35);
+  const a38 = hexAlpha(accent, 0.38);
+  const a40 = hexAlpha(accent, 0.40);
+  const a45 = hexAlpha(accent, 0.45);
+  const a50 = hexAlpha(accent, 0.50);
+  const a55 = hexAlpha(accent, 0.55);
+  const a60 = hexAlpha(accent, 0.60);
+  const a65 = hexAlpha(accent, 0.65);
+  const a80 = hexAlpha(accent, 0.80);
+  return (
+  <svg viewBox="0 0 360 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxWidth: '380px', height: 'auto', filter: `drop-shadow(0 12px 32px ${a15})` }}>
     <defs>
       <linearGradient id="g-body-main" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2a2a45"/><stop offset="40%" stopColor="#1e1e38"/><stop offset="100%" stopColor="#0e0e1e"/></linearGradient>
       <linearGradient id="g-lid-main" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#32324e"/><stop offset="100%" stopColor="#1a1a30"/></linearGradient>
-      <linearGradient id="g-metal-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="rgba(26,188,156,0.0)"/><stop offset="25%" stopColor="rgba(26,188,156,0.55)"/><stop offset="50%" stopColor="rgba(26,188,156,0.8)"/><stop offset="75%" stopColor="rgba(26,188,156,0.55)"/><stop offset="100%" stopColor="rgba(26,188,156,0.0)"/></linearGradient>
-      <linearGradient id="g-metal-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(26,188,156,0.0)"/><stop offset="50%" stopColor="rgba(26,188,156,0.45)"/><stop offset="100%" stopColor="rgba(26,188,156,0.0)"/></linearGradient>
+      <linearGradient id="g-metal-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={a0}/><stop offset="25%" stopColor={a55}/><stop offset="50%" stopColor={a80}/><stop offset="75%" stopColor={a55}/><stop offset="100%" stopColor={a0}/></linearGradient>
+      <linearGradient id="g-metal-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={a0}/><stop offset="50%" stopColor={a45}/><stop offset="100%" stopColor={a0}/></linearGradient>
       <linearGradient id="g-plate-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.06)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
-      <radialGradient id="g-inner-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(26,188,156,0.25)"/><stop offset="100%" stopColor="rgba(26,188,156,0)"/></radialGradient>
+      <radialGradient id="g-inner-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor={a25}/><stop offset="100%" stopColor={a0}/></radialGradient>
       <filter id="f-body-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.6)"/></filter>
       <filter id="f-glow-strong" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
       <filter id="f-glow-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
       <clipPath id="clip-body"><rect x="20" y="138" width="320" height="152" rx="10"/></clipPath>
-      <pattern id="rivets" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="2" fill="rgba(26,188,156,0.2)"/><circle cx="15" cy="15" r="1" fill="rgba(26,188,156,0.4)"/></pattern>
+      <pattern id="rivets" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="2" fill={a20}/><circle cx="15" cy="15" r="1" fill={a40}/></pattern>
     </defs>
     <g filter="url(#f-body-shadow)">
-      <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#g-body-main)" stroke="rgba(26,188,156,0.22)" strokeWidth="1.5"/>
+      <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#g-body-main)" stroke={a22} strokeWidth="1.5"/>
       <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#rivets)" opacity="0.7" clipPath="url(#clip-body)"/>
       <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#g-plate-shine)"/>
       <rect x="20" y="165" width="320" height="9" fill="url(#g-metal-h)" opacity="0.75"/>
-      <rect x="20" y="165" width="320" height="2" fill="rgba(26,188,156,0.3)"/>
+      <rect x="20" y="165" width="320" height="2" fill={a30}/>
       <rect x="20" y="172" width="320" height="2" fill="rgba(0,0,0,0.3)"/>
       <rect x="20" y="218" width="320" height="9" fill="url(#g-metal-h)" opacity="0.65"/>
-      <rect x="20" y="218" width="320" height="2" fill="rgba(26,188,156,0.25)"/>
+      <rect x="20" y="218" width="320" height="2" fill={a25}/>
       <rect x="20" y="225" width="320" height="2" fill="rgba(0,0,0,0.3)"/>
       <line x1="115" y1="138" x2="115" y2="290" stroke="url(#g-metal-v)" strokeWidth="1.5" opacity="0.5"/>
       <line x1="245" y1="138" x2="245" y2="290" stroke="url(#g-metal-v)" strokeWidth="1.5" opacity="0.5"/>
       {[[20,138],[300,138],[20,258],[300,258]].map(([cx,cy],i)=>(
-        <g key={i}><rect x={cx} y={cy} width="40" height="32" rx="6" fill="rgba(26,188,156,0.06)" stroke="rgba(26,188,156,0.28)" strokeWidth="1.2"/><rect x={cx+4} y={cy+4} width="32" height="24" rx="4" fill="rgba(26,188,156,0.04)" stroke="rgba(26,188,156,0.15)" strokeWidth="0.8"/></g>
+        <g key={i}><rect x={cx} y={cy} width="40" height="32" rx="6" fill={a06} stroke={a28} strokeWidth="1.2"/><rect x={cx+4} y={cy+4} width="32" height="24" rx="4" fill={a04} stroke={a15} strokeWidth="0.8"/></g>
       ))}
       {[148,175,202,230,257].map(y=>(
-        <g key={y}><rect x="20" y={y} width="8" height="8" rx="2" fill="rgba(26,188,156,0.25)" stroke="rgba(26,188,156,0.4)" strokeWidth="0.8"/><rect x="332" y={y} width="8" height="8" rx="2" fill="rgba(26,188,156,0.25)" stroke="rgba(26,188,156,0.4)" strokeWidth="0.8"/></g>
+        <g key={y}><rect x="20" y={y} width="8" height="8" rx="2" fill={a25} stroke={a40} strokeWidth="0.8"/><rect x="332" y={y} width="8" height="8" rx="2" fill={a25} stroke={a40} strokeWidth="0.8"/></g>
       ))}
-      <line x1="20" y1="138" x2="115" y2="290" stroke="rgba(26,188,156,0.04)" strokeWidth="1.5"/>
-      <line x1="115" y1="138" x2="20" y2="290" stroke="rgba(26,188,156,0.04)" strokeWidth="1.5"/>
-      <line x1="245" y1="138" x2="340" y2="290" stroke="rgba(26,188,156,0.04)" strokeWidth="1.5"/>
-      <line x1="340" y1="138" x2="245" y2="290" stroke="rgba(26,188,156,0.04)" strokeWidth="1.5"/>
-      <rect x="115" y="180" width="130" height="80" rx="8" fill="rgba(26,188,156,0.04)" stroke="rgba(26,188,156,0.15)" strokeWidth="1"/>
-      <polygon points="180,188 196,194 196,206 180,212 164,206 164,194" fill="none" stroke="rgba(26,188,156,0.35)" strokeWidth="1.2"/>
-      <circle cx="180" cy="200" r="6" fill="rgba(26,188,156,0.12)" stroke="rgba(26,188,156,0.45)" strokeWidth="1"/>
-      <text x="180" y="228" textAnchor="middle" fontSize="6" fontFamily="Share Tech Mono" fill="rgba(26,188,156,0.4)" letterSpacing="0.35em">CLASSIFIED</text>
-      <text x="180" y="238" textAnchor="middle" fontSize="4.5" fontFamily="Share Tech Mono" fill="rgba(26,188,156,0.25)" letterSpacing="0.25em">TOP-SECRET</text>
-      <rect x="20" y="282" width="320" height="8" rx="0" fill="rgba(26,188,156,0.08)" stroke="rgba(26,188,156,0.18)" strokeWidth="0.8"/>
+      <line x1="20" y1="138" x2="115" y2="290" stroke={a04} strokeWidth="1.5"/>
+      <line x1="115" y1="138" x2="20" y2="290" stroke={a04} strokeWidth="1.5"/>
+      <line x1="245" y1="138" x2="340" y2="290" stroke={a04} strokeWidth="1.5"/>
+      <line x1="340" y1="138" x2="245" y2="290" stroke={a04} strokeWidth="1.5"/>
+      <rect x="115" y="180" width="130" height="80" rx="8" fill={a04} stroke={a15} strokeWidth="1"/>
+      <polygon points="180,188 196,194 196,206 180,212 164,206 164,194" fill="none" stroke={a35} strokeWidth="1.2"/>
+      <circle cx="180" cy="200" r="6" fill={a12} stroke={a45} strokeWidth="1"/>
+      <text x="180" y="228" textAnchor="middle" fontSize="6" fontFamily="Share Tech Mono" fill={a40} letterSpacing="0.35em">CLASSIFIED</text>
+      <text x="180" y="238" textAnchor="middle" fontSize="4.5" fontFamily="Share Tech Mono" fill={a25} letterSpacing="0.25em">TOP-SECRET</text>
+      <rect x="20" y="282" width="320" height="8" rx="0" fill={a08} stroke={a18} strokeWidth="0.8"/>
     </g>
     <g style={{ transform: unlocked ? 'scale(0) translate(-180px,-188px)' : 'scale(1)', transformOrigin: '180px 188px', transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)' }}>
-      <rect x="148" y="156" width="64" height="64" rx="9" fill="rgba(10,10,20,0.8)" stroke="rgba(26,188,156,0.5)" strokeWidth="1.8"/>
-      <rect x="152" y="160" width="56" height="56" rx="7" fill="rgba(26,188,156,0.04)" stroke="rgba(26,188,156,0.18)" strokeWidth="0.8"/>
-      <path d="M172,176 L172,169 Q172,160 180,160 Q188,160 188,169 L188,176" fill="none" stroke="rgba(26,188,156,0.65)" strokeWidth="2.5" strokeLinecap="round"/>
-      <rect x="156" y="176" width="48" height="34" rx="6" fill="rgba(26,188,156,0.1)" stroke="rgba(26,188,156,0.55)" strokeWidth="1.5"/>
-      <circle cx="180" cy="189" r="5.5" fill="rgba(0,0,0,0.6)" stroke="rgba(26,188,156,0.6)" strokeWidth="1.2"/>
-      <rect x="178" y="189" width="4" height="8" rx="1.5" fill="rgba(26,188,156,0.3)"/>
-      <text x="180" y="218" textAnchor="middle" fontSize="5" fontFamily="Share Tech Mono" fill="rgba(26,188,156,0.45)" letterSpacing="0.18em">LOCKED</text>
+      <rect x="148" y="156" width="64" height="64" rx="9" fill="rgba(10,10,20,0.8)" stroke={a50} strokeWidth="1.8"/>
+      <rect x="152" y="160" width="56" height="56" rx="7" fill={a04} stroke={a18} strokeWidth="0.8"/>
+      <path d="M172,176 L172,169 Q172,160 180,160 Q188,160 188,169 L188,176" fill="none" stroke={a65} strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="156" y="176" width="48" height="34" rx="6" fill={a10} stroke={a55} strokeWidth="1.5"/>
+      <circle cx="180" cy="189" r="5.5" fill="rgba(0,0,0,0.6)" stroke={a60} strokeWidth="1.2"/>
+      <rect x="178" y="189" width="4" height="8" rx="1.5" fill={a30}/>
+      <text x="180" y="218" textAnchor="middle" fontSize="5" fontFamily="Share Tech Mono" fill={a45} letterSpacing="0.18em">LOCKED</text>
     </g>
-    <rect className="chest-slot-rect" x="144" y="152" width="72" height="72" rx="11" fill="none" stroke="#1abc9c" strokeWidth="2.5" strokeDasharray="5 3" opacity="0" filter="url(#f-glow-strong)"/>
+    <rect className="chest-slot-rect" x="144" y="152" width="72" height="72" rx="11" fill="none" stroke={accent} strokeWidth="2.5" strokeDasharray="5 3" opacity="0" filter="url(#f-glow-strong)"/>
     <g style={{ transformOrigin: '180px 138px', transform: lidOpen ? 'perspective(700px) rotateX(-118deg)' : 'perspective(700px) rotateX(0deg)', transition: 'transform 0.75s cubic-bezier(0.34,1.1,0.64,1)' }}>
-      <rect x="20" y="92" width="320" height="50" rx="10" fill="url(#g-lid-main)" stroke="rgba(26,188,156,0.35)" strokeWidth="1.5" filter="url(#f-body-shadow)"/>
+      <rect x="20" y="92" width="320" height="50" rx="10" fill="url(#g-lid-main)" stroke={a35} strokeWidth="1.5" filter="url(#f-body-shadow)"/>
       <rect x="20" y="92" width="320" height="50" rx="10" fill="url(#g-plate-shine)"/>
       <rect x="20" y="108" width="320" height="8" fill="url(#g-metal-h)" opacity="0.55"/>
-      <rect x="20" y="108" width="320" height="2" fill="rgba(26,188,156,0.2)"/>
-      {[[20,92],[300,92]].map(([cx,cy],i)=>(<g key={i}><rect x={cx} y={cy} width="40" height="50" rx={i===0?'10 0 0 0':'0 10 0 0'} fill="rgba(26,188,156,0.06)" stroke="rgba(26,188,156,0.25)" strokeWidth="1"/></g>))}
-      {[50,85,120,155,180,205,240,275,310].map(x=>(<g key={x}><circle cx={x} cy={104} r="3" fill="rgba(26,188,156,0.3)" stroke="rgba(26,188,156,0.5)" strokeWidth="0.6"/><circle cx={x} cy={104} r="1.2" fill="rgba(26,188,156,0.6)"/></g>))}
-      <text x="180" y="131" textAnchor="middle" fontSize="7" fontFamily="Share Tech Mono" fill="rgba(26,188,156,0.35)" letterSpacing="0.5em">SECURE VAULT</text>
-      <line x1="60" y1="92" x2="180" y2="142" stroke="rgba(26,188,156,0.06)" strokeWidth="1.5"/>
-      <line x1="300" y1="92" x2="180" y2="142" stroke="rgba(26,188,156,0.06)" strokeWidth="1.5"/>
-      {[150,178,206].map(y=>(<g key={y}><rect x="20" y={y-16} width="7" height="7" rx="2" fill="rgba(26,188,156,0.22)" stroke="rgba(26,188,156,0.38)" strokeWidth="0.7"/><rect x="333" y={y-16} width="7" height="7" rx="2" fill="rgba(26,188,156,0.22)" stroke="rgba(26,188,156,0.38)" strokeWidth="0.7"/></g>))}
+      <rect x="20" y="108" width="320" height="2" fill={a20}/>
+      {[[20,92],[300,92]].map(([cx,cy],i)=>(<g key={i}><rect x={cx} y={cy} width="40" height="50" rx={i===0?'10 0 0 0':'0 10 0 0'} fill={a06} stroke={a25} strokeWidth="1"/></g>))}
+      {[50,85,120,155,180,205,240,275,310].map(x=>(<g key={x}><circle cx={x} cy={104} r="3" fill={a30} stroke={a50} strokeWidth="0.6"/><circle cx={x} cy={104} r="1.2" fill={a60}/></g>))}
+      <text x="180" y="131" textAnchor="middle" fontSize="7" fontFamily="Share Tech Mono" fill={a35} letterSpacing="0.5em">SECURE VAULT</text>
+      <line x1="60" y1="92" x2="180" y2="142" stroke={a06} strokeWidth="1.5"/>
+      <line x1="300" y1="92" x2="180" y2="142" stroke={a06} strokeWidth="1.5"/>
+      {[150,178,206].map(y=>(<g key={y}><rect x="20" y={y-16} width="7" height="7" rx="2" fill={a22} stroke={a38} strokeWidth="0.7"/><rect x="333" y={y-16} width="7" height="7" rx="2" fill={a22} stroke={a38} strokeWidth="0.7"/></g>))}
     </g>
-    <rect x="138" y="134" width="84" height="11" rx="5.5" fill="rgba(26,188,156,0.22)" stroke="rgba(26,188,156,0.5)" strokeWidth="1.2"/>
-    {[154,172,180,188,206].map(x=>(<circle key={x} cx={x} cy={139.5} r="3.2" fill="rgba(26,188,156,0.55)" stroke="rgba(26,188,156,0.8)" strokeWidth="0.8"/>))}
-    {lidOpen&&(<><ellipse cx="180" cy="148" rx="120" ry="26" fill="url(#g-inner-glow)" filter="url(#f-glow-soft)"/><ellipse cx="180" cy="148" rx="70" ry="16" fill="rgba(26,188,156,0.15)" filter="url(#f-glow-strong)"/><rect x="20" y="138" width="320" height="30" fill="url(#g-inner-glow)" opacity="0.6"/></>)}
-    <rect x="20" y="138" width="320" height="3" fill="rgba(26,188,156,0.2)" style={{ animation: 'chestScan 2.6s ease-in-out infinite' }}/>
+    <rect x="138" y="134" width="84" height="11" rx="5.5" fill={a22} stroke={a50} strokeWidth="1.2"/>
+    {[154,172,180,188,206].map(x=>(<circle key={x} cx={x} cy={139.5} r="3.2" fill={a55} stroke={a80} strokeWidth="0.8"/>))}
+    {lidOpen&&(<><ellipse cx="180" cy="148" rx="120" ry="26" fill="url(#g-inner-glow)" filter="url(#f-glow-soft)"/><ellipse cx="180" cy="148" rx="70" ry="16" fill={a15} filter="url(#f-glow-strong)"/><rect x="20" y="138" width="320" height="30" fill="url(#g-inner-glow)" opacity="0.6"/></>)}
+    <rect x="20" y="138" width="320" height="3" fill={a20} style={{ animation: 'chestScan 2.6s ease-in-out infinite' }}/>
     <ellipse cx="180" cy="298" rx="145" ry="8" fill="rgba(0,0,0,0.4)" opacity="0.6"/>
   </svg>
-);
+  );
+};
 
-const MilitaryKeySVG = () => (
-  <svg viewBox="0 0 160 65" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '180px', height: 'auto', filter: 'drop-shadow(0 6px 20px rgba(26,188,156,0.55))' }}>
+const MilitaryKeySVG = ({ accent = '#1abc9c' }) => {
+  const a15 = hexAlpha(accent, 0.15);
+  const a25 = hexAlpha(accent, 0.25);
+  const a35 = hexAlpha(accent, 0.35);
+  const a55 = hexAlpha(accent, 0.55);
+  const a60 = hexAlpha(accent, 0.60);
+  const a80 = hexAlpha(accent, 0.80);
+  return (
+  <svg viewBox="0 0 160 65" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '180px', height: 'auto', filter: `drop-shadow(0 6px 20px ${a55})` }}>
     <defs>
-      <linearGradient id="g-key-body" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#5ee8c8"/><stop offset="50%" stopColor="#1abc9c"/><stop offset="100%" stopColor="#0d8f75"/></linearGradient>
+      <linearGradient id="g-key-body" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={hexAlpha(accent, 0.9)}/><stop offset="50%" stopColor={accent}/><stop offset="100%" stopColor={hexAlpha(accent, 0.55)}/></linearGradient>
       <linearGradient id="g-key-shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.35)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
       <filter id="f-key-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
     </defs>
     <circle cx="28" cy="32" r="21" fill="none" stroke="url(#g-key-body)" strokeWidth="4.5" filter="url(#f-key-glow)"/>
-    <circle cx="28" cy="32" r="14" fill="none" stroke="rgba(26,188,156,0.35)" strokeWidth="1.5"/>
-    <circle cx="28" cy="32" r="7" fill="rgba(26,188,156,0.15)" stroke="rgba(26,188,156,0.55)" strokeWidth="1.5"/>
-    <circle cx="28" cy="32" r="3.5" fill="#1abc9c" filter="url(#f-key-glow)"/>
-    <line x1="28" y1="18" x2="28" y2="46" stroke="rgba(26,188,156,0.25)" strokeWidth="1"/>
-    <line x1="14" y1="32" x2="42" y2="32" stroke="rgba(26,188,156,0.25)" strokeWidth="1"/>
+    <circle cx="28" cy="32" r="14" fill="none" stroke={a35} strokeWidth="1.5"/>
+    <circle cx="28" cy="32" r="7" fill={a15} stroke={a55} strokeWidth="1.5"/>
+    <circle cx="28" cy="32" r="3.5" fill={accent} filter="url(#f-key-glow)"/>
+    <line x1="28" y1="18" x2="28" y2="46" stroke={a25} strokeWidth="1"/>
+    <line x1="14" y1="32" x2="42" y2="32" stroke={a25} strokeWidth="1"/>
     <rect x="47" y="28.5" width="90" height="8" rx="4" fill="url(#g-key-body)"/>
     <rect x="47" y="28.5" width="90" height="3.5" rx="1.8" fill="url(#g-key-shine)"/>
     <rect x="58" y="31" width="3" height="6" rx="1.2" fill="rgba(0,0,0,0.3)"/>
@@ -333,16 +371,30 @@ const MilitaryKeySVG = () => (
     <rect x="80" y="31" width="2" height="6" rx="1" fill="rgba(0,0,0,0.3)"/>
     <rect x="100" y="36" width="9" height="15" rx="2.5" fill="url(#g-key-body)"/>
     <rect x="100" y="36" width="9" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
-    <rect x="113" y="36" width="7" height="10" rx="2" fill="#1abc9c"/>
+    <rect x="113" y="36" width="7" height="10" rx="2" fill={accent}/>
     <rect x="124" y="36" width="9" height="17" rx="2.5" fill="url(#g-key-body)"/>
     <rect x="124" y="36" width="9" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
-    <rect x="65" y="19" width="6" height="9" rx="2" fill="rgba(26,188,156,0.6)" stroke="rgba(26,188,156,0.8)" strokeWidth="0.8"/>
-    <text x="28" y="60" textAnchor="middle" fontSize="5.5" fontFamily="Share Tech Mono" fill="rgba(26,188,156,0.55)" letterSpacing="0.25em">VLT-K01</text>
+    <rect x="65" y="19" width="6" height="9" rx="2" fill={a60} stroke={a80} strokeWidth="0.8"/>
+    <text x="28" y="60" textAnchor="middle" fontSize="5.5" fontFamily="Share Tech Mono" fill={a55} letterSpacing="0.25em">VLT-K01</text>
   </svg>
-);
+  );
+};
 
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
+const THEME_ACCENT = {
+  cyberpunk: '#1abc9c',
+  synthwave: '#f72585',
+  lava:      '#ef4444',
+  forest:    '#22c55e',
+  ocean:     '#0ea5e9',
+  sunset:    '#f97316',
+  galaxy:    '#7c3aed',
+};
+
 const Projects = () => {
+  const { theme } = useTheme();
+  const accent = THEME_ACCENT[theme] ?? '#1abc9c';
+
   // phase: 'chest' | 'transitioning' | 'cards'
   const [phase, setPhase] = useState('chest');
   const [unlocked, setUnlocked] = useState(false);
@@ -641,7 +693,7 @@ const Projects = () => {
               <div className="chest-badge-dot" />
             </div>
             <div style={{ position: 'relative', width: '100%', maxWidth: 380 }}>
-              <ArmorChestSVG unlocked={unlocked} lidOpen={lidOpen} />
+              <ArmorChestSVG unlocked={unlocked} lidOpen={lidOpen} accent={accent} />
               <div ref={slotRectRef} className="slot-glow-e" style={{ opacity: 0 }} />
             </div>
             <div className="chest-status-e">
@@ -653,7 +705,7 @@ const Projects = () => {
           {phase === 'chest' && (
             <div ref={keyWrapRef} style={{ opacity: 0 }} className="key-wrap-e">
               <div ref={keyInnerRef} className="">
-                <MilitaryKeySVG />
+                <MilitaryKeySVG accent={accent} />
                 {nearSlot && <div className="key-near-pulse" />}
               </div>
             </div>

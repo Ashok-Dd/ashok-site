@@ -133,6 +133,14 @@ function SkillShooter({ onExit }) {
   const [reloading, setReloading]   = useState(false);
   const [comboItems, setComboItems] = useState([]);
   const [entryStep, setEntryStep]   = useState(0);
+  const [shooterCd, setShooterCd]   = useState(-1);
+
+  useEffect(() => {
+    if (shooterCd < 0) return;
+    if (shooterCd > 0) { const t = setTimeout(() => setShooterCd(c => c - 1), 800); return () => clearTimeout(t); }
+    const t = setTimeout(() => { setShooterCd(-1); if (gsRef.current) { gsRef.current.phase = "play"; syncHud(); } }, 600);
+    return () => clearTimeout(t);
+  }, [shooterCd, syncHud]);
 
   useEffect(() => {
   GAME_SKILLS.forEach((sk) => {
@@ -181,8 +189,7 @@ function SkillShooter({ onExit }) {
     const t2 = setTimeout(() => setEntryStep(2), 1400);
     const t3 = setTimeout(() => setEntryStep(3), 2400);
     const t4 = setTimeout(() => {
-      if (gsRef.current) gsRef.current.phase = "play";
-      setEntryStep(4); syncHud();
+      setEntryStep(4); setShooterCd(3);
     }, 3400);
     return () => [t1, t2, t3, t4].forEach(clearTimeout);
   }, [syncHud]);
@@ -462,7 +469,7 @@ function SkillShooter({ onExit }) {
 
   const isPlay = hud.phase === "play";
   const isExit = hud.phase === "exit";
-  const isEntry = hud.phase === "entry";
+  const isEntry = hud.phase === "entry" && shooterCd < 0;
 
   return (
     <div
@@ -496,6 +503,16 @@ function SkillShooter({ onExit }) {
           )}
           {entryStep >= 2 && (<div className="ss-mono" style={{ animation: "ssFadeUp .5s ease both", marginTop: 44, color: "rgba(77,217,188,0.55)", fontSize: 12, letterSpacing: ".2em" }}>INITIALIZING TARGETS...</div>)}
           {entryStep >= 3 && (<div className="ss-mono" style={{ animation: "ssPulse .6s infinite", marginTop: 12, color: "rgba(26,188,156,0.35)", fontSize: 11, letterSpacing: ".3em" }}>LOADING WEAPONS SYSTEM...</div>)}
+        </div>
+      )}
+
+      {/* COUNTDOWN */}
+      {shooterCd >= 0 && (
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(3,8,8,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20 }}>
+          <div key={shooterCd} className="ss-orb" style={{ fontSize: 'clamp(5rem,22vw,13rem)', fontWeight: 900, color: shooterCd > 0 ? '#1abc9c' : '#4cc9f0', textShadow: '0 0 60px #1abc9c', animation: 'cntP 0.75s ease-out forwards' }}>
+            {shooterCd > 0 ? shooterCd : 'GO!'}
+          </div>
+          <style>{`@keyframes cntP { from { transform: scale(2.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
         </div>
       )}
 

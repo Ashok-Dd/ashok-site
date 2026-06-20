@@ -6,7 +6,7 @@ const DIM    = '#00b32c';
 const DARK   = '#003310';
 
 const GRID   = 20;
-const TICK   = 150;
+const TICK   = 120;
 const WIN_AT = 10;
 
 const GAME_SKILLS = [
@@ -124,13 +124,10 @@ function SnakeGame({ onExit }) {
     /* move head */
     const head = { x: s.snake[0].x + s.dir.x, y: s.snake[0].y + s.dir.y };
 
-    /* wall collision */
-    if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
-      s.dead = true;
-      setIsDead(true);
-      setPhase('dead');
-      return;
-    }
+    /* wall wrap (teleport from one edge to the other) */
+    head.x = ((head.x % GRID) + GRID) % GRID;
+    head.y = ((head.y % GRID) + GRID) % GRID;
+
     /* self collision */
     if (s.snake.some(seg => seg.x === head.x && seg.y === head.y)) {
       s.dead = true;
@@ -146,7 +143,7 @@ function SnakeGame({ onExit }) {
       const newEaten = [...s.eaten, s.food];
       s.eaten = newEaten;
       s.grow += 3;
-      s.tickMs = Math.max(80, s.tickMs - 5);
+      s.tickMs = Math.max(80, s.tickMs - 8);
       setEaten(newEaten);
 
       if (newEaten.length >= WIN_AT) {
