@@ -2711,7 +2711,7 @@ select {
   border-radius: 50%;
   overflow: visible;
   border: 2.5px solid var(--color-accent-glow);
-  background: #1a1a2e;
+  background: var(--color-bg-elevated);
   box-shadow:
     0 0 0 5px var(--color-accent-subtle),
     0 0 40px var(--color-accent-muted),
@@ -3324,7 +3324,7 @@ select {
 
 /* Footer */
 .ft-root {
-  background: #0d0d1a;
+  background: var(--color-bg-sunken);
   position: relative;
   overflow: hidden;
 }
@@ -3654,7 +3654,7 @@ select {
   width: 100%;
   z-index: 999;
   backdrop-filter: blur(18px);
-  background: rgba(15, 15, 30, 0.95);
+  background: var(--color-bg-overlay);
   border-bottom: 1px solid var(--color-accent-muted);
 }
 .nav-container {
@@ -3721,7 +3721,7 @@ select {
   left: 0;
   width: 100%;
   height: 100vh;
-  background: rgba(15, 15, 30, 0.98);
+  background: var(--color-bg-overlay);
   display: flex;
   flex-direction: column;
   justify-content: center;
