@@ -413,13 +413,11 @@ function EndlessRunner({ onExit }) {
         style={{ width: '100%', height: '100%', display: 'block' }}
       />
       {/* HUD */}
-      <div style={{ position: 'absolute', top: 16, left: 20, fontFamily: '"Share Tech Mono", monospace', color: ACCENT, fontSize: 13, letterSpacing: '0.1em', textShadow: `0 0 10px ${ACCENT}` }}>
-        ENDLESS RUNNER
+      <div style={{ position: 'absolute', top: 16, left: 20, fontFamily: '"Share Tech Mono", monospace', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+        <span style={{ color: ACCENT, fontSize: 13, letterSpacing: '0.1em', textShadow: `0 0 10px ${ACCENT}` }}>ENDLESS RUNNER</span>
+        <span style={{ color: CYAN, fontSize: 12, letterSpacing: '0.08em' }}>DIST: {score}m</span>
       </div>
-      <div style={{ position: 'absolute', top: 16, right: 20, fontFamily: '"Share Tech Mono", monospace', color: CYAN, fontSize: 13, letterSpacing: '0.1em' }}>
-        DIST: {score}m
-      </div>
-      <button onClick={onExit} style={{ position: 'absolute', top: 14, right: 110, background: 'transparent', border: `1px solid ${ACCENT}`, color: ACCENT, padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.12em' }}>
+      <button onClick={onExit} style={{ position: 'absolute', top: 14, right: 20, background: 'transparent', border: `1px solid ${ACCENT}`, color: ACCENT, padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.12em', zIndex: 1 }}>
         EXIT
       </button>
       <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', fontFamily: '"Share Tech Mono", monospace', color: 'rgba(76,201,240,0.5)', fontSize: 11, letterSpacing: '0.12em' }}>

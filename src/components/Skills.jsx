@@ -7,6 +7,7 @@ import SunsetGame from './SunsetGame';
 import LavaGame from './LavaGame';
 import ForestGame from './ForestGame';
 import SnakeGame from './SnakeGame';
+import CircleGame from './CircleGame';
 import GalaxyGame from './GalaxyGame';
 import { useTheme } from '../context/ThemeContext';
 import { categoriesData } from '../../data';
@@ -17,7 +18,7 @@ const THEME_GAME_META = {
   sunset:    { label: 'glide',  Icon: Sun       },
   lava:      { label: 'meteor', Icon: Flame     },
   forest:    { label: 'snake',  Icon: Terminal  },
-  ocean:     { label: 'hunt',   Icon: Bug       },
+  ocean:     { label: 'circle', Icon: Waves     },
   galaxy:    { label: 'blast',  Icon: Telescope },
 };
 
@@ -113,7 +114,7 @@ export default function Skills() {
           {theme === 'sunset'    && <SunsetGame    onExit={exitGame} />}
           {theme === 'lava'      && <LavaGame      onExit={exitGame} />}
           {theme === 'forest'    && <SnakeGame     onExit={exitGame} />}
-          {theme === 'ocean'     && <ForestGame    onExit={exitGame} />}
+          {theme === 'ocean'     && <CircleGame    onExit={exitGame} />}
           {theme === 'galaxy'    && <GalaxyGame    onExit={exitGame} />}
         </div>
       )}

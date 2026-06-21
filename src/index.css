@@ -4271,17 +4271,19 @@ select {
 }
 
 .theme-dot-trigger {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: block;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .theme-dot-trigger:hover {
-  transform: scale(1.35);
+  transform: scale(1.2) rotate(-8deg);
 }
 
 /* Dropdown list */

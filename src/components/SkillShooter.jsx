@@ -136,13 +136,6 @@ function SkillShooter({ onExit }) {
   const [shooterCd, setShooterCd]   = useState(-1);
 
   useEffect(() => {
-    if (shooterCd < 0) return;
-    if (shooterCd > 0) { const t = setTimeout(() => setShooterCd(c => c - 1), 800); return () => clearTimeout(t); }
-    const t = setTimeout(() => { setShooterCd(-1); if (gsRef.current) { gsRef.current.phase = "play"; syncHud(); } }, 600);
-    return () => clearTimeout(t);
-  }, [shooterCd, syncHud]);
-
-  useEffect(() => {
   GAME_SKILLS.forEach((sk) => {
     const IconComp = ICON_MAP[sk.icon];
     if (!IconComp) return;
@@ -171,6 +164,13 @@ function SkillShooter({ onExit }) {
     const s = gsRef.current; if (!s) return;
     setHud({ score: s.score, ammo: s.ammo, kills: s.kills, phase: s.phase });
   }, []);
+
+  useEffect(() => {
+    if (shooterCd < 0) return;
+    if (shooterCd > 0) { const t = setTimeout(() => setShooterCd(c => c - 1), 800); return () => clearTimeout(t); }
+    const t = setTimeout(() => { setShooterCd(-1); if (gsRef.current) { gsRef.current.phase = "play"; syncHud(); } }, 600);
+    return () => clearTimeout(t);
+  }, [shooterCd, syncHud]);
 
   const initGs = useCallback(() => {
     gsRef.current = {

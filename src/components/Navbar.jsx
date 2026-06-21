@@ -9,7 +9,7 @@ const THEMES = [
   { id: 'synthwave', color: '#f72585', label: 'Synthwave',   gameLabel: 'Endless Runner', GameIcon: Zap       },
   { id: 'lava',      color: '#ef4444', label: 'Lava',        gameLabel: 'Meteor Strike',  GameIcon: Flame     },
   { id: 'forest',    color: '#22c55e', label: 'Forest',      gameLabel: 'Snake',          GameIcon: TreePine  },
-  { id: 'ocean',     color: '#0ea5e9', label: 'Ocean',       gameLabel: 'Firefly Hunt',   GameIcon: Waves     },
+  { id: 'ocean',     color: '#0ea5e9', label: 'Ocean',       gameLabel: 'Circle Draw',    GameIcon: Waves     },
   { id: 'sunset',    color: '#f97316', label: 'Sunset',      gameLabel: 'Paper Glider',   GameIcon: Sun       },
   { id: 'galaxy',    color: '#7c3aed', label: 'Galaxy',      gameLabel: 'Asteroid Blast', GameIcon: Telescope },
 ];
@@ -136,17 +136,32 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Theme dot trigger + dropdown */}
+          {/* Theme pencil trigger + dropdown */}
           <div className="theme-dot-wrap" ref={dropdownRef}>
             <button
               className="theme-dot-trigger"
-              style={{
-                background: currentTheme.color,
-                boxShadow: `0 0 0 2px ${currentTheme.color}55, 0 0 10px ${currentTheme.color}88`,
-              }}
+              style={{ background: 'transparent', boxShadow: 'none', padding: 4 }}
               onClick={() => setIsDropdownOpen(prev => !prev)}
               title={`Theme: ${currentTheme.label}`}
-            />
+            >
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style={{ filter: `drop-shadow(0 0 6px ${currentTheme.color}bb)`, display: 'block' }}>
+                <g transform="rotate(45 11 11)">
+                  {/* eraser top */}
+                  <rect x="8" y="2" width="6" height="2.5" rx="1"
+                    stroke={currentTheme.color} strokeWidth="1.3" fill="none" />
+                  {/* pencil body */}
+                  <rect x="8" y="4.5" width="6" height="11" rx="0"
+                    stroke={currentTheme.color} strokeWidth="1.3" fill="none" />
+                  {/* tip triangle */}
+                  <polyline points="8,15.5 11,20 14,15.5"
+                    stroke={currentTheme.color} strokeWidth="1.3" strokeLinejoin="round" fill="none" />
+                  {/* center line on tip */}
+                  <line x1="11" y1="15.5" x2="11" y2="19"
+                    stroke={currentTheme.color} strokeWidth="0.8" strokeOpacity="0.5" />
+                </g>
+              </svg>
+            </button>
 
             {isDropdownOpen && (
               <div className="theme-dropdown">

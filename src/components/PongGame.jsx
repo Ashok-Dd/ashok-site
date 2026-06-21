@@ -360,12 +360,11 @@ function LaserDodge({ onExit }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: BG, zIndex: 9999 }}>
       <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
-      <div style={{ position: 'absolute', top: 14, left: 20, fontFamily: '"Share Tech Mono", monospace', color: ACCENT, fontSize: 14, letterSpacing: '0.1em', textShadow: `0 0 10px ${ACCENT}`, zIndex: 1 }}>LASER DODGE</div>
-      <div style={{ position: 'absolute', top: 14, right: 20, fontFamily: '"Share Tech Mono", monospace', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-        <span style={{ color: ACCENT, fontSize: 13, letterSpacing: '0.08em' }}>SCORE {score}s</span>
-        <span style={{ color: DIM, fontSize: 11, letterSpacing: '0.06em' }}>BEST {best}s</span>
+      <div style={{ position: 'absolute', top: 14, left: 20, fontFamily: '"Share Tech Mono", monospace', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+        <span style={{ color: ACCENT, fontSize: 13, letterSpacing: '0.1em', textShadow: `0 0 10px ${ACCENT}` }}>LASER DODGE</span>
+        <span style={{ color: ACCENT, fontSize: 12, letterSpacing: '0.08em' }}>SCORE {score}s &nbsp;·&nbsp; <span style={{ color: DIM }}>BEST {best}s</span></span>
       </div>
-      <button onClick={onExit} style={{ position: 'absolute', top: 12, left: 160, background: 'transparent', border: `1px solid ${DIM}`, color: DIM, padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.1em', zIndex: 1 }}>EXIT</button>
+      <button onClick={onExit} style={{ position: 'absolute', top: 12, right: 20, background: 'transparent', border: `1px solid ${DIM}`, color: DIM, padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.1em', zIndex: 1 }}>EXIT</button>
       <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)', fontFamily: '"Share Tech Mono", monospace', color: `rgba(0,212,255,0.3)`, fontSize: 10, letterSpacing: '0.12em', zIndex: 1 }}>WASD / ARROWS — MOVE &nbsp;·&nbsp; CRYSTAL = GHOST MODE</div>
     </div>
   );

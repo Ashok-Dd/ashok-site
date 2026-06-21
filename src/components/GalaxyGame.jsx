@@ -413,7 +413,7 @@ function AsteroidBlast({ onExit }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: BG, zIndex: 9999 }}>
       <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
-      <button onClick={onExit} style={{ position: 'absolute', top: 12, left: 20, background: 'transparent', border: `1px solid #3b0764`, color: '#3b0764', padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.1em', zIndex: 1 }}>EXIT</button>
+      <button onClick={onExit} style={{ position: 'absolute', top: 12, right: 20, background: 'transparent', border: `1px solid #3b0764`, color: '#3b0764', padding: '4px 12px', cursor: 'pointer', fontFamily: '"Share Tech Mono", monospace', fontSize: 10, letterSpacing: '0.1em', zIndex: 1 }}>EXIT</button>
       <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)', fontFamily: '"Share Tech Mono", monospace', color: `rgba(124,58,237,0.4)`, fontSize: 10, letterSpacing: '0.12em', zIndex: 1 }}>← → ROTATE &nbsp;·&nbsp; W THRUST &nbsp;·&nbsp; SPACE FIRE</div>
     </div>
   );

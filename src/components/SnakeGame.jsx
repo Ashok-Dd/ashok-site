@@ -6,7 +6,7 @@ const DIM    = '#00b32c';
 const DARK   = '#003310';
 
 const GRID   = 20;
-const TICK   = 120;
+const TICK   = 180;
 const WIN_AT = 10;
 
 const GAME_SKILLS = [
@@ -143,7 +143,7 @@ function SnakeGame({ onExit }) {
       const newEaten = [...s.eaten, s.food];
       s.eaten = newEaten;
       s.grow += 3;
-      s.tickMs = Math.max(80, s.tickMs - 8);
+      s.tickMs = Math.max(120, s.tickMs - 6);
       setEaten(newEaten);
 
       if (newEaten.length >= WIN_AT) {
