@@ -2611,7 +2611,10 @@ select {
   box-shadow: 0 8px 24px var(--color-accent-glow);
 }
 .btn-cta-outline {
-  padding: 12px 28px;
+  padding: 15px 30px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
   background: transparent;
   color: var(--color-accent);
   font-family: "Inter", sans-serif;
