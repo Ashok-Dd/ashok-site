@@ -446,7 +446,7 @@ export const heroData = {
   ],
 };
 
-export const navItems = ["Home", "Skills", "Projects", "Leetcode", "Contact"];
+export const navItems = ["Home", "Skills", "Projects", "Contact"];
 
 export const footerData = {
   tagline: "Full Stack Developer · Code Ninja",
