@@ -99,9 +99,9 @@ const Footer = () => {
                 {footerData.statusBadge}
               </div>
               <p className="ft-status-desc">{footerData.statusDesc}</p>
-              <a href={footerData.resumeUrl} download className="ft-resume-btn">
+              {/* <a href={footerData.resumeUrl} download className="ft-resume-btn">
                 Download Resume ↓
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
