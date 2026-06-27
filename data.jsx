@@ -4,6 +4,7 @@ import {
   Cpu,
   Github,
   ShoppingCart,
+  Dumbbell,
   Instagram,
   Wrench,
   HeartPulse,
@@ -127,6 +128,47 @@ export const GAME_SKILLS = [
 export const PROJECTS = [
   {
     id: 0,
+    title: "AEVUM GYM Landing Page",
+    short: "Premium Fitness Platform",
+    tag: "Landing Page",
+    rating: "4.9",
+    icon: Dumbbell,
+    accentColor: "#f97316",
+    year: "2027",
+
+    description:
+      "A modern gym landing page designed to attract new members, showcase trainers, highlight fitness programs, and drive membership registrations.",
+
+    longDesc:
+      "Developed a high-converting fitness website for AEVUM Gym featuring membership plans, trainer profiles, workout programs, BMI calculator, testimonials, and contact forms. The platform focuses on user engagement through smooth animations, responsive design, and a premium user experience optimized for both desktop and mobile users.",
+
+    tech: ["Next.js", "TailwindCSS", "GSAP"],
+
+    features: [
+      "Membership Plans",
+      "Trainer Profiles",
+      "Workout Programs",
+      "BMI Calculator",
+      "Men's & Women's Fitness",
+      "GSAP Animations",
+      "Online Registration",
+      "Responsive Design",
+    ],
+
+    github: "https://github.com/Ashok-Dd/gym-landing-page",
+
+    live: "https://aevum-gym.vercel.app/",
+
+    num: "01",
+
+    stats: [
+      { label: "Performance", val: "98%" },
+      { label: "Mobile Score", val: "100%" },
+      { label: "Page Speed", val: "<1s" },
+    ],
+  },
+  {
+    id: 1,
     title: "Karta Shopping Platform",
     short: "E-Commerce Platform",
     tag: "E-Commerce",
@@ -147,7 +189,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/karta-shopping-kart",
     live: "https://karta-ecommerce.vercel.app/",
-    num: "01",
+    num: "02",
     stats: [
       { label: "Users", val: "1.8K" },
       { label: "Orders", val: "5K+" },
@@ -155,7 +197,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 1,
+    id: 2,
     title: "Student Dashboard",
     short: "Education Platform",
     tag: "Education",
@@ -176,7 +218,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/student-dashboard",
     live: "https://student-dashboard-two-sandy.vercel.app/",
-    num: "01",
+    num: "03",
     stats: [
       { label: "Users", val: "2.4K" },
       { label: "Uptime", val: "99.9%" },
@@ -184,7 +226,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 2,
+    id: 3,
     title: "Code Space",
     short: "Snippet Storage",
     tag: "Utility",
@@ -205,7 +247,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/code-space",
     live: "https://code-space-beta-ten.vercel.app/",
-    num: "02",
+    num: "04",
     stats: [
       { label: "Snippets", val: "10K+" },
       { label: "Langs", val: "40+" },
@@ -213,7 +255,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     title: "DevTools Playground",
     short: "Developer Toolkit",
     tag: "Tooling",
@@ -229,7 +271,7 @@ export const PROJECTS = [
     features: ["API Tester", "JSON ↔ CSV", "JWT Decoder", "Regex Tester"],
     github: "https://github.com/Ashok-Dd/DevTools-Playground",
     live: "https://dev-tools-playground.vercel.app/",
-    num: "03",
+    num: "05",
     stats: [
       { label: "Tools", val: "8" },
       { label: "OAuth", val: "Google" },
@@ -237,7 +279,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     title: "HealVerse",
     short: "AI Health Companion",
     tag: "Health",
@@ -258,7 +300,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Srikar132/healverse-server",
     live: "https://github.com/Srikar132/healverse-server",
-    num: "04",
+    num: "06",
     stats: [
       { label: "AI Modules", val: "3" },
       { label: "Platform", val: "Mobile" },
@@ -266,7 +308,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     title: "AgriAssist",
     short: "Smart Farming Platform",
     tag: "AgriTech",
@@ -287,7 +329,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/agriassist-backend",
     live: "https://github.com/Ashok-Dd/agriassist-backend",
-    num: "05",
+    num: "07",
     stats: [
       { label: "DL Model", val: "Custom" },
       { label: "Platform", val: "Mobile" },
@@ -295,7 +337,7 @@ export const PROJECTS = [
     ],
   },
   {
-    id: 6,
+    id: 7,
     title: "RAT3",
     short: "Cyber Security Shield",
     tag: "Security",
@@ -316,7 +358,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/postinstallation_rat3",
     live: "https://github.com/Ashok-Dd/postinstallation_rat3",
-    num: "06",
+    num: "08",
     stats: [
       { label: "Platform", val: "Mobile" },
       { label: "Threat DB", val: "Live" },
@@ -357,15 +399,15 @@ export const SOCIALS = [
   {
     id: "email",
     label: "Email",
-    sub: "bonguashok86@gmail.com",
-    href: "mailto:bonguashok86@gmail.com",
+    sub: "srirambongu899@gmail.com",
+    href: "mailto:srirambongu899@gmail.com",
     Icon: Mail,
   },
   {
     id: "whatsapp",
     label: "WhatsApp",
-    sub: "+91 9392954525",
-    href: "https://wa.me/9392954525",
+    sub: "+91 9014256401",
+    href: "https://wa.me/9014256401",
     Icon: MessageCircle,
   },
 ];
@@ -382,8 +424,8 @@ export const links = [
     href: "https://instagram.com/ashok_devil_123",
     label: "Instagram",
   },
-  { icon: Mail, href: "mailto:bonguashok86@gmail.com", label: "Email" },
-  { icon: MessageCircle, href: "https://wa.me/9392954525", label: "WhatsApp" },
+  { icon: Mail, href: "mailto:srirambongu899@gmail.com", label: "Email" },
+  { icon: MessageCircle, href: "https://wa.me/9014256401", label: "WhatsApp" },
 ];
 
 export const heroData = {
@@ -414,10 +456,10 @@ export const footerData = {
   resumeUrl: "/AshokResume .pdf",
   navLinks: ["Home", "Projects", "Skills", "Contact"],
   contact: {
-    email: "bonguashok86@gmail.com",
-    emailHref: "mailto:bonguashok86@gmail.com",
-    phone: "+91 9392954525",
-    phoneHref: "https://wa.me/9392954525",
+    email: "srirambongu899@gmail.com",
+    emailHref: "mailto:srirambongu899@gmail.com",
+    phone: "+91 9014256401",
+    phoneHref: "https://wa.me/9014256401",
     github: "github.com/Ashok-Dd",
     githubHref: "https://github.com/Ashok-Dd",
   },
