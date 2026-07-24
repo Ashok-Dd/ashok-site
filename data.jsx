@@ -399,15 +399,15 @@ export const SOCIALS = [
   {
     id: "email",
     label: "Email",
-    sub: "srirambongu899@gmail.com",
-    href: "mailto:srirambongu899@gmail.com",
+    sub: "bonguashok86@gmail.com",
+    href: "mailto:bonguashok86@gmail.com",
     Icon: Mail,
   },
   {
     id: "whatsapp",
     label: "WhatsApp",
-    sub: "+91 9014256401",
-    href: "https://wa.me/9014256401",
+    sub: "+91 9392954525",
+    href: "https://wa.me/9392954525",
     Icon: MessageCircle,
   },
 ];
@@ -424,8 +424,8 @@ export const links = [
     href: "https://instagram.com/ashok_devil_123",
     label: "Instagram",
   },
-  { icon: Mail, href: "mailto:srirambongu899@gmail.com", label: "Email" },
-  { icon: MessageCircle, href: "https://wa.me/9014256401", label: "WhatsApp" },
+  { icon: Mail, href: "mailto:bonguashok86@gmail.com", label: "Email" },
+  { icon: MessageCircle, href: "https://wa.me/9392954525", label: "WhatsApp" },
 ];
 
 export const heroData = {
@@ -439,14 +439,14 @@ export const heroData = {
     { num: "20+", label: "Tech Mastered" },
   ],
   profileImage: "/profile.png",
-  cvUrl: "/AshokResume .pdf",
+  cvUrl: "/Ashok-Resume.pdf",
   badges: [
     { text: "const ninja = true", pos: "top" },
     { text: "<Coding />", pos: "bot" },
   ],
 };
 
-export const navItems = ["Home", "Skills", "Projects", "Contact"];
+export const navItems = ["Home", "Skills", "Projects", "Leetcode", "Contact"];
 
 export const footerData = {
   tagline: "Full Stack Developer · Code Ninja",
@@ -456,10 +456,10 @@ export const footerData = {
   resumeUrl: "/AshokResume .pdf",
   navLinks: ["Home", "Projects", "Skills", "Contact"],
   contact: {
-    email: "srirambongu899@gmail.com",
-    emailHref: "mailto:srirambongu899@gmail.com",
-    phone: "+91 9014256401",
-    phoneHref: "https://wa.me/9014256401",
+    email: "bonguashok86@gmail.com",
+    emailHref: "mailto:bonguashok86@gmail.com",
+    phone: "+91 9392954525",
+    phoneHref: "https://wa.me/9392954525",
     github: "github.com/Ashok-Dd",
     githubHref: "https://github.com/Ashok-Dd",
   },

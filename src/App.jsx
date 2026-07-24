@@ -19,7 +19,7 @@ const App = () => {
       <div id="home"><Home /></div>
       <div id="skills"><Skills /></div>
       <div id="projects"><Projects /></div>
-      {/* <div id="leetcode"><LeetCodeSection /></div> */}
+      <div id="leetcode"><LeetCodeSection /></div>
       <div id="contact"><Contact /></div>
       <div id="footer"><Footer /></div>
     </ThemeProvider>

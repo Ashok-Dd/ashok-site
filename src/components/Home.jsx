@@ -169,10 +169,10 @@ const Home = () => {
 
             {/* CTAs */}
             <div className="hero-cta-wrap home-ctas">
-              {/* <a href={heroData.cvUrl} download className="btn-cta-primary">
+              <a href={heroData.cvUrl} download className="btn-cta-primary">
                 <Download size={15} />
                 Download CV
-              </a> */}
+              </a>
               <button
                 className="btn-cta-outline"
                 onClick={() =>
