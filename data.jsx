@@ -15,6 +15,10 @@ import {
   Mail,
   MessageCircle,
   Server,
+  Terminal,
+  Stethoscope,
+  Gamepad2,
+  ShieldCheck,
 } from "lucide-react";
 import {
   FaHtml5,
@@ -46,6 +50,7 @@ import { DiGit } from "react-icons/di";
 
 export const roles = [
   "Full Stack Developer",
+  "GTM Engineer",
   "Code Ninja",
   "Problem Solver",
   "Tech Enthusiast",
@@ -89,7 +94,7 @@ export const categoriesData = [
     id: "tools",
     name: "Tools",
     icon: Wrench,
-    skills: ["Git", "GitBash", "VS Code", "Postman", "Vercel"],
+    skills: ["Git", "GitBash", "VS Code", "Postman", "Vercel", "Firebase", "GSAP"],
   },
 ];
 
@@ -127,6 +132,34 @@ export const GAME_SKILLS = [
 
 export const PROJECTS = [
   {
+    id: 8,
+    title: "DevOS",
+    short: "All-in-one Developer Workspace",
+    tag: "Platform",
+    icon: Terminal,
+    accentColor: "#6366f1",
+    year: "2026",
+    description:
+      "One developer identity for GitHub, LeetCode, Codeforces and GeeksforGeeks — teams and Kanban boards, DSA practice, everyday dev utilities and a public leaderboard.",
+    longDesc:
+      "DevOS brings the places a developer works into a single workspace: team boards with sprint planning, a performance view that pulls activity from GitHub, LeetCode, Codeforces and GeeksforGeeks, a structured DSA sheet grouped by topic, a toolkit of JSON/JWT/regex utilities, and a launch showcase for projects. Currently in early access.",
+    tech: ["Next.js", "TypeScript", "MongoDB", "TailwindCSS"],
+    features: [
+      "Teams & Kanban Boards",
+      "Cross-platform Performance View",
+      "DSA Sheet",
+      "Developer Toolkit",
+      "Leaderboard",
+    ],
+    github: "https://github.com/Ashok-Dd/DevOS",
+    live: "https://developer-os-delta.vercel.app",
+    num: "01",
+    stats: [
+      { label: "Platforms", val: "4" },
+      { label: "Status", val: "Early Access" },
+    ],
+  },
+  {
     id: 0,
     title: "AEVUM GYM Landing Page",
     short: "Premium Fitness Platform",
@@ -134,7 +167,7 @@ export const PROJECTS = [
     rating: "4.9",
     icon: Dumbbell,
     accentColor: "#f97316",
-    year: "2027",
+    year: "2026",
 
     description:
       "A modern gym landing page designed to attract new members, showcase trainers, highlight fitness programs, and drive membership registrations.",
@@ -159,7 +192,7 @@ export const PROJECTS = [
 
     live: "https://aevum-gym.vercel.app/",
 
-    num: "01",
+    num: "02",
 
     stats: [
       { label: "Performance", val: "98%" },
@@ -189,7 +222,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/karta-shopping-kart",
     live: "https://karta-ecommerce.vercel.app/",
-    num: "02",
+    num: "03",
     stats: [
       { label: "Users", val: "1.8K" },
       { label: "Orders", val: "5K+" },
@@ -218,7 +251,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/student-dashboard",
     live: "https://student-dashboard-two-sandy.vercel.app/",
-    num: "03",
+    num: "04",
     stats: [
       { label: "Users", val: "2.4K" },
       { label: "Uptime", val: "99.9%" },
@@ -247,7 +280,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/code-space",
     live: "https://code-space-beta-ten.vercel.app/",
-    num: "04",
+    num: "05",
     stats: [
       { label: "Snippets", val: "10K+" },
       { label: "Langs", val: "40+" },
@@ -271,7 +304,7 @@ export const PROJECTS = [
     features: ["API Tester", "JSON ↔ CSV", "JWT Decoder", "Regex Tester"],
     github: "https://github.com/Ashok-Dd/DevTools-Playground",
     live: "https://dev-tools-playground.vercel.app/",
-    num: "05",
+    num: "06",
     stats: [
       { label: "Tools", val: "8" },
       { label: "OAuth", val: "Google" },
@@ -300,7 +333,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Srikar132/healverse-server",
     live: "https://github.com/Srikar132/healverse-server",
-    num: "06",
+    num: "07",
     stats: [
       { label: "AI Modules", val: "3" },
       { label: "Platform", val: "Mobile" },
@@ -329,7 +362,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/agriassist-backend",
     live: "https://github.com/Ashok-Dd/agriassist-backend",
-    num: "07",
+    num: "08",
     stats: [
       { label: "DL Model", val: "Custom" },
       { label: "Platform", val: "Mobile" },
@@ -358,7 +391,7 @@ export const PROJECTS = [
     ],
     github: "https://github.com/Ashok-Dd/postinstallation_rat3",
     live: "https://github.com/Ashok-Dd/postinstallation_rat3",
-    num: "08",
+    num: "09",
     stats: [
       { label: "Platform", val: "Mobile" },
       { label: "Threat DB", val: "Live" },
@@ -368,11 +401,92 @@ export const PROJECTS = [
 ];
 
 export const LEETCODE_DATA = {
-  total: 702,
-  easy: 346,
-  medium: 318,
-  hard: 38,
+  total: 724,
+  easy: 358,
+  medium: 327,
+  hard: 39,
 };
+
+export const experienceData = [
+  {
+    id: "cocomply",
+    role: "GTM Engineer",
+    company: "CoComply AS",
+    logo: "/cocomply-logo.png",
+    period: "Present",
+    type: "Full-time",
+    summary:
+      "Working at the intersection of engineering and go-to-market at CoComply — building the systems, automations and data flows that help the team find, reach and convert customers.",
+    points: [
+      "Engineering the go-to-market stack: pipelines, automations and integrations",
+      "Bridging product, sales and data to speed up outreach and onboarding",
+    ],
+    tags: ["GTM", "Automation", "Data", "Full Stack"],
+  },
+];
+
+export const freelanceData = {
+  eyebrow: "Open for Commissions",
+  title: "Freelance Work",
+  subtitle: "Independent · End-to-end · Shipped",
+  blurb:
+    "Alongside my day job I work as a freelance developer — taking products from idea to production for founders and small teams: mobile apps, backends, admin dashboards and landing sites.",
+  services: [
+    "Mobile Apps (Flutter / React Native)",
+    "Web Apps (Next.js)",
+    "Backends & APIs",
+    "Admin Dashboards",
+  ],
+  cta: { label: "Hire me for a project", target: "contact" },
+  process: [
+    { n: "01", title: "Discover", text: "We align on the problem, the users and a realistic scope." },
+    { n: "02", title: "Design", text: "Flows, UI and a clear plan before a single line of code." },
+    { n: "03", title: "Build", text: "Clean full-stack code, built in iterations with regular demos." },
+    { n: "04", title: "Ship", text: "Deploy, hand over, and stay on hand for support." },
+  ],
+};
+
+export const FREELANCE_PROJECTS = [
+  {
+    id: "opflow",
+    title: "OPflow",
+    short: "OPD Appointment & Patient-Flow Platform",
+    icon: Stethoscope,
+    accentColor: "#14b8a6",
+    description:
+      "Right patient, right doctor, at the right time — a patient + doctor app with live queue, booking, rescheduling and payments, backed by an API, an admin console and a landing site.",
+    tech: ["Flutter", "NestJS", "TypeScript", "Next.js"],
+    parts: [
+      { label: "Mobile App", href: "https://github.com/Ashok-Dd/opflow-app", live: "https://opflow-alpha.vercel.app" },
+      { label: "Admin", href: "https://github.com/Ashok-Dd/opflow-admin", live: "https://opflow-admin.vercel.app" },
+      { label: "Backend", href: "https://github.com/Ashok-Dd/opflow-backend" },
+      { label: "Website", href: "https://github.com/Ashok-Dd/opflow", live: "https://opflow-landing-indol.vercel.app" },
+    ],
+  },
+  {
+    id: "card-cricket",
+    title: "Card Cricket",
+    short: "Real-time Multiplayer Card Game",
+    icon: Gamepad2,
+    accentColor: "#f59e0b",
+    description:
+      "A mobile-only, real-time multiplayer cricket card game — Top-Trumps-style stat battles with collectible player cards.",
+    tech: ["Flutter", "NestJS", "Postgres", "Redis"],
+    parts: [{ label: "Source", href: "https://github.com/Ashok-Dd/card-cricket" }],
+  },
+  {
+    id: "bsafe",
+    title: "BSafe",
+    short: "Freelance Project",
+    icon: ShieldCheck,
+    accentColor: "#ef4444",
+    description:
+      "Built for a client as part of my freelance work. Full write-up coming soon.",
+    tech: [],
+    parts: [],
+  },
+];
+
 
 export const SOCIALS = [
   {
@@ -434,11 +548,11 @@ export const heroData = {
   name: "Ashok",
   bio: "Crafting elegant solutions to complex problems. Turning caffeine into code and ideas into reality. Master of the digital realm, wielding keyboards like katanas.",
   stats: [
-    { num: "6+", label: "Projects Built" },
+    { num: "10+", label: "Projects Built" },
     { num: "2+", label: "Years Coding" },
     { num: "20+", label: "Tech Mastered" },
   ],
-  profileImage: "/profile.png",
+  profileImage: "/profile-cyber.png",
   cvUrl: "/Ashok-Resume.pdf",
   badges: [
     { text: "const ninja = true", pos: "top" },
@@ -446,15 +560,24 @@ export const heroData = {
   ],
 };
 
-export const navItems = ["Home", "Skills", "Projects", "Leetcode", "Contact"];
+export const navItems = [
+  "Home",
+  "Skills",
+  "Experience",
+  "Projects",
+  "Freelance",
+  "Arcade",
+  "Leetcode",
+  "Contact",
+];
 
 export const footerData = {
-  tagline: "Full Stack Developer · Code Ninja",
-  taglineSub: "Building the web, one commit at a time.",
-  statusBadge: "Available for hire",
-  statusDesc: "Open to full-time roles, freelance projects & collabs.",
-  resumeUrl: "/AshokResume .pdf",
-  navLinks: ["Home", "Projects", "Skills", "Contact"],
+  tagline: "GTM Engineer · Freelance Full-Stack Developer",
+  taglineSub: "Building products that ship — web, mobile and 3D.",
+  statusBadge: "Open to freelance work",
+  statusDesc: "GTM Engineer at CoComply · open to freelance projects & collabs.",
+  resumeUrl: "/Ashok-Resume.pdf",
+  navLinks: ["Home", "Skills", "Experience", "Projects", "Freelance", "Arcade", "Leetcode", "Contact"],
   contact: {
     email: "bonguashok86@gmail.com",
     emailHref: "mailto:bonguashok86@gmail.com",
@@ -463,7 +586,7 @@ export const footerData = {
     github: "github.com/Ashok-Dd",
     githubHref: "https://github.com/Ashok-Dd",
   },
-  builtWith: "Built with React · TailwindCSS · Node.js",
+  builtWith: "Built with React · Vite · TailwindCSS · GSAP",
   copyright: "Ashok Bongu",
 };
 
@@ -471,5 +594,5 @@ export const leetcodeProfile = {
   username: "@b_ashok",
   profileUrl: "https://leetcode.com/u/b_ashok",
   avatarImage: "/me1.png",
-  rankBadge: "Guardian",
+  rankBadge: "365 Days Badge",
 };

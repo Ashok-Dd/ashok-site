@@ -4736,21 +4736,6 @@ select {
   50% { background-position: -60% 0; }
 }
 
-/* Load-time light sweep */
-.hero-k-sweep {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 42%;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(100deg, transparent, var(--color-accent-glow), transparent);
-  filter: blur(34px);
-  mix-blend-mode: screen;
-}
-
 /* Film grain */
 .hero-k-grain {
   position: absolute;
@@ -4889,7 +4874,48 @@ select {
     animation: none;
     content: none;
   }
-  .hero-k-sweep {
-    display: none;
-  }
 }
+
+/* ── 3D hero name (three.js) ── */
+.hero-k-name-3d {
+  display: block;
+  width: 100%;
+  max-width: none;
+  perspective: none;
+  line-height: 1;
+}
+.hero-k-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.hero-k-3d {
+  /* full-bleed: the canvas runs edge to edge, so the word can never be cropped by a container */
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: clamp(190px, 30vw, 400px);
+}
+.hero-kinetic { overflow-x: clip; }
+.hero-k-3d canvas {
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.45));
+}
+.hero-k-3dhint {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+.hero-k-3dhint svg { color: var(--color-accent); }

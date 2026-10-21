@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import { ArrowDown, Download, FolderOpen, Palette } from 'lucide-react';
 import gsap from 'gsap';
 import { roles, heroData, SOCIALS } from '../../data';
 import { useTheme } from '../context/ThemeContext';
+import Boundary from '../three/Boundary';
+import { hasWebGL } from '../three/ashok3d';
+
+const HeroName3D = lazy(() => import('./HeroName3D'));
 
 const HERO_SOCIAL_IDS = ['github', 'linkedin', 'email'];
 
@@ -219,17 +223,16 @@ const Home = () => {
   useEffect(() => {
     const reduced = prefersReduced();
 
+    const root0 = containerRef.current;
     const ctx = gsap.context(() => {
       gsap.set('.hero-k-stage', { opacity: 1 });
 
       if (reduced) return;
 
       const tl = gsap.timeline({ delay: 0.12, defaults: { ease: 'power3.out' } });
-      tl.fromTo('.hero-k-sweep',
-          { xPercent: -120, opacity: 0.9 },
-          { xPercent: 130, opacity: 0, duration: 1.15, ease: 'power2.inOut' }, 0)
-        .from('.hero-k-halo', { scale: 0.4, opacity: 0, duration: 1, ease: 'power2.out' }, 0.1)
-        .from('.hero-k-name > *', {
+      const legacy = !!root0?.querySelector('.hero-k-oframe');
+      tl.from('.hero-k-halo', { scale: 0.4, opacity: 0, duration: 1, ease: 'power2.out' }, 0.1);
+      if (legacy) tl.from('.hero-k-name > *', {
           y: () => gsap.utils.random(50, 130),
           x: () => gsap.utils.random(-55, 55),
           rotation: () => gsap.utils.random(-22, 22),
@@ -237,15 +240,15 @@ const Home = () => {
           stagger: 0.07,
           duration: 0.9,
           ease: 'back.out(1.5)',
-        }, 0.18)
-        .from('.hero-k-oframe img', { clipPath: 'circle(0% at 50% 50%)', duration: 0.7, ease: 'power2.out' }, 0.45)
+        }, 0.18).from('.hero-k-oframe img', { clipPath: 'circle(0% at 50% 50%)', duration: 0.7, ease: 'power2.out' }, 0.45);
+      tl.from('.hero-k-3d', { opacity: 0, scale: 0.94, duration: 0.9, ease: 'power2.out' }, 0.1)
         .from('.hero-k-role', { y: 20, opacity: 0, duration: 0.55 }, '-=0.25')
         .from('.hero-k-meta', { y: 14, opacity: 0, duration: 0.5 }, '-=0.35')
         .from('.hero-k-bio', { y: 20, opacity: 0, duration: 0.55 }, '-=0.35')
         .from('.hero-k-actions > *', { y: 18, opacity: 0, stagger: 0.07, duration: 0.5 }, '-=0.35')
         .from('.hero-scroll-hint', { opacity: 0, y: 10, duration: 0.5 }, '-=0.2');
 
-      gsap.to('.hero-k-letter-i', {
+      if (legacy) gsap.to('.hero-k-letter-i', {
         yPercent: -7,
         duration: 2.8,
         ease: 'sine.inOut',
@@ -253,23 +256,25 @@ const Home = () => {
       });
 
       /* pointer parallax on name / photo / halo + cursor spotlight */
-      const nameX = gsap.quickTo('.hero-k-name', 'x', { duration: 0.8, ease: 'power3' });
-      const nameY = gsap.quickTo('.hero-k-name', 'y', { duration: 0.8, ease: 'power3' });
-      const oX = gsap.quickTo('.hero-k-oframe', 'x', { duration: 1, ease: 'power3' });
-      const oY = gsap.quickTo('.hero-k-oframe', 'y', { duration: 1, ease: 'power3' });
-      const oRy = gsap.quickTo('.hero-k-oframe', 'rotationY', { duration: 0.7, ease: 'power3' });
-      const oRx = gsap.quickTo('.hero-k-oframe', 'rotationX', { duration: 0.7, ease: 'power3' });
+      const nameX = legacy ? gsap.quickTo('.hero-k-name', 'x', { duration: 0.8, ease: 'power3' }) : null;
+      const nameY = legacy ? gsap.quickTo('.hero-k-name', 'y', { duration: 0.8, ease: 'power3' }) : null;
+      const oX = legacy ? gsap.quickTo('.hero-k-oframe', 'x', { duration: 1, ease: 'power3' }) : null;
+      const oY = legacy ? gsap.quickTo('.hero-k-oframe', 'y', { duration: 1, ease: 'power3' }) : null;
+      const oRy = legacy ? gsap.quickTo('.hero-k-oframe', 'rotationY', { duration: 0.7, ease: 'power3' }) : null;
+      const oRx = legacy ? gsap.quickTo('.hero-k-oframe', 'rotationX', { duration: 0.7, ease: 'power3' }) : null;
 
       const root = containerRef.current;
       const onMove = (e) => {
         const nx = e.clientX / window.innerWidth - 0.5;
         const ny = e.clientY / window.innerHeight - 0.5;
-        nameX(nx * 14);
-        nameY(ny * 9);
-        oX(nx * -22);
-        oY(ny * -13);
-        oRy(nx * 12);
-        oRx(ny * -12);
+        if (legacy) {
+          nameX(nx * 14);
+          nameY(ny * 9);
+          oX(nx * -22);
+          oY(ny * -13);
+          oRy(nx * 12);
+          oRx(ny * -12);
+        }
         if (root) {
           const rect = root.getBoundingClientRect();
           root.style.setProperty('--mx', `${e.clientX - rect.left}px`);
@@ -314,40 +319,42 @@ const Home = () => {
     const next = THEME_CYCLE[(i + 1) % THEME_CYCLE.length];
     setTheme(next);
     if (prefersReduced()) return;
-    gsap.fromTo('.hero-k-oframe',
-      { scale: 0.9 },
-      { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.45)' });
-    gsap.fromTo('.hero-k-sweep',
-      { xPercent: -120, opacity: 0.8 },
-      { xPercent: 130, opacity: 0, duration: 0.85, ease: 'power2.inOut' });
+    if (document.querySelector('.hero-k-oframe')) {
+      gsap.fromTo('.hero-k-oframe',
+        { scale: 0.9 },
+        { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.45)' });
+    }
+  };
+
+  const downloadResume = async (e) => {
+    e.preventDefault();
+    const name = 'Ashok-Bongu-Resume.pdf';
+    try {
+      const res = await fetch(heroData.cvUrl);
+      if (!res.ok) throw new Error('fetch failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      const a = document.createElement('a');
+      a.href = heroData.cvUrl;
+      a.download = name;
+      a.click();
+    }
   };
 
   const heroSocials = SOCIALS.filter((s) => HERO_SOCIAL_IDS.includes(s.id));
+  const [webgl] = useState(() => hasWebGL());
 
-  return (
-    <section id="home" ref={containerRef} className="portfolio-home hero-kinetic">
-
-      <canvas ref={canvasRef} className="hero-constellation" aria-hidden="true" />
-
-      {/* ── Background ── */}
-      <div className="home-bg">
-        <div className="home-glow home-glow-1" />
-        <div className="home-glow home-glow-2" />
-        <div className="hero-k-vignette" />
-      </div>
-      <div className="hero-k-grain" aria-hidden="true" />
-      <div className="hero-k-spot" aria-hidden="true" />
-      <div className="hero-k-sweep" aria-hidden="true" />
-
-      <div className="hero-k-stage">
-        <div className="hero-k-inner">
-
-          {/* Giant name — photo is the "O" and switches the theme */}
-          <div className="hero-k-namewrap">
-            <span className="hero-k-halo" aria-hidden="true" />
-            <span className="hero-k-halo hero-k-halo-2" aria-hidden="true" />
-
-            <h1 className="hero-k-name" aria-label={heroData.name}>
+  /* HTML name — only used when WebGL is unavailable or the 3D scene fails */
+  const legacyName = (
+    <>
               {NAME_LETTERS.map((ch, i) =>
                 ch === 'O' ? (
                   <button
@@ -371,7 +378,42 @@ const Home = () => {
                   </span>
                 )
               )}
+    </>
+  );
+
+  return (
+    <section id="home" ref={containerRef} className="portfolio-home hero-kinetic">
+
+      <canvas ref={canvasRef} className="hero-constellation" aria-hidden="true" />
+
+      {/* ── Background ── */}
+      <div className="home-bg">
+        <div className="home-glow home-glow-1" />
+        <div className="home-glow home-glow-2" />
+        <div className="hero-k-vignette" />
+      </div>
+      <div className="hero-k-grain" aria-hidden="true" />
+      <div className="hero-k-spot" aria-hidden="true" />
+
+      <div className="hero-k-stage">
+        <div className="hero-k-inner">
+
+          {/* Giant name — photo is the "O" and switches the theme */}
+          <div className="hero-k-namewrap">
+            <span className="hero-k-halo" aria-hidden="true" />
+            <span className="hero-k-halo hero-k-halo-2" aria-hidden="true" />
+
+            <h1 className="hero-k-name hero-k-name-3d" aria-label={heroData.name}>
+              <span className="hero-k-sr">{heroData.name}</span>
+              {webgl ? (
+                <Boundary fallback={legacyName}>
+                  <Suspense fallback={<div className="hero-k-3d" aria-hidden="true" />}>
+                    <HeroName3D theme={theme} onCycle={cycleTheme} />
+                  </Suspense>
+                </Boundary>
+              ) : legacyName}
             </h1>
+            <p className="hero-k-3dhint" aria-hidden="true"><Palette size={12} />click the photo to switch theme</p>
           </div>
 
           {/* Role */}
@@ -398,9 +440,14 @@ const Home = () => {
 
           {/* Actions */}
           <div className="hero-k-actions">
-            <a href={heroData.cvUrl} download className="btn-cta-primary">
+            <a
+              href={heroData.cvUrl}
+              download="Ashok-Bongu-Resume.pdf"
+              onClick={downloadResume}
+              className="btn-cta-primary"
+            >
               <Download size={15} />
-              Resume
+              My Resume
             </a>
             <button
               className="btn-cta-outline"

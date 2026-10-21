@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SiLeetcode } from "react-icons/si";
 import { LEETCODE_DATA, leetcodeProfile } from '../../data'
+import Donut3D from './Donut3D';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -29,7 +30,7 @@ const s = {
     position: "absolute",
     inset: 0,
     backgroundImage:
-      "linear-gradient(rgba(26,188,156,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(26,188,156,0.04) 1px,transparent 1px)",
+      "linear-gradient(color-mix(in srgb, var(--color-accent) 4%, transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb, var(--color-accent) 4%, transparent) 1px,transparent 1px)",
     backgroundSize: "48px 48px",
   },
   bgBlob1: {
@@ -40,7 +41,7 @@ const s = {
     left: -80,
     borderRadius: "50%",
     background:
-      "radial-gradient(circle,rgba(26,188,156,0.09) 0%,transparent 70%)",
+      "radial-gradient(circle,color-mix(in srgb, var(--color-accent) 9%, transparent) 0%,transparent 70%)",
     filter: "blur(100px)",
   },
   bgBlob2: {
@@ -51,14 +52,14 @@ const s = {
     right: -60,
     borderRadius: "50%",
     background:
-      "radial-gradient(circle,rgba(26,188,156,0.06) 0%,transparent 70%)",
+      "radial-gradient(circle,color-mix(in srgb, var(--color-accent) 6%, transparent) 0%,transparent 70%)",
     filter: "blur(100px)",
   },
   bgScanLine: {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(to bottom,transparent 0%,rgba(26,188,156,0.025) 50%,transparent 100%)",
+      "linear-gradient(to bottom,transparent 0%,color-mix(in srgb, var(--color-accent) 2.5%, transparent) 50%,transparent 100%)",
     backgroundSize: "100% 160px",
     animation: "lc-scan 10s linear infinite",
   },
@@ -95,7 +96,7 @@ const s = {
     height: 6,
     borderRadius: "50%",
     background: "var(--color-accent)",
-    boxShadow: "0 0 8px rgba(26,188,156,0.6)",
+    boxShadow: "0 0 8px color-mix(in srgb, var(--color-accent) 60%, transparent)",
     flexShrink: 0,
     animation: "pulse-dot 2s ease-in-out infinite",
   },
@@ -105,7 +106,7 @@ const s = {
     fontWeight: 900,
     letterSpacing: "-0.01em",
     lineHeight: 1.1,
-    background: "linear-gradient(135deg,#f5f5f7 25%,#1abc9c)",
+    background: "linear-gradient(135deg,var(--color-text-primary) 25%,var(--color-accent))",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
@@ -130,15 +131,15 @@ const s = {
     height: 1,
     width: 72,
     background: flip
-      ? "linear-gradient(to left,transparent,rgba(26,188,156,0.5))"
-      : "linear-gradient(to right,transparent,rgba(26,188,156,0.5))",
+      ? "linear-gradient(to left,transparent,color-mix(in srgb, var(--color-accent) 50%, transparent))"
+      : "linear-gradient(to right,transparent,color-mix(in srgb, var(--color-accent) 50%, transparent))",
   }),
   rulerGem: {
     width: 8,
     height: 8,
     background: "var(--color-accent)",
     transform: "rotate(45deg)",
-    boxShadow: "0 0 10px rgba(26,188,156,0.7)",
+    boxShadow: "0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent)",
   },
 
   /* ── wrapper row ── */
@@ -159,13 +160,13 @@ const s = {
     position: "relative",
     width: 400,
     background: "rgba(37,37,56,0.55)",
-    border: "1px solid rgba(26,188,156,0.18)",
+    border: "1px solid color-mix(in srgb, var(--color-accent) 18%, transparent)",
     borderRadius: 22,
     padding: "32px 28px",
     backdropFilter: "blur(18px)",
     WebkitBackdropFilter: "blur(18px)",
     boxShadow:
-      "0 0 0 1px rgba(26,188,156,0.05), 0 8px 40px rgba(0,0,0,0.5), 0 0 30px rgba(26,188,156,0.06)",
+      "0 0 0 1px color-mix(in srgb, var(--color-accent) 5%, transparent), 0 8px 40px rgba(0,0,0,0.5), 0 0 30px color-mix(in srgb, var(--color-accent) 6%, transparent)",
     overflow: "hidden",
   },
   cardTopBar: {
@@ -175,7 +176,7 @@ const s = {
     right: 0,
     height: 2,
     background:
-      "linear-gradient(90deg,transparent,#1abc9c,#4dd9bc,transparent)",
+      "linear-gradient(90deg,transparent,var(--color-accent),#4dd9bc,transparent)",
   },
   cardBotLine: {
     position: "absolute",
@@ -184,7 +185,7 @@ const s = {
     right: 0,
     height: 1,
     background:
-      "linear-gradient(90deg,transparent,rgba(26,188,156,0.25),transparent)",
+      "linear-gradient(90deg,transparent,color-mix(in srgb, var(--color-accent) 25%, transparent),transparent)",
   },
 
   /* card header row */
@@ -284,7 +285,7 @@ const s = {
   statBox: {
     padding: "11px 8px",
     background: "rgba(255,255,255,0.025)",
-    border: "1px solid rgba(26,188,156,0.1)",
+    border: "1px solid color-mix(in srgb, var(--color-accent) 10%, transparent)",
     borderRadius: 10,
     textAlign: "center",
   },
@@ -359,8 +360,8 @@ const s = {
   insight: {
     marginTop: 16,
     padding: "10px 14px",
-    background: "rgba(26,188,156,0.06)",
-    border: "1px solid rgba(26,188,156,0.18)",
+    background: "color-mix(in srgb, var(--color-accent) 6%, transparent)",
+    border: "1px solid color-mix(in srgb, var(--color-accent) 18%, transparent)",
     borderRadius: 10,
     fontFamily: "var(--font-mono)",
     fontSize: "0.7rem",
@@ -375,7 +376,7 @@ const s = {
     height: 6,
     borderRadius: "50%",
     background: "var(--color-accent)",
-    boxShadow: "0 0 6px rgba(26,188,156,0.7)",
+    boxShadow: "0 0 6px color-mix(in srgb, var(--color-accent) 70%, transparent)",
     flexShrink: 0,
     animation: "pulse-dot 1.8s ease-in-out infinite",
   },
@@ -390,7 +391,7 @@ const s = {
     gap: 7,
     padding: "11px 0",
     background: "transparent",
-    border: "1.5px solid rgba(26,188,156,0.35)",
+    border: "1.5px solid color-mix(in srgb, var(--color-accent) 35%, transparent)",
     borderRadius: 10,
     fontFamily: "var(--font-display)",
     fontSize: "0.72rem",
@@ -429,7 +430,7 @@ const Corner = ({ pos, flip }) => (
       fill="none"
       style={{ transform: flip ? "scale(-1,1)" : "none" }}
     >
-      <path d="M0 18 L0 0 L18 0" stroke="rgba(26,188,156,0.5)" strokeWidth="2" fill="none" />
+      <path d="M0 18 L0 0 L18 0" stroke="color-mix(in srgb, var(--color-accent) 50%, transparent)" strokeWidth="2" fill="none" />
     </svg>
   </div>
 );
@@ -443,7 +444,7 @@ const DonutRing = ({ value, total }) => {
   return (
     <svg width="110" height="110" viewBox="0 0 110 110" style={{ transform: "rotate(-90deg)" }}>
       {/* track */}
-      <circle cx="55" cy="55" r={R} fill="none" stroke="rgba(26,188,156,0.08)" strokeWidth="7" />
+      <circle cx="55" cy="55" r={R} fill="none" stroke="color-mix(in srgb, var(--color-accent) 8%, transparent)" strokeWidth="7" />
       {/* easy */}
       <circle
         id="ring-easy"
@@ -534,7 +535,7 @@ const LeetCodeSection = () => {
 
   /* ── visit button hover ── */
   const handleBtnEnter = () => gsap.to(btnRef.current, {
-    background: "rgba(26,188,156,0.1)", scale: 1.02, duration: 0.2
+    background: "color-mix(in srgb, var(--color-accent) 10%, transparent)", scale: 1.02, duration: 0.2
   });
   const handleBtnLeave = () => gsap.to(btnRef.current, {
     background: "transparent", scale: 1, duration: 0.25
@@ -636,7 +637,7 @@ const LeetCodeSection = () => {
           100% { background-position: 0 100vh; }
         }
         @keyframes pulse-dot {
-          0%,100% { opacity:1; box-shadow:0 0 6px rgba(26,188,156,.6); }
+          0%,100% { opacity:1; box-shadow:0 0 6px color-mix(in srgb, var(--color-accent) 60%, transparent); }
           50%      { opacity:.3; box-shadow:none; }
         }
         @keyframes spark-ping {
@@ -645,8 +646,8 @@ const LeetCodeSection = () => {
           100% { transform:scale(1); opacity:.7; }
         }
         .lc-stat-box:hover {
-          border-color: rgba(26,188,156,0.3) !important;
-          background: rgba(26,188,156,0.06) !important;
+          border-color: color-mix(in srgb, var(--color-accent) 30%, transparent) !important;
+          background: color-mix(in srgb, var(--color-accent) 6%, transparent) !important;
         }
       `}</style>
 
@@ -727,7 +728,7 @@ const LeetCodeSection = () => {
             {/* ── donut ring + total ── */}
             <div style={s.ringWrap}>
               <div style={s.ringOuter}>
-                <DonutRing value={LEETCODE_DATA.total} total={LEETCODE_DATA.total} />
+                <Donut3D easy={LEETCODE_DATA.easy} medium={LEETCODE_DATA.medium} hard={LEETCODE_DATA.hard} />
                 <div style={s.ringCenter}>
                   <span ref={totalNumRef} style={s.ringVal}>0</span>
                   <span style={s.ringLabel}>Solved</span>

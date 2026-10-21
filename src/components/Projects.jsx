@@ -2,17 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ExternalLink, Github, Code2, Laptop, Wrench, Star, X, ArrowRight, Zap, Globe, Shield, Lock, ChevronUp, Terminal, Database, Layers } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Draggable } from 'gsap/all';
 import { PROJECTS } from '../../data';
-import { useTheme } from '../context/ThemeContext';
+import ProjectGate3D from './ProjectGate3D';
+import { hasWebGL } from '../three/ashok3d';
 
-const hexAlpha = (hex, a) => {
-  if (!hex || hex.length < 7) return `rgba(26,188,156,${a})`;
-  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${a})`;
-};
 
-gsap.registerPlugin(ScrollTrigger, Draggable);
+gsap.registerPlugin(ScrollTrigger);
 
 
 
@@ -96,6 +91,7 @@ const ProjectDrawer = ({ project, onClose }) => {
                 <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: 3 }}>{s.label}</div>
               </div>
             ))}
+            {project.rating && (
             <div style={{ flex: '1 1 80px', padding: '12px 16px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.18)', borderRadius: 14, textAlign: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                 <Star size={12} fill="#f59e0b" color="#f59e0b" />
@@ -103,6 +99,7 @@ const ProjectDrawer = ({ project, onClose }) => {
               </div>
               <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: 3 }}>Rating</div>
             </div>
+            )}
           </div>
 
           <div className="drawer-animate" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
@@ -210,10 +207,12 @@ const ProjectCard = ({ project, onOpen }) => {
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
           <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: accent, background: `${accent}12`, border: `1px solid ${accent}30`, borderRadius: 999, padding: '3px 11px' }}>{project.tag}</span>
+          {project.rating && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.22)', borderRadius: 999, padding: '3px 9px' }}>
             <Star size={9} fill="currentColor" />
             <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '0.6rem', fontWeight: 700 }}>{project.rating}</span>
           </div>
+          )}
         </div>
         <div style={{ width: 56, height: 56, borderRadius: 18, background: `${accent}10`, border: `1px solid ${accent}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent, marginBottom: 16, boxShadow: `0 4px 20px ${accent}20`, transition: 'transform 0.4s ease, box-shadow 0.4s ease' }} className="card-icon-enhanced">
           <Icon size={24} />
@@ -245,414 +244,114 @@ const ProjectCard = ({ project, onOpen }) => {
   );
 };
 
-/* ─── SVGs ──────────────────────────────────────────────── */
-const ArmorChestSVG = ({ unlocked, lidOpen, accent = '#1abc9c' }) => {
-  const a0  = hexAlpha(accent, 0);
-  const a04 = hexAlpha(accent, 0.04);
-  const a06 = hexAlpha(accent, 0.06);
-  const a08 = hexAlpha(accent, 0.08);
-  const a10 = hexAlpha(accent, 0.10);
-  const a12 = hexAlpha(accent, 0.12);
-  const a15 = hexAlpha(accent, 0.15);
-  const a18 = hexAlpha(accent, 0.18);
-  const a20 = hexAlpha(accent, 0.20);
-  const a22 = hexAlpha(accent, 0.22);
-  const a25 = hexAlpha(accent, 0.25);
-  const a28 = hexAlpha(accent, 0.28);
-  const a30 = hexAlpha(accent, 0.30);
-  const a35 = hexAlpha(accent, 0.35);
-  const a38 = hexAlpha(accent, 0.38);
-  const a40 = hexAlpha(accent, 0.40);
-  const a45 = hexAlpha(accent, 0.45);
-  const a50 = hexAlpha(accent, 0.50);
-  const a55 = hexAlpha(accent, 0.55);
-  const a60 = hexAlpha(accent, 0.60);
-  const a65 = hexAlpha(accent, 0.65);
-  const a80 = hexAlpha(accent, 0.80);
-  return (
-  <svg viewBox="0 0 360 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', maxWidth: '380px', height: 'auto', filter: `drop-shadow(0 12px 32px ${a15})` }}>
-    <defs>
-      <linearGradient id="g-body-main" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2a2a45"/><stop offset="40%" stopColor="#1e1e38"/><stop offset="100%" stopColor="#0e0e1e"/></linearGradient>
-      <linearGradient id="g-lid-main" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#32324e"/><stop offset="100%" stopColor="#1a1a30"/></linearGradient>
-      <linearGradient id="g-metal-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={a0}/><stop offset="25%" stopColor={a55}/><stop offset="50%" stopColor={a80}/><stop offset="75%" stopColor={a55}/><stop offset="100%" stopColor={a0}/></linearGradient>
-      <linearGradient id="g-metal-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={a0}/><stop offset="50%" stopColor={a45}/><stop offset="100%" stopColor={a0}/></linearGradient>
-      <linearGradient id="g-plate-shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.06)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
-      <radialGradient id="g-inner-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor={a25}/><stop offset="100%" stopColor={a0}/></radialGradient>
-      <filter id="f-body-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.6)"/></filter>
-      <filter id="f-glow-strong" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-      <filter id="f-glow-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-      <clipPath id="clip-body"><rect x="20" y="138" width="320" height="152" rx="10"/></clipPath>
-      <pattern id="rivets" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="2" fill={a20}/><circle cx="15" cy="15" r="1" fill={a40}/></pattern>
-    </defs>
-    <g filter="url(#f-body-shadow)">
-      <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#g-body-main)" stroke={a22} strokeWidth="1.5"/>
-      <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#rivets)" opacity="0.7" clipPath="url(#clip-body)"/>
-      <rect x="20" y="138" width="320" height="152" rx="10" fill="url(#g-plate-shine)"/>
-      <rect x="20" y="165" width="320" height="9" fill="url(#g-metal-h)" opacity="0.75"/>
-      <rect x="20" y="165" width="320" height="2" fill={a30}/>
-      <rect x="20" y="172" width="320" height="2" fill="rgba(0,0,0,0.3)"/>
-      <rect x="20" y="218" width="320" height="9" fill="url(#g-metal-h)" opacity="0.65"/>
-      <rect x="20" y="218" width="320" height="2" fill={a25}/>
-      <rect x="20" y="225" width="320" height="2" fill="rgba(0,0,0,0.3)"/>
-      <line x1="115" y1="138" x2="115" y2="290" stroke="url(#g-metal-v)" strokeWidth="1.5" opacity="0.5"/>
-      <line x1="245" y1="138" x2="245" y2="290" stroke="url(#g-metal-v)" strokeWidth="1.5" opacity="0.5"/>
-      {[[20,138],[300,138],[20,258],[300,258]].map(([cx,cy],i)=>(
-        <g key={i}><rect x={cx} y={cy} width="40" height="32" rx="6" fill={a06} stroke={a28} strokeWidth="1.2"/><rect x={cx+4} y={cy+4} width="32" height="24" rx="4" fill={a04} stroke={a15} strokeWidth="0.8"/></g>
-      ))}
-      {[148,175,202,230,257].map(y=>(
-        <g key={y}><rect x="20" y={y} width="8" height="8" rx="2" fill={a25} stroke={a40} strokeWidth="0.8"/><rect x="332" y={y} width="8" height="8" rx="2" fill={a25} stroke={a40} strokeWidth="0.8"/></g>
-      ))}
-      <line x1="20" y1="138" x2="115" y2="290" stroke={a04} strokeWidth="1.5"/>
-      <line x1="115" y1="138" x2="20" y2="290" stroke={a04} strokeWidth="1.5"/>
-      <line x1="245" y1="138" x2="340" y2="290" stroke={a04} strokeWidth="1.5"/>
-      <line x1="340" y1="138" x2="245" y2="290" stroke={a04} strokeWidth="1.5"/>
-      <rect x="115" y="180" width="130" height="80" rx="8" fill={a04} stroke={a15} strokeWidth="1"/>
-      <polygon points="180,188 196,194 196,206 180,212 164,206 164,194" fill="none" stroke={a35} strokeWidth="1.2"/>
-      <circle cx="180" cy="200" r="6" fill={a12} stroke={a45} strokeWidth="1"/>
-      <text x="180" y="228" textAnchor="middle" fontSize="6" fontFamily="Share Tech Mono" fill={a40} letterSpacing="0.35em">CLASSIFIED</text>
-      <text x="180" y="238" textAnchor="middle" fontSize="4.5" fontFamily="Share Tech Mono" fill={a25} letterSpacing="0.25em">TOP-SECRET</text>
-      <rect x="20" y="282" width="320" height="8" rx="0" fill={a08} stroke={a18} strokeWidth="0.8"/>
-    </g>
-    <g style={{ transform: unlocked ? 'scale(0) translate(-180px,-188px)' : 'scale(1)', transformOrigin: '180px 188px', transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)' }}>
-      <rect x="148" y="156" width="64" height="64" rx="9" fill="rgba(10,10,20,0.8)" stroke={a50} strokeWidth="1.8"/>
-      <rect x="152" y="160" width="56" height="56" rx="7" fill={a04} stroke={a18} strokeWidth="0.8"/>
-      <path d="M172,176 L172,169 Q172,160 180,160 Q188,160 188,169 L188,176" fill="none" stroke={a65} strokeWidth="2.5" strokeLinecap="round"/>
-      <rect x="156" y="176" width="48" height="34" rx="6" fill={a10} stroke={a55} strokeWidth="1.5"/>
-      <circle cx="180" cy="189" r="5.5" fill="rgba(0,0,0,0.6)" stroke={a60} strokeWidth="1.2"/>
-      <rect x="178" y="189" width="4" height="8" rx="1.5" fill={a30}/>
-      <text x="180" y="218" textAnchor="middle" fontSize="5" fontFamily="Share Tech Mono" fill={a45} letterSpacing="0.18em">LOCKED</text>
-    </g>
-    <rect className="chest-slot-rect" x="144" y="152" width="72" height="72" rx="11" fill="none" stroke={accent} strokeWidth="2.5" strokeDasharray="5 3" opacity="0" filter="url(#f-glow-strong)"/>
-    <g style={{ transformOrigin: '180px 138px', transform: lidOpen ? 'perspective(700px) rotateX(-118deg)' : 'perspective(700px) rotateX(0deg)', transition: 'transform 0.75s cubic-bezier(0.34,1.1,0.64,1)' }}>
-      <rect x="20" y="92" width="320" height="50" rx="10" fill="url(#g-lid-main)" stroke={a35} strokeWidth="1.5" filter="url(#f-body-shadow)"/>
-      <rect x="20" y="92" width="320" height="50" rx="10" fill="url(#g-plate-shine)"/>
-      <rect x="20" y="108" width="320" height="8" fill="url(#g-metal-h)" opacity="0.55"/>
-      <rect x="20" y="108" width="320" height="2" fill={a20}/>
-      {[[20,92],[300,92]].map(([cx,cy],i)=>(<g key={i}><rect x={cx} y={cy} width="40" height="50" rx={i===0?'10 0 0 0':'0 10 0 0'} fill={a06} stroke={a25} strokeWidth="1"/></g>))}
-      {[50,85,120,155,180,205,240,275,310].map(x=>(<g key={x}><circle cx={x} cy={104} r="3" fill={a30} stroke={a50} strokeWidth="0.6"/><circle cx={x} cy={104} r="1.2" fill={a60}/></g>))}
-      <text x="180" y="131" textAnchor="middle" fontSize="7" fontFamily="Share Tech Mono" fill={a35} letterSpacing="0.5em">SECURE VAULT</text>
-      <line x1="60" y1="92" x2="180" y2="142" stroke={a06} strokeWidth="1.5"/>
-      <line x1="300" y1="92" x2="180" y2="142" stroke={a06} strokeWidth="1.5"/>
-      {[150,178,206].map(y=>(<g key={y}><rect x="20" y={y-16} width="7" height="7" rx="2" fill={a22} stroke={a38} strokeWidth="0.7"/><rect x="333" y={y-16} width="7" height="7" rx="2" fill={a22} stroke={a38} strokeWidth="0.7"/></g>))}
-    </g>
-    <rect x="138" y="134" width="84" height="11" rx="5.5" fill={a22} stroke={a50} strokeWidth="1.2"/>
-    {[154,172,180,188,206].map(x=>(<circle key={x} cx={x} cy={139.5} r="3.2" fill={a55} stroke={a80} strokeWidth="0.8"/>))}
-    {lidOpen&&(<><ellipse cx="180" cy="148" rx="120" ry="26" fill="url(#g-inner-glow)" filter="url(#f-glow-soft)"/><ellipse cx="180" cy="148" rx="70" ry="16" fill={a15} filter="url(#f-glow-strong)"/><rect x="20" y="138" width="320" height="30" fill="url(#g-inner-glow)" opacity="0.6"/></>)}
-    <rect x="20" y="138" width="320" height="3" fill={a20} style={{ animation: 'chestScan 2.6s ease-in-out infinite' }}/>
-    <ellipse cx="180" cy="298" rx="145" ry="8" fill="rgba(0,0,0,0.4)" opacity="0.6"/>
-  </svg>
-  );
-};
-
-const MilitaryKeySVG = ({ accent = '#1abc9c' }) => {
-  const a15 = hexAlpha(accent, 0.15);
-  const a25 = hexAlpha(accent, 0.25);
-  const a35 = hexAlpha(accent, 0.35);
-  const a55 = hexAlpha(accent, 0.55);
-  const a60 = hexAlpha(accent, 0.60);
-  const a80 = hexAlpha(accent, 0.80);
-  return (
-  <svg viewBox="0 0 160 65" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '180px', height: 'auto', filter: `drop-shadow(0 6px 20px ${a55})` }}>
-    <defs>
-      <linearGradient id="g-key-body" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={hexAlpha(accent, 0.9)}/><stop offset="50%" stopColor={accent}/><stop offset="100%" stopColor={hexAlpha(accent, 0.55)}/></linearGradient>
-      <linearGradient id="g-key-shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.35)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
-      <filter id="f-key-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-    </defs>
-    <circle cx="28" cy="32" r="21" fill="none" stroke="url(#g-key-body)" strokeWidth="4.5" filter="url(#f-key-glow)"/>
-    <circle cx="28" cy="32" r="14" fill="none" stroke={a35} strokeWidth="1.5"/>
-    <circle cx="28" cy="32" r="7" fill={a15} stroke={a55} strokeWidth="1.5"/>
-    <circle cx="28" cy="32" r="3.5" fill={accent} filter="url(#f-key-glow)"/>
-    <line x1="28" y1="18" x2="28" y2="46" stroke={a25} strokeWidth="1"/>
-    <line x1="14" y1="32" x2="42" y2="32" stroke={a25} strokeWidth="1"/>
-    <rect x="47" y="28.5" width="90" height="8" rx="4" fill="url(#g-key-body)"/>
-    <rect x="47" y="28.5" width="90" height="3.5" rx="1.8" fill="url(#g-key-shine)"/>
-    <rect x="58" y="31" width="3" height="6" rx="1.2" fill="rgba(0,0,0,0.3)"/>
-    <rect x="70" y="31" width="3" height="6" rx="1.2" fill="rgba(0,0,0,0.3)"/>
-    <rect x="80" y="31" width="2" height="6" rx="1" fill="rgba(0,0,0,0.3)"/>
-    <rect x="100" y="36" width="9" height="15" rx="2.5" fill="url(#g-key-body)"/>
-    <rect x="100" y="36" width="9" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
-    <rect x="113" y="36" width="7" height="10" rx="2" fill={accent}/>
-    <rect x="124" y="36" width="9" height="17" rx="2.5" fill="url(#g-key-body)"/>
-    <rect x="124" y="36" width="9" height="4" rx="1" fill="rgba(255,255,255,0.2)"/>
-    <rect x="65" y="19" width="6" height="9" rx="2" fill={a60} stroke={a80} strokeWidth="0.8"/>
-    <text x="28" y="60" textAnchor="middle" fontSize="5.5" fontFamily="Share Tech Mono" fill={a55} letterSpacing="0.25em">VLT-K01</text>
-  </svg>
-  );
-};
-
 /* ─── MAIN COMPONENT ────────────────────────────────────── */
-const THEME_ACCENT = {
-  cyberpunk: '#1abc9c',
-  synthwave: '#f72585',
-  lava:      '#ef4444',
-  forest:    '#22c55e',
-  ocean:     '#0ea5e9',
-  sunset:    '#f97316',
-  galaxy:    '#7c3aed',
-};
+const gateHeight = () => Math.round(Math.min(940, Math.max(600, window.innerHeight * 0.94)));
 
 const Projects = () => {
-  const { theme } = useTheme();
-  const accent = THEME_ACCENT[theme] ?? '#1abc9c';
-
-  // phase: 'chest' | 'transitioning' | 'cards'
-  const [phase, setPhase] = useState('chest');
-  const [unlocked, setUnlocked] = useState(false);
-  const [lidOpen, setLidOpen] = useState(false);
+  const [webgl] = useState(() => hasWebGL());
+  // phase: 'gate' | 'transitioning' | 'cards'
+  const [phase, setPhase] = useState(() => (hasWebGL() ? 'gate' : 'cards'));
   const [activeProject, setActive] = useState(null);
-  const [nearSlot, setNearSlot] = useState(false);
 
-  const sectionRef    = useRef(null);
-  const headerRef     = useRef(null);
-  const chestAreaRef  = useRef(null);
-  const keyWrapRef    = useRef(null);
-  const keyInnerRef   = useRef(null);
-  const slotRectRef   = useRef(null);
-  const cardsAreaRef  = useRef(null);   // the outer wrapper — always mounted
-  const cardsGridRef  = useRef(null);   // inner grid of actual cards
-  const particlesRef  = useRef(null);
-  const hintRef       = useRef(null);
-  const hideRef       = useRef(null);
-  const draggableInst = useRef(null);
+  const stageRef     = useRef(null);
+  const layerRef     = useRef(null);   // the 3D door layer
+  const gateRef      = useRef(null);
+  const contentRef   = useRef(null);   // everything hidden behind the door: header + cards + button
+  const headerRef    = useRef(null);
+  const cardsGridRef = useRef(null);
+  const particlesRef = useRef(null);
+  const hideRef      = useRef(null);
 
-  /* ── hide cards wrapper initially so there's no flicker ── */
+  /* the closed stage is a full-height door; keep it that way across resizes */
   useEffect(() => {
-    if (cardsAreaRef.current) {
-      gsap.set(cardsAreaRef.current, { display: 'none', opacity: 0 });
-    }
-  }, []);
+    const stage = stageRef.current;
+    if (!webgl) { stage.classList.add('open'); stage.style.height = 'auto'; return undefined; }
+    stage.style.height = `${gateHeight()}px`;
+    const onResize = () => { if (!stage.classList.contains('open') && !stage.dataset.busy) stage.style.height = `${gateHeight()}px`; };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [webgl]);
 
-  /* ── scroll reveal ── */
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(headerRef.current,
-        { opacity: 0, y: -28 },
-        { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 82%', once: true } }
-      );
-      gsap.fromTo(chestAreaRef.current,
-        { opacity: 0, scale: 0.82, y: 48 },
-        { opacity: 1, scale: 1, y: 0, duration: 1.0, ease: 'expo.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 74%', once: true } }
-      );
-      gsap.fromTo(keyWrapRef.current,
-        { opacity: 0, x: -44, rotation: -8 },
-        { opacity: 1, x: 0, rotation: 0, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%', once: true } }
-      );
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
-
-  /* ── key ambient float ── */
-  useEffect(() => {
-    if (phase !== 'chest') return;
-    const tween = gsap.to(keyInnerRef.current, { y: -10, rotation: 5, duration: 2.0, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-    return () => tween.kill();
-  }, [phase]);
-
-  /* ── hint pulse ── */
-  useEffect(() => {
-    if (phase !== 'chest' || !hintRef.current) return;
-    const tween = gsap.to(hintRef.current, { opacity: 0.22, duration: 1.1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-    return () => tween.kill();
-  }, [phase]);
-
-  /* ── init draggable ── */
-  const initDraggable = useCallback(() => {
-    if (!keyWrapRef.current || !chestAreaRef.current) return;
-    const keyEl  = keyWrapRef.current;
-    const slotEl = slotRectRef.current;
-
-    draggableInst.current = Draggable.create(keyEl, {
-      type: 'x,y',
-      cursor: 'grab',
-      activeCursor: 'grabbing',
-      onDragStart() {
-        gsap.killTweensOf(keyInnerRef.current);
-        gsap.to(keyInnerRef.current, { y: 0, rotation: 0, scale: 1.1, duration: 0.18 });
-        gsap.to(slotEl, { opacity: 0.85, duration: 0.28 });
-      },
-      onDrag() {
-        const kBox = keyEl.getBoundingClientRect();
-        const cBox = chestAreaRef.current.getBoundingClientRect();
-        const d = Math.hypot(
-          kBox.left + kBox.width / 2 - (cBox.left + cBox.width * 0.5),
-          kBox.top  + kBox.height / 2 - (cBox.top  + cBox.height * 0.55)
-        );
-        const close = d < 100;
-        setNearSlot(close);
-        gsap.to(slotEl, { opacity: close ? 1 : 0.65, scale: close ? 1.18 : 1, duration: 0.16 });
-      },
-      onDragEnd() {
-        const kBox = keyEl.getBoundingClientRect();
-        const cBox = chestAreaRef.current.getBoundingClientRect();
-        const d = Math.hypot(
-          kBox.left + kBox.width / 2 - (cBox.left + cBox.width * 0.5),
-          kBox.top  + kBox.height / 2 - (cBox.top  + cBox.height * 0.55)
-        );
-        if (d < 100) {
-          doUnlock(keyEl);
-        } else {
-          gsap.to(keyEl, { x: 0, y: 0, scale: 1, duration: 0.7, ease: 'elastic.out(1,0.55)' });
-          gsap.to(keyInnerRef.current, { scale: 1, duration: 0.35 });
-          gsap.to(slotEl, { opacity: 0, duration: 0.35 });
-          setNearSlot(false);
-        }
-      },
-    })[0];
-  }, []);
-
-  useEffect(() => {
-    if (phase === 'chest') {
-      const t = setTimeout(initDraggable, 120);
-      return () => clearTimeout(t);
-    }
-    return () => draggableInst.current?.kill();
-  }, [phase, initDraggable]);
-
-  /* ── particle burst ── */
+  /* sparks from the lock */
   const spawnBurst = useCallback(() => {
     const cont = particlesRef.current;
-    if (!cont) return;
-    const cBox = chestAreaRef.current?.getBoundingClientRect();
+    const layer = layerRef.current;
+    if (!cont || !layer) return;
+    const cBox = layer.getBoundingClientRect();
     const pBox = cont.getBoundingClientRect();
-    const cx = (cBox?.left ?? 0) + (cBox?.width ?? 0) / 2 - pBox.left;
-    const cy = (cBox?.top  ?? 0) + (cBox?.height ?? 0) / 2 - pBox.top;
+    const cx = cBox.left + cBox.width / 2 - pBox.left;
+    const cy = cBox.top + cBox.height * 0.54 - pBox.top;
     const cs = getComputedStyle(document.documentElement);
-    const ca = cs.getPropertyValue('--color-accent').trim();
-    const cl = cs.getPropertyValue('--color-accent-light').trim();
-    const cd = cs.getPropertyValue('--color-accent-dark').trim();
-    const colors = [ca, cl, cd, 'rgba(255,255,255,0.85)', ca];
-    for (let i = 0; i < 44; i++) {
-      const p   = document.createElement('div');
-      const sz  = 3 + Math.random() * 9;
-      const ang = (Math.PI * 2 * i) / 44 + (Math.random() - 0.5) * 0.5;
-      const dist = 80 + Math.random() * 150;
+    const colors = [cs.getPropertyValue('--color-accent').trim(), cs.getPropertyValue('--color-accent-light').trim(), cs.getPropertyValue('--color-accent-dark').trim(), 'rgba(255,255,255,0.9)'];
+    for (let i = 0; i < 52; i++) {
+      const p = document.createElement('div');
+      const sz = 3 + Math.random() * 8;
+      const ang = (Math.PI * 2 * i) / 52 + (Math.random() - 0.5) * 0.5;
+      const dist = 90 + Math.random() * 220;
       const color = colors[i % colors.length];
-      p.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.55?'2px':'50%'};background:${color};box-shadow:0 0 8px ${color};pointer-events:none;left:${cx}px;top:${cy}px;`;
+      p.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:${Math.random() > 0.55 ? '2px' : '50%'};background:${color};box-shadow:0 0 8px ${color};pointer-events:none;left:${cx}px;top:${cy}px;`;
       cont.appendChild(p);
       gsap.fromTo(p,
         { x: 0, y: 0, opacity: 1, scale: 1, rotation: 0 },
-        { x: Math.cos(ang) * dist, y: Math.sin(ang) * dist - 55, opacity: 0, scale: 0, rotation: Math.random() * 360, duration: 0.85 + Math.random() * 0.5, ease: 'power2.out', delay: Math.random() * 0.12, onComplete: () => p.remove() }
-      );
+        { x: Math.cos(ang) * dist, y: Math.sin(ang) * dist + 30, opacity: 0, scale: 0, rotation: Math.random() * 360, duration: 0.8 + Math.random() * 0.6, ease: 'power2.out', onComplete: () => p.remove() });
     }
   }, []);
 
-  /* ── UNLOCK SEQUENCE ── */
-  const doUnlock = useCallback((keyEl) => {
-    setPhase('transitioning');
-    draggableInst.current?.disable();
+  /* the lock is gone and the doors start sliding → the whole section comes out of the dark behind them */
+  const revealContent = useCallback(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    content.style.visibility = 'visible';
+    gsap.fromTo(headerRef.current, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.2, ease: 'power3.out' });
+    const cards = cardsGridRef.current?.querySelectorAll('.proj-card-enhanced') ?? [];
+    gsap.fromTo(cards,
+      { opacity: 0, scale: 0.9, y: 36, filter: 'blur(10px)' },
+      { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', duration: 1.1, stagger: 0.08, delay: 0.4, ease: 'power3.out', clearProps: 'filter' });
+    gsap.fromTo(hideRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, delay: 1.5, ease: 'power2.out' });
+  }, []);
 
-    const cBox = chestAreaRef.current.getBoundingClientRect();
-    const kBox = keyEl.getBoundingClientRect();
-    const tl   = gsap.timeline();
+  /* doors fully apart → let the section grow to show every project */
+  const handleOpened = useCallback(() => {
+    const stage = stageRef.current;
+    stage.classList.add('open');
+    stage.style.height = 'auto';
+    if (layerRef.current) layerRef.current.style.display = 'none';
+    setPhase('cards');
+  }, []);
 
-    tl
-      /* snap key to lock */
-      .to(keyEl, {
-        x: `+=${cBox.left + cBox.width * 0.5  - (kBox.left + kBox.width  / 2)}`,
-        y: `+=${cBox.top  + cBox.height * 0.55 - (kBox.top  + kBox.height / 2)}`,
-        duration: 0.3, ease: 'power3.in',
-      })
-      /* key rotates / inserts */
-      .to(keyInnerRef.current, { rotation: 90, scale: 0.55, duration: 0.28, ease: 'power2.inOut' })
-      /* chest shakes — no flash, just physical impact */
-      .to(chestAreaRef.current, { x: -10, duration: 0.045, ease: 'none' })
-      .to(chestAreaRef.current, { x: 13,  duration: 0.045, ease: 'none' })
-      .to(chestAreaRef.current, { x: -9,  duration: 0.04,  ease: 'none' })
-      .to(chestAreaRef.current, { x: 11,  duration: 0.04,  ease: 'none' })
-      .to(chestAreaRef.current, { x: -6,  duration: 0.035, ease: 'none' })
-      .to(chestAreaRef.current, { x: 5,   duration: 0.035, ease: 'none' })
-      .to(chestAreaRef.current, { x: -2,  duration: 0.03,  ease: 'none' })
-      .to(chestAreaRef.current, { x: 0,   duration: 0.05,  ease: 'power2.out' })
-      /* key vanishes */
-      .to(keyEl,         { opacity: 0, scale: 0, duration: 0.25, ease: 'back.in(2)' })
-      .to(slotRectRef.current, { opacity: 0, duration: 0.18 }, '<')
-      /* mark unlocked → SVG lock pops off */
-      .call(() => setUnlocked(true))
-      /* short green glow on the chest */
-      .to(chestAreaRef.current, {
-        filter: 'drop-shadow(0 0 36px rgba(26,188,156,0.85)) drop-shadow(0 0 70px rgba(26,188,156,0.35))',
-        duration: 0.38,
-      })
-      /* lid opens */
-      .call(() => setLidOpen(true))
-      /* particles */
-      .call(spawnBurst, [], '+=0.18')
-      /* glow fades */
-      .to(chestAreaRef.current, { filter: 'drop-shadow(0 12px 32px rgba(26,188,156,0.15))', duration: 0.9, ease: 'power2.out' }, '+=0.05')
-      /* chest + key scene shrinks and fades out */
-      .to('.chest-scene-e', {
-        opacity: 0, scale: 0.88, y: 40,
-        duration: 0.65, ease: 'power2.in',
-      }, '+=0.55')
+  const handleUnlock = useCallback(() => {
+    if (phase === 'gate') gateRef.current?.unlock();
+  }, [phase]);
 
-      .call(() => {
-        const chestScene = sectionRef.current?.querySelector('.chest-scene-e');
-        if (chestScene) gsap.set(chestScene, { display: 'none' });
-      })    
-
-      /* ── cards come in right after chest vanishes ── */
-      .call(() => {
-        /* make wrapper visible but still transparent */
-        gsap.set(cardsAreaRef.current, { display: 'block', opacity: 0, height: 'auto' });
-      })
-      .to(cardsAreaRef.current, { opacity: 1, duration: 0.01 }) // instant reveal of container
-      /* stagger cards from above, no flicker: they start invisible via GSAP */
-      .call(() => {
-        const cards = cardsGridRef.current?.querySelectorAll('.proj-card-enhanced') ?? [];
-        gsap.fromTo(cards,
-          { opacity: 0, y: -70, rotation: () => -10 + Math.random() * 20, scale: 0.7 },
-          { opacity: 1, y: 0, rotation: 0, scale: 1, duration: 0.78, stagger: 0.18, ease: 'expo.out' }
-        );
-        gsap.fromTo(hideRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', delay: 0.72 }
-        );
-      })
-      .call(() => setPhase('cards'), [], '+=0.1');
-  }, [spawnBurst]);
-
-  /* ── HIDE / RESET ── */
+  /* seal the door again: collapse back to the door height while the doors slide shut */
   const handleHide = useCallback(() => {
     if (phase !== 'cards') return;
     setPhase('transitioning');
-
-    const cards = cardsGridRef.current?.querySelectorAll('.proj-card-enhanced') ?? [];
-    const tl = gsap.timeline({
-      onComplete: () => {
-        /* fully hide cards wrapper */
-        gsap.set(cardsAreaRef.current, { display: 'none', opacity: 0 });
-        /* reset chest + key */
-        setUnlocked(false);
-        setLidOpen(false);
-        gsap.set(keyWrapRef.current, { x: 0, y: 0, opacity: 0, rotation: 0 });
-        gsap.set(keyInnerRef.current, { rotation: 0, scale: 1 });
-        gsap.set(chestAreaRef.current, { filter: 'none', x: 0 });
-        setPhase('chest');
-        /* re-entrance animation for chest scene */
-        setTimeout(() => {
-          const chestScene = sectionRef.current?.querySelector('.chest-scene-e');
-          if (chestScene) gsap.set(chestScene, { display: 'flex', opacity: 1, scale: 1, y: 0 });
-          gsap.fromTo(chestAreaRef.current,
-            { opacity: 0, scale: 0.85, y: 40 },
-            { opacity: 1, scale: 1,    y: 0,  duration: 0.8, ease: 'expo.out' }
-          );
-          gsap.fromTo(keyWrapRef.current,
-            { opacity: 0, x: -36 },
-            { opacity: 1, x: 0,     duration: 0.7, ease: 'expo.out', delay: 0.15 }
-          );
-        }, 40);
-      },
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    const target = gateHeight();
+    const h0 = stage.offsetHeight;
+    stage.dataset.busy = '1';
+    window.scrollTo({ top: stage.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+    stage.classList.remove('open');
+    stage.style.height = `${h0}px`;
+    layer.style.display = 'block';
+    gsap.to(hideRef.current, { opacity: 0, duration: 0.2 });
+    const collapse = new Promise((res) => gsap.to(stage, { height: target, duration: 0.9, ease: 'power2.inOut', onComplete: res }));
+    Promise.all([collapse, gateRef.current?.close()]).then(() => {
+      const cards = cardsGridRef.current?.querySelectorAll('.proj-card-enhanced') ?? [];
+      gsap.set(cards, { opacity: 0 });
+      gsap.set(headerRef.current, { opacity: 0 });
+      contentRef.current.style.visibility = 'hidden';
+      stage.style.height = `${target}px`;
+      delete stage.dataset.busy;
+      setPhase('gate');
     });
-
-    tl.to(hideRef.current, { opacity: 0, y: 8, duration: 0.22 })
-      .to(cards, { y: -55, opacity: 0, rotation: () => -7 + Math.random() * 14, scale: 0.72, duration: 0.45, stagger: 0.08, ease: 'power2.in' }, '-=0.1')
-      .to(cardsAreaRef.current, { opacity: 0, duration: 0.18 });
   }, [phase]);
 
   return (
     <>
-      <section id="projects" ref={sectionRef} className="proj-section-enhanced">
-        {/* Background */}
+      <section id="projects" className="proj-section-enhanced">
         <div className="proj-bg-enhanced">
           <div className="bg-grid-e" />
           <div className="bg-blob-1" />
@@ -663,76 +362,62 @@ const Projects = () => {
           <span className="bg-glyph bg-g3">{'[ ]'}</span>
         </div>
 
-        {/* Header */}
-        <div ref={headerRef} className="proj-header-enhanced" style={{ opacity: 0 }}>
-          <p className="proj-eyebrow-e">
-            <span className="eyebrow-dot-e" />
-            <span>What I've Built</span>
-            <span className="eyebrow-dot-e" />
-          </p>
-          <h2 className="proj-title-e">My Projects</h2>
-          <p className="proj-sub-e">
-            {phase === 'cards' ? 'Click any card to explore the full details.' : 'Drag the key into the chest to unlock your projects.'}
-          </p>
-          <div className="proj-divider-e">
-            <div className="div-line-e" />
-            <div className="div-gem-e" />
-            <div className="div-line-e div-line-r-e" />
-          </div>
-        </div>
-
-        {/* Particles */}
         <div ref={particlesRef} className="particles-layer-e" />
 
-        {/* ─── CHEST SCENE (always in DOM, hidden by CSS when cards visible) ─── */}
-        <div className="chest-scene-e">
-          <div ref={chestAreaRef} style={{ opacity: 0 }} className="chest-wrap-e">
-            <div className="chest-badge-e">
-              <Shield size={10} />
-              <span>CLASSIFIED · VAULT A7</span>
-              <div className="chest-badge-dot" />
+        {/* ─── STAGE: title + projects wait behind the door ─── */}
+        <div ref={stageRef} className="gate-stage">
+          <div className="gate-room" aria-hidden="true" />
+
+          <div ref={contentRef} className="gate-content" style={{ visibility: webgl ? 'hidden' : 'visible' }}>
+            <div ref={headerRef} className="proj-header-enhanced" style={{ opacity: webgl ? 0 : 1 }}>
+              <p className="proj-eyebrow-e">
+                <span className="eyebrow-dot-e" />
+                <span>What I've Built</span>
+                <span className="eyebrow-dot-e" />
+              </p>
+              <h2 className="proj-title-e">My Projects</h2>
+              <p className="proj-sub-e">Click any card to explore the full details.</p>
+              <div className="proj-divider-e">
+                <div className="div-line-e" />
+                <div className="div-gem-e" />
+                <div className="div-line-e div-line-r-e" />
+              </div>
             </div>
-            <div style={{ position: 'relative', width: '100%', maxWidth: 380 }}>
-              <ArmorChestSVG unlocked={unlocked} lidOpen={lidOpen} accent={accent} />
-              <div ref={slotRectRef} className="slot-glow-e" style={{ opacity: 0 }} />
+
+            <div ref={cardsGridRef} className="cards-area-e">
+              {PROJECTS.map((p) => (
+                <ProjectCard key={p.id} project={p} onOpen={setActive} />
+              ))}
             </div>
-            <div className="chest-status-e">
-              <div className="status-dot-e" />
-              <span>{unlocked ? 'UNLOCKED' : 'SECURED'}</span>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 36, paddingBottom: 24 }}>
+              <button ref={hideRef} onClick={handleHide} className="hide-btn-e" style={{ opacity: webgl ? 0 : 1 }}>
+                <ChevronUp size={14} />
+                <span>Seal the door</span>
+                <div className="hide-btn-shine" />
+              </button>
             </div>
           </div>
 
-          {phase === 'chest' && (
-            <div ref={keyWrapRef} style={{ opacity: 0 }} className="key-wrap-e">
-              <div ref={keyInnerRef} className="">
-                <MilitaryKeySVG accent={accent} />
-                {nearSlot && <div className="key-near-pulse" />}
+          {webgl && (
+            <div ref={layerRef} className="gate-layer">
+              <ProjectGate3D
+                ref={gateRef}
+                onBurst={spawnBurst}
+                onStart={() => setPhase('transitioning')}
+                onDoorsStart={revealContent}
+                onOpened={handleOpened}
+              />
+              <div className="gate-foot" style={{ opacity: phase === 'gate' ? 1 : 0, pointerEvents: phase === 'gate' ? 'auto' : 'none' }}>
+                <div className="drag-hint-e" style={{ opacity: 0.9 }}>
+                  <div className="hint-arr-wrap"><ArrowRight size={12} /></div>
+                  <span>drag the access key → lock</span>
+                </div>
+                <button className="gate-skip" onClick={handleUnlock}>
+                  <Lock size={12} /> or just open the door
+                </button>
               </div>
             </div>
           )}
-
-          {phase === 'chest' && (
-            <div ref={hintRef} className="drag-hint-e" style={{ opacity: 0.55 }}>
-              <div className="hint-arr-wrap"><ArrowRight size={12} /></div>
-              <span>drag key → chest</span>
-            </div>
-          )}
-        </div>
-
-        {/* ─── CARDS AREA — always mounted, visibility controlled by GSAP ─── */}
-        <div ref={cardsAreaRef} style={{ display: 'none', opacity: 0 }}>
-          <div ref={cardsGridRef} className="cards-area-e">
-            {PROJECTS.map((p) => (
-              <ProjectCard key={p.id} project={p} onOpen={setActive} />
-            ))}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 36 }}>
-            <button ref={hideRef} onClick={handleHide} className="hide-btn-e" style={{ opacity: 0 }}>
-              <ChevronUp size={14} />
-              <span>Hide Projects</span>
-              <div className="hide-btn-shine" />
-            </button>
-          </div>
         </div>
       </section>
 
@@ -840,6 +525,21 @@ const Projects = () => {
         /* ── DRAG HINT ── */
         .drag-hint-e    { display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--color-accent);opacity:0.55; }
         .hint-arr-wrap  { animation:hint-slide 1.1s ease-in-out infinite;color:var(--color-accent); }
+
+        /* ── GATE STAGE (full-bleed, the title and cards sit behind the door) ── */
+        .proj-section-enhanced { padding:0 0 80px !important; }
+        .gate-stage { position:relative; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden; z-index:2; background:var(--color-bg-primary); }
+        .gate-stage.open { overflow:visible; }
+        .gate-room { position:absolute; inset:0; pointer-events:none;
+          background:radial-gradient(ellipse 60% 45% at 50% 20%, var(--color-accent-muted), transparent 72%); }
+        .gate-content { position:absolute; inset:0; overflow:hidden; padding-top:96px; }
+        .gate-stage.open .gate-content { position:relative; inset:auto; overflow:visible; }
+        .gate-layer { position:absolute; inset:0; z-index:5; }
+        .gate-foot { position:absolute; left:0; right:0; bottom:26px; z-index:6; display:flex; flex-direction:column; align-items:center; gap:12px; transition:opacity .4s; pointer-events:none; }
+        .gate-foot .drag-hint-e { text-shadow:0 0 14px rgba(0,0,0,.9); }
+        .gate-skip { pointer-events:auto; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:var(--color-bg-glass); border:1px solid var(--color-border-strong); color:var(--color-text-secondary);
+          border-radius:999px; padding:8px 18px; font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; backdrop-filter:blur(6px); transition:all .25s; }
+        .gate-skip:hover { color:var(--color-accent); border-color:var(--color-accent-border); }
 
         /* ── CARDS AREA ── */
         .cards-area-e { display:flex;justify-content:center;flex-wrap:wrap;gap:24px;padding:16px 32px 8px;position:relative;z-index:2;max-width:1200px;margin:0 auto; }

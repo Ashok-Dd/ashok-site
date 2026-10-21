@@ -89,18 +89,18 @@ const Loader = ({ onComplete }) => {
           position: absolute;
           left: 0; right: 0;
           height: 50%;
-          background: #1E1E2F;
+          background: var(--color-bg-primary);
           z-index: 2;
         }
         .l-panel-top {
           top: 0;
           background-image:
-            radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,188,156,0.08) 0%, #1E1E2F 70%);
+            radial-gradient(ellipse 80% 60% at 50% 0%, color-mix(in srgb, var(--color-accent) 8%, transparent) 0%, var(--color-bg-primary) 70%);
         }
         .l-panel-bot {
           bottom: 0;
           background-image:
-            radial-gradient(ellipse 80% 60% at 50% 100%, rgba(26,188,156,0.06) 0%, #1E1E2F 70%);
+            radial-gradient(ellipse 80% 60% at 50% 100%, color-mix(in srgb, var(--color-accent) 6%, transparent) 0%, var(--color-bg-primary) 70%);
         }
         .l-center {
           position: absolute;
@@ -118,7 +118,7 @@ const Loader = ({ onComplete }) => {
           font-weight: 900;
           letter-spacing: -0.06em;
           line-height: 1;
-          color: rgba(26,188,156,0.06);
+          color: color-mix(in srgb, var(--color-accent) 6%, transparent);
           position: absolute;
           top: 50%;
           left: 50%;
@@ -128,7 +128,7 @@ const Loader = ({ onComplete }) => {
         .l-line {
           width: clamp(200px, 30vw, 400px);
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(26,188,156,0.5), transparent);
+          background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-accent) 50%, transparent), transparent);
           margin-bottom: 28px;
         }
         .l-name {
@@ -148,7 +148,7 @@ const Loader = ({ onComplete }) => {
           will-change: transform;
         }
         .l-char.accent {
-          color: #1ABC9C;
+          color: var(--color-accent);
         }
         .l-tag {
           font-size: 10px;
@@ -175,7 +175,7 @@ const Loader = ({ onComplete }) => {
           top: 0; bottom: 0;
           left: 50%;
           width: 1px;
-          background: rgba(26,188,156,0.04);
+          background: color-mix(in srgb, var(--color-accent) 4%, transparent);
           z-index: 1;
         }
         .l-divider {
@@ -183,7 +183,7 @@ const Loader = ({ onComplete }) => {
           left: 0; right: 0;
           top: 50%;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(26,188,156,0.12), transparent);
+          background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent);
           z-index: 5;
         }
       `}</style>
