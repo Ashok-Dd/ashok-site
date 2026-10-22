@@ -259,7 +259,8 @@ const PhotoO = ({ photoT, holeR, colors, theme, onClick }) => {
       </mesh>
       <mesh ref={disc} position={[0, 0, 0.2]} visible={false}>
         <circleGeometry args={[1, 96]} />
-        <meshBasicMaterial map={tex} transparent opacity={tex ? 1 : 0} toneMapped={false} />
+        {/* keyed on the texture: a material compiled without a map ignores one that arrives later (renders plain white) */}
+        <meshBasicMaterial key={tex ? tex.uuid : 'pending'} map={tex} transparent opacity={tex ? 1 : 0} toneMapped={false} />
       </mesh>
       {interactive && (
         <mesh
