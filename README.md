@@ -20,4 +20,4 @@ npm run build
 
 Contact form needs `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`, `VITE_WHATSAPP_NUMBER` in `.env`.
 
-Drop the CoComply logo at `public/cocomply-logo.png` (shown on the Experience card; falls back to initials).
+Drop the CoComply logo at `public/cocomply-logo.webp` (shown on the Experience card; falls back to initials).

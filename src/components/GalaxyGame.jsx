@@ -19,7 +19,7 @@ function AsteroidBlast({ onExit }) {
   const [phase, setPhase]   = useState('entry');
   const [countdown, setCountdown] = useState(3);
   const [score, setScore]   = useState(0);
-  const [lives, setLives]   = useState(LIVES_MAX);
+  const [, setLives]   = useState(LIVES_MAX);
   const [best, setBest]     = useState(() => parseInt(localStorage.getItem('asteroid-best') || '0', 10));
 
   useEffect(() => {

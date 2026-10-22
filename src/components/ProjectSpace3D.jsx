@@ -207,18 +207,6 @@ const makeTex = () => {
   return t;
 };
 
-const glowTex = (() => {
-  let t;
-  return () => {
-    if (t) return t;
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const x = c.getContext('2d'); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-    x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-    t = new THREE.CanvasTexture(c); return t;
-  };
-})();
-
 /* where a slab sits relative to the focused one */
 const flowTarget = (d) => {
   const a = Math.abs(d), s = Math.sign(d);
@@ -228,7 +216,6 @@ const flowTarget = (d) => {
 const Panel = ({ project, index, total, focus, layout, onSelect }) => {
   const root = useRef();
   const tilt = useRef();
-  const halo = useRef();
   const edge = useRef();
   const shade = useRef([]);
   const ang = useRef(null);
@@ -300,7 +287,6 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
 
     const c = focused || hover ? white : dim;
     shade.current.forEach((m) => m && m.color.lerp(c, Math.min(1, dt * 6)));
-    if (halo.current) halo.current.material.opacity = THREE.MathUtils.damp(halo.current.material.opacity, focused ? 0.55 : 0.16, 5, dt);
     if (edge.current) edge.current.emissiveIntensity = THREE.MathUtils.damp(edge.current.emissiveIntensity, focused ? 1.6 : 0.35, 5, dt);
   });
 
@@ -309,9 +295,6 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
 
   return (
     <group ref={root}>
-      <sprite ref={halo} scale={[PW * 2, PH * 2.3, 1]} position={[0, 0, -0.4]}>
-        <spriteMaterial map={glowTex()} color={project.accent} transparent opacity={0.16} depthWrite={false} blending={THREE.AdditiveBlending} />
-      </sprite>
       <group ref={tilt}>
         <RoundedBox args={[PW + 0.16, PH + 0.16, DEPTH]} radius={0.1} smoothness={4}>
           <meshStandardMaterial ref={edge} color="#0a0c1c" metalness={0.7} roughness={0.25} emissive={project.accent} emissiveIntensity={0.35} />

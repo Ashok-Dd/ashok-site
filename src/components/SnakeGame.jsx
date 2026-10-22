@@ -34,8 +34,8 @@ function SnakeGame({ onExit }) {
   const [phase, setPhase]       = useState('entry');
   const [bootLines, setBootLines] = useState([]);
   const [eaten, setEaten]       = useState([]);
-  const [isDead, setIsDead]     = useState(false);
-  const [isWin, setIsWin]       = useState(false);
+  const [, setIsDead]     = useState(false);
+  const [, setIsWin]       = useState(false);
 
   /* ── Boot sequence ── */
   useEffect(() => {

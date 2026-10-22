@@ -179,18 +179,30 @@ const makeGeo = (ch, shape = SHAPES[ch], curveSegments = 64) => {
 
 /* ───────────── environment for metallic reflections ───────────── */
 export const Env = () => {
-  const { gl, scene } = useThree();
+  const { gl, scene, invalidate } = useThree();
   useEffect(() => {
-    const pm = new THREE.PMREMGenerator(gl);
-    const env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environment = env;
-    gl.setClearColor(0x000000, 0); // PMREM leaves the clear alpha at 1 → opaque canvas
-    return () => {
-      scene.environment = null;
-      env.dispose();
-      pm.dispose();
+    let env = null;
+    let pm = null;
+    const build = () => {
+      env?.dispose();
+      pm?.dispose();
+      pm = new THREE.PMREMGenerator(gl);
+      env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environment = env;
+      gl.setClearColor(0x000000, 0); // PMREM leaves the clear alpha at 1 → opaque canvas
+      invalidate();
     };
-  }, [gl, scene]);
+    build();
+    // a restored GPU context comes back with an empty environment map → metal would turn dark; rebuild it
+    const canvas = gl.domElement;
+    canvas.addEventListener('webglcontextrestored', build);
+    return () => {
+      canvas.removeEventListener('webglcontextrestored', build);
+      scene.environment = null;
+      env?.dispose();
+      pm?.dispose();
+    };
+  }, [gl, scene, invalidate]);
   return null;
 };
 

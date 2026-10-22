@@ -36,10 +36,6 @@ const Freelance = () => {
         opacity: 0, y: 50, rotateX: -22, transformPerspective: 900, duration: 0.9, stagger: 0.14, ease: 'power3.out', clearProps: 'transform',
         scrollTrigger: { trigger: '.fr-process', start: 'top 85%', once: true },
       });
-      gsap.to('.fr-orb', {
-        yPercent: (i) => (i % 2 ? -40 : 40), ease: 'none',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top bottom', end: 'bottom top', scrub: 1 },
-      });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -53,11 +49,6 @@ const Freelance = () => {
 
   return (
     <section id="freelance" ref={sectionRef} className="fr-section">
-      <div className="fr-bg" aria-hidden="true">
-        <span className="fr-orb fr-orb-1" />
-        <span className="fr-orb fr-orb-2" />
-        <span className="fr-grid-bg" />
-      </div>
 
       <div className="fr-head">
         <p className="fr-eyebrow"><span className="fr-dot" />{freelanceData.eyebrow}<span className="fr-dot" /></p>
@@ -113,15 +104,8 @@ const Freelance = () => {
       </div>
 
       <style>{`
-        .fr-section { position:relative; overflow:hidden; background:var(--color-bg-primary); color:var(--color-text-primary); padding:110px 24px 100px; }
-        .fr-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
-        .fr-orb { position:absolute; border-radius:50%; filter:blur(36px); }
-        .fr-orb-1 { width:460px; height:460px; right:-120px; top:6%; background:radial-gradient(circle, var(--color-accent-muted), transparent 68%); animation:frFloat 12s ease-in-out infinite; }
-        .fr-orb-2 { width:380px; height:380px; left:-110px; bottom:8%; background:radial-gradient(circle, var(--color-accent-subtle), transparent 68%); animation:frFloat 15s ease-in-out infinite reverse; }
-        .fr-grid-bg { position:absolute; inset:0; opacity:.5;
-          background:linear-gradient(var(--color-border) 1px, transparent 1px) 0 0/56px 56px, linear-gradient(90deg, var(--color-border) 1px, transparent 1px) 0 0/56px 56px;
-          -webkit-mask:radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent 75%); mask:radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent 75%); }
-        @keyframes frFloat { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(-24px,22px) scale(1.06); } }
+        .fr-section { position:relative; overflow:hidden; background:var(--color-bg-primary); color:var(--color-text-primary); padding:56px 24px 90px; }
+
 
         .fr-head { position:relative; text-align:center; margin-bottom:28px; }
         .fr-eyebrow { display:inline-flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--color-accent); margin-bottom:14px; }
@@ -185,7 +169,7 @@ const Freelance = () => {
           .fr-section { padding:80px 16px 72px; } .fr-ticker { margin-inline:-16px; } .fr-steps { grid-template-columns:1fr; }
         }
         @media (prefers-reduced-motion:reduce) {
-          .fr-orb, .fr-title, .fr-track, .fr-dot, .fr-live, .fr-cta i { animation:none; }
+          .fr-title, .fr-track, .fr-dot, .fr-live, .fr-cta i { animation:none; }
           .fr-step { transition:none; }
         }
       `}</style>

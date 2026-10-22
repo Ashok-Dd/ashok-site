@@ -17,7 +17,7 @@ function EndlessRunner({ onExit }) {
   const [countdown, setCountdown] = useState(3);
   const [score, setScore]     = useState(0);
   const [best, setBest]       = useState(() => parseInt(localStorage.getItem('runner-best') || '0', 10));
-  const [dead, setDead]       = useState(false);
+  const [, setDead]       = useState(false);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
