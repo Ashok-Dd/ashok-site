@@ -44,7 +44,11 @@ const Projects = ({ onOpenChange }) => {
     const stage = stageRef.current;
     if (!webgl) { stage.classList.add('open'); stage.style.height = 'auto'; return undefined; }
     stage.style.height = `${gateHeight()}px`;
-    const onResize = () => { if (!stage.classList.contains('open') && !stage.dataset.busy) stage.style.height = `${gateHeight()}px`; };
+    stage.style.setProperty('--gate-h', `${gateHeight()}px`);
+    const onResize = () => {
+      stage.style.setProperty('--gate-h', `${gateHeight()}px`);
+      if (!stage.classList.contains('open') && !stage.dataset.busy) stage.style.height = `${gateHeight()}px`;
+    };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [webgl]);
@@ -83,8 +87,8 @@ const Projects = ({ onOpenChange }) => {
     if (stage && !stage.classList.contains('open')) gsap.to(stage, { height: Math.max(stage.offsetHeight, content.scrollHeight + 40), duration: 1.4, ease: 'power2.inOut' });
     gsap.fromTo(headerRef.current, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.2, ease: 'power3.out' });
     gsap.fromTo(cardsGridRef.current,
-      { opacity: 0, y: 36, filter: 'blur(10px)' },
-      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.1, delay: 0.4, ease: 'power3.out', clearProps: 'filter' });
+      { opacity: 0, y: 36 },
+      { opacity: 1, y: 0, duration: 1.1, delay: 0.4, ease: 'power3.out', clearProps: 'opacity,transform' });
     gsap.fromTo(hideRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, delay: 1.5, ease: 'power2.out' });
   }, []);
 
@@ -128,7 +132,7 @@ const Projects = ({ onOpenChange }) => {
   }, [phase]);
 
   /* tell the page when the door is open – the sections below are only loaded then */
-  useEffect(() => { onOpenChange?.(opened); }, [opened, onOpenChange]);
+  useEffect(() => { onOpenChange?.(!webgl || phase === 'cards'); }, [phase, webgl, onOpenChange]);
 
   return (
     <>
@@ -177,7 +181,7 @@ const Projects = ({ onOpenChange }) => {
                 return webgl ? (
                   <Boundary fallback={grid}>
                     <Suspense fallback={<div className="ps-wrap" />}>
-                    <ProjectSpace3D projects={cards} focus={focus} onFocus={setFocus} onOpen={openProject} layout="ring" label="Project orbit" />
+                    <ProjectSpace3D projects={cards} focus={focus} onFocus={setFocus} onOpen={openProject} layout="ring" label="Project orbit" paused={!opened} />
                     </Suspense>
                   </Boundary>
                 ) : grid;
@@ -332,7 +336,7 @@ const Projects = ({ onOpenChange }) => {
           background:radial-gradient(ellipse 60% 45% at 50% 20%, var(--color-accent-muted), transparent 72%); }
         .gate-content { position:absolute; inset:0; overflow:hidden; padding-top:96px; }
         .gate-stage.open .gate-content { position:relative; inset:auto; overflow:visible; }
-        .gate-layer { position:absolute; inset:0; z-index:5; }
+        .gate-layer { position:absolute; top:0; left:0; right:0; height:var(--gate-h, 100%); z-index:5; }
         .gate-foot { position:absolute; left:0; right:0; bottom:26px; z-index:6; display:flex; flex-direction:column; align-items:center; gap:12px; transition:opacity .4s; pointer-events:none; }
         .gate-foot .drag-hint-e { text-shadow:0 0 14px rgba(0,0,0,.9); }
         .gate-skip { pointer-events:auto; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:var(--color-bg-glass); border:1px solid var(--color-border-strong); color:var(--color-text-secondary);

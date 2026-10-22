@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, startTransition, useCallback, useEffect, useState } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -18,7 +18,8 @@ const Footer = lazy(() => import('./components/Footer'));
 
 const App = () => {
   const [unlocked, setUnlocked] = useState(false);
-  const onOpenChange = useCallback((open) => setUnlocked(open), []);
+  // mounting five sections is heavy: do it as a low-priority transition so the open door keeps animating smoothly
+  const onOpenChange = useCallback((open) => { if (open) startTransition(() => setUnlocked(true)); else setUnlocked(false); }, []);
 
   /* fetch the lower sections' code while the browser is idle, so opening the gate never waits on the network */
   useEffect(() => {

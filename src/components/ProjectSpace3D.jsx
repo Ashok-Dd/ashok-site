@@ -357,7 +357,7 @@ const Scene = ({ projects, focus, layout, onSelect }) => (
   </>
 );
 
-const ProjectSpace3D = ({ projects, focus, onFocus, onOpen, layout = 'flow', label = 'Project space' }) => {
+const ProjectSpace3D = ({ projects, focus, onFocus, onOpen, layout = 'flow', label = 'Project space', paused = false }) => {
   const down = useRef(null);
   const box = useRef(null);
   const [live, setLive] = useState(false);
@@ -381,7 +381,7 @@ const ProjectSpace3D = ({ projects, focus, onFocus, onOpen, layout = 'flow', lab
         if (Math.abs(dx) > 70) go(dx < 0 ? 1 : -1);
       }}
     >
-      <Canvas frameloop={live ? 'always' : 'never'} camera={{ position: [0, 0.5, 8.8], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}>
+      <Canvas frameloop={live && !paused ? 'always' : 'never'} camera={{ position: [0, 0.5, 8.8], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}>
         <Scene projects={projects} focus={focus} layout={layout} onSelect={select} />
       </Canvas>
 

@@ -300,7 +300,7 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
   const narrow = aspect < 1.2;
 
   /* textures: rebuilt for size / theme / fonts */
-  const bucket = Math.min(2560, Math.max(960, Math.round((size.width * Math.min(2, window.devicePixelRatio || 1)) / 128) * 128));
+  const bucket = Math.min(1920, Math.max(960, Math.round((size.width * Math.min(1.25, window.devicePixelRatio || 1)) / 128) * 128));
   const [themeKey, setThemeKey] = useState(0);
   useEffect(() => { const id = requestAnimationFrame(() => setThemeKey((k) => k + 1)); return () => cancelAnimationFrame(id); }, [theme]);
   const face = useMemo(() => {
