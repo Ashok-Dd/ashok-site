@@ -20,11 +20,25 @@ const App = () => {
   const [unlocked, setUnlocked] = useState(false);
   const onOpenChange = useCallback((open) => setUnlocked(open), []);
 
+  /* fetch the lower sections' code while the browser is idle, so opening the gate never waits on the network */
+  useEffect(() => {
+    const warm = () => {
+      import('./components/Freelance');
+      import('./components/Games');
+      import('./components/LeetCodeSection');
+      import('./components/Contact');
+      import('./components/Footer');
+    };
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1800));
+    const id = idle(warm, { timeout: 4000 });
+    return () => { (window.cancelIdleCallback || clearTimeout)(id); };
+  }, []);
+
   /* newly mounted sections change the page height – let scroll triggers re-measure */
   useEffect(() => {
     if (!unlocked) return undefined;
-    const id = setTimeout(() => ScrollTrigger.refresh(), 600);
-    return () => clearTimeout(id);
+    const ids = [setTimeout(() => ScrollTrigger.refresh(), 250), setTimeout(() => ScrollTrigger.refresh(), 1800)];
+    return () => ids.forEach(clearTimeout);
   }, [unlocked]);
 
   return (

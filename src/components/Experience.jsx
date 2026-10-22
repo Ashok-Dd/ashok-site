@@ -10,18 +10,24 @@ gsap.registerPlugin(ScrollTrigger);
 const initials = (name) =>
   name.split(/\s+/).filter((w) => w.length > 2).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
-/** a thick spinning coin: logo on both faces, a ridged rim made of stacked discs */
+/** a thick coin that keeps turning: the logo is on both faces (as a background, which paints reliably in 3D), rim is a short stack of discs */
 const Coin = ({ src, company }) => {
   const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    const im = new Image();
+    im.onerror = () => setFailed(true);
+    im.src = src;
+  }, [src]);
   const face = failed
     ? <span className="xp-coin-fallback">{initials(company)}</span>
-    : <img src={src} alt={`${company} logo`} onError={() => setFailed(true)} />;
+    : null;
+  const bg = failed ? undefined : { backgroundImage: `url(${src})` };
   return (
     <div className="xp-stage">
       <div className="xp-coin">
-        {Array.from({ length: 13 }, (_, i) => <i key={i} className="xp-rim" style={{ '--z': `${(i - 6) * 2}px` }} />)}
-        <div className="xp-face xp-front">{face}</div>
-        <div className="xp-face xp-back">{face}</div>
+        {Array.from({ length: 7 }, (_, i) => <i key={i} className="xp-rim" style={{ '--z': `${(i - 3) * 2}px` }} />)}
+        <div className="xp-face xp-front" style={bg} role="img" aria-label={`${company} logo`}>{face}</div>
+        <div className="xp-face xp-back" style={bg} aria-hidden="true">{face}</div>
       </div>
       <span className="xp-floor" />
     </div>
@@ -154,16 +160,15 @@ const Experience = () => {
         /* left column: spinning coin + status */
         .xp-side { display:grid; justify-items:center; gap:12px; transform:translateZ(46px); }
         .xp-stage { position:relative; width:170px; height:190px; perspective:700px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; }
-        .xp-coin { position:relative; width:150px; height:150px; transform-style:preserve-3d; animation:xpSpin 9s linear infinite; }
+        .xp-coin { position:relative; width:150px; height:150px; transform-style:preserve-3d; animation:xpSpin 8s linear infinite; }
         .xp-stage:hover .xp-coin { animation-duration:3s; }
-        @keyframes xpSpin { from { transform:rotateX(-10deg) rotateY(0deg); } to { transform:rotateX(-10deg) rotateY(360deg); } }
+        @keyframes xpSpin { from { transform:rotateX(-8deg) rotateY(0deg); } to { transform:rotateX(-8deg) rotateY(360deg); } }
         .xp-rim, .xp-face { position:absolute; inset:0; border-radius:50%; }
         .xp-rim { transform:translateZ(var(--z)); background:linear-gradient(135deg,var(--color-accent-dark),var(--color-accent)); }
-        .xp-face { display:flex; align-items:center; justify-content:center; overflow:hidden; backface-visibility:hidden; background:var(--color-bg-elevated);
+        .xp-face { background-color:var(--color-bg-elevated); background-size:100% 100%; background-repeat:no-repeat; background-position:center; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; overflow:hidden;
           box-shadow:inset 0 0 0 5px var(--color-accent), inset 0 0 28px rgba(0,0,0,.35); }
-        .xp-front { transform:translateZ(14px); }
-        .xp-back { transform:rotateY(180deg) translateZ(14px); }
-        .xp-face img { width:100%; height:100%; object-fit:cover; display:block; }
+        .xp-front { transform:translateZ(8px); }
+        .xp-back { transform:rotateY(180deg) translateZ(8px); }
         .xp-coin-fallback { font-family:var(--font-display); font-weight:900; font-size:2.4rem; color:var(--color-accent); }
         .xp-floor { position:absolute; left:50%; bottom:0; width:120px; height:20px; margin-left:-60px; border-radius:50%; background:radial-gradient(ellipse, var(--color-accent-glow), transparent 70%); filter:blur(5px); animation:xpShadow 4.5s ease-in-out infinite; }
         @keyframes xpShadow { 0%,100% { transform:scaleX(1); opacity:.7; } 50% { transform:scaleX(.5); opacity:.35; } }
@@ -190,16 +195,28 @@ const Experience = () => {
         .xp-tags span:hover { transform:translateY(-3px); background:var(--color-accent-muted); }
 
         @media (max-width:820px) {
-          .xp-card { grid-template-columns:1fr; gap:22px; padding:30px 22px; justify-items:center; }
-          .xp-body { justify-self:stretch; }
-          .xp-side { grid-auto-flow:column; grid-template-columns:none; justify-items:center; flex-wrap:wrap; }
-          .xp-stage { grid-column:1 / -1; }
+          .xp-card { grid-template-columns:minmax(0,1fr); gap:24px; padding:30px 22px; transform:none; transform-style:flat; }
+          .xp-side, .xp-body, .xp-points li { transform:none; }
+          .xp-side { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+          .xp-stage { flex:0 0 100%; margin-bottom:0; }
+          .xp-points li:hover { transform:translateX(3px); }
         }
         @media (max-width:700px) {
           .xp-section { padding:80px 16px 72px; }
-          .xp-list { padding-left:34px; }
-          .xp-line { left:7px; }
-          .xp-node { left:-34px; top:30px; }
+          .xp-head { margin-bottom:40px; }
+          .xp-list { padding-left:30px; gap:28px; }
+          .xp-line { left:6px; }
+          .xp-node { left:-30px; top:34px; width:16px; height:16px; }
+          .xp-node span { width:6px; height:6px; }
+          .xp-card { padding:24px 16px 22px; gap:20px; }
+          .xp-stage { width:140px; height:156px; margin:0 auto; flex:0 0 100%; }
+          .xp-coin { width:118px; height:118px; }
+          .xp-company { font-size:.7rem; letter-spacing:.18em; }
+          .xp-role { font-size:1.65rem; margin-bottom:14px; }
+          .xp-summary { font-size:.88rem; line-height:1.7; }
+          .xp-points li { padding:10px 12px; font-size:.84rem; gap:10px; align-items:flex-start; }
+          .xp-points li span { margin-top:1px; }
+          .xp-tags span { font-size:.58rem; }
         }
         @media (prefers-reduced-motion:reduce) {
           .xp-border, .xp-title, .xp-dot, .xp-node span, .xp-pulse, .xp-coin, .xp-floor { animation:none; }

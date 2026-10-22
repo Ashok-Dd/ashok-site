@@ -23,6 +23,7 @@ const Projects = ({ onOpenChange }) => {
   const [webgl] = useState(() => hasWebGL());
   // phase: 'gate' | 'transitioning' | 'cards'
   const [phase, setPhase] = useState(() => (hasWebGL() ? 'gate' : 'cards'));
+  const [opened, setOpened] = useState(() => !hasWebGL());   // true from the moment the key turns until the door is sealed again
   const [activeProject, setActive] = useState(null);
   const cards = useMemo(() => PROJECTS.map(normalizeProject), []);
   const [focus, setFocus] = useState(0);
@@ -78,6 +79,8 @@ const Projects = ({ onOpenChange }) => {
     const content = contentRef.current;
     if (!content) return;
     content.style.visibility = 'visible';
+    const stage = stageRef.current;
+    if (stage && !stage.classList.contains('open')) gsap.to(stage, { height: Math.max(stage.offsetHeight, content.scrollHeight + 40), duration: 1.4, ease: 'power2.inOut' });
     gsap.fromTo(headerRef.current, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.2, ease: 'power3.out' });
     gsap.fromTo(cardsGridRef.current,
       { opacity: 0, y: 36, filter: 'blur(10px)' },
@@ -102,6 +105,7 @@ const Projects = ({ onOpenChange }) => {
   const handleHide = useCallback(() => {
     if (phase !== 'cards') return;
     setPhase('transitioning');
+    setOpened(false);
     const stage = stageRef.current;
     const layer = layerRef.current;
     const target = gateHeight();
@@ -124,11 +128,11 @@ const Projects = ({ onOpenChange }) => {
   }, [phase]);
 
   /* tell the page when the door is open – the sections below are only loaded then */
-  useEffect(() => { onOpenChange?.(!webgl || phase === 'cards'); }, [phase, webgl, onOpenChange]);
+  useEffect(() => { onOpenChange?.(opened); }, [opened, onOpenChange]);
 
   return (
     <>
-      <section id="projects" className="proj-section-enhanced">
+      <section id="projects" className={`proj-section-enhanced${opened ? ' is-open' : ''}`}>
         <div className="proj-bg-enhanced">
           <div className="bg-grid-e" />
           <div className="bg-blob-1" />
@@ -194,7 +198,7 @@ const Projects = ({ onOpenChange }) => {
                 <ProjectGate3D
                   ref={gateRef}
                   onBurst={spawnBurst}
-                  onStart={() => setPhase('transitioning')}
+                  onStart={() => { setPhase('transitioning'); setOpened(true); }}
                   onDoorsStart={revealContent}
                   onOpened={handleOpened}
                 />
@@ -320,7 +324,8 @@ const Projects = ({ onOpenChange }) => {
         .hint-arr-wrap  { animation:hint-slide 1.1s ease-in-out infinite;color:var(--color-accent); }
 
         /* ── GATE STAGE (full-bleed, the title and cards sit behind the door) ── */
-        .proj-section-enhanced { padding:0 0 80px !important; }
+        .proj-section-enhanced { padding:0 !important; }
+        .proj-section-enhanced.is-open { padding:0 0 80px !important; }
         .gate-stage { position:relative; width:100vw; margin-left:calc(50% - 50vw); overflow:hidden; z-index:2; background:var(--color-bg-primary); }
         .gate-stage.open { overflow:visible; }
         .gate-room { position:absolute; inset:0; pointer-events:none;

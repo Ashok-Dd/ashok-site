@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import './projectUI.css';
 
@@ -16,8 +17,9 @@ import './projectUI.css';
  * Mouse = look around + tilt the slab, arrows / swipe / dots = travel, click = focus, click again = open.
  */
 
-const PW = 4.4, PH = 2.75, DEPTH = 0.2;
-const TEX_W = 768, TEX_H = Math.round((1024 * PH) / PW);
+const PW = 5.8, PH = 3.625, DEPTH = 0.24;
+const TEX_W = 768, TEX_H = Math.round((TEX_W * PH) / PW);   // layout units; the canvas is drawn K× denser for sharpness
+const K = 1.4;
 
 const rr = (ctx, x, y, w, h, r) => {
   ctx.beginPath();
@@ -39,84 +41,168 @@ const fonts = () => {
   return { display: f('--font-display', 'sans-serif'), mono: f('--font-mono', 'monospace') };
 };
 
-const BAND = TEX_H * 0.42;
+const PAD = 60;                       // keeps text and pills well inside the edge
+const BAND = TEX_H * 0.46;
+const seeded = (n) => { let x = n; return () => { x = (x * 16807) % 2147483647; return x / 2147483647; }; };
 
-/** layer 0 – the slab face: cover, grid, number, frame */
-const paintBase = (c, p, img) => {
-  const ctx = c.getContext('2d'); const ft = fonts();
+/** cover artwork: neon horizon grid, orbit rings, a glowing project glyph and drifting marks */
+const paintArt = (ctx, p, icon) => {
+  const W = TEX_W, H = BAND;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip();
+  const base = ctx.createLinearGradient(0, 0, W, H);
+  base.addColorStop(0, p.accent + '70'); base.addColorStop(0.55, '#0a0d1e'); base.addColorStop(1, '#070914');
+  ctx.fillStyle = base; ctx.fillRect(0, 0, W, H);
+
+  const cx = W * 0.72, cy = H * 0.5;
+  const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, H * 1.1);
+  glow.addColorStop(0, p.accent + 'aa'); glow.addColorStop(0.45, p.accent + '30'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+  // perspective grid floor running to the horizon
+  const hy = H * 0.62;
+  ctx.strokeStyle = p.accent + '55'; ctx.lineWidth = 1.5;
+  for (let i = -14; i <= 14; i++) { ctx.beginPath(); ctx.moveTo(cx + i * 9, hy); ctx.lineTo(cx + i * 120, H); ctx.stroke(); }
+  for (let k = 0; k < 8; k++) { const y = hy + (H - hy) * Math.pow(k / 7, 1.7); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  const fadeFloor = ctx.createLinearGradient(0, hy, 0, hy + 20);
+  fadeFloor.addColorStop(0, 'rgba(10,13,30,1)'); fadeFloor.addColorStop(1, 'rgba(10,13,30,0)');
+  ctx.fillStyle = fadeFloor; ctx.fillRect(0, hy - 2, W, 22);
+
+  // orbit rings
+  ctx.lineWidth = 2;
+  [[70, 0.9], [104, 0.55], [140, 0.3]].forEach(([r, al], i) => {
+    ctx.strokeStyle = p.accent; ctx.globalAlpha = al; ctx.setLineDash(i === 1 ? [10, 14] : i === 2 ? [3, 12] : []);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+  });
+  ctx.setLineDash([]); ctx.globalAlpha = 1;
+  // satellites on the rings
+  [[70, 0.8], [104, 3.4], [140, 5.4]].forEach(([r, a], i) => {
+    ctx.fillStyle = i ? '#ffffff' : p.accent; ctx.shadowColor = p.accent; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 5 - i, 0, Math.PI * 2); ctx.fill();
+  }); ctx.shadowBlur = 0;
+
+  // glyph badge
+  ctx.fillStyle = 'rgba(8,10,24,0.72)'; ctx.beginPath(); ctx.arc(cx, cy, 52, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = p.accent; ctx.lineWidth = 3; ctx.shadowColor = p.accent; ctx.shadowBlur = 22; ctx.stroke(); ctx.shadowBlur = 0;
+  if (icon) { ctx.shadowColor = p.accent; ctx.shadowBlur = 16; ctx.drawImage(icon, cx - 30, cy - 30, 60, 60); ctx.shadowBlur = 0; }
+
+  // drifting marks
+  const R = seeded(p.num.length * 97 + (p.title.charCodeAt(0) || 7));
+  for (let i = 0; i < 26; i++) {
+    const x = R() * W, y = R() * H * 0.62, sz = 1.5 + R() * 2.5;
+    ctx.fillStyle = i % 4 ? 'rgba(255,255,255,0.45)' : p.accent; ctx.fillRect(x, y, sz, sz);
+    if (i % 7 === 0) { ctx.strokeStyle = p.accent + 'aa'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x + 6, y); ctx.moveTo(x, y - 6); ctx.lineTo(x, y + 6); ctx.stroke(); }
+  }
+  // ghost number
+  const ft = fonts();
+  ctx.font = `900 ${H * 0.95}px ${ft.display}`; ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText(p.num, 28, H * 0.54);
+  // fade into the body
+  const fade = ctx.createLinearGradient(0, H * 0.62, 0, H);
+  fade.addColorStop(0, 'rgba(7,9,20,0)'); fade.addColorStop(1, '#070914');
+  ctx.fillStyle = fade; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+};
+
+/** layer 0 – the slab face: artwork, glass body, frame */
+const paintBase = (c, p, img, icon) => {
+  const ctx = c.getContext('2d');
+  ctx.setTransform(K, 0, 0, K, 0, 0);
   ctx.clearRect(0, 0, TEX_W, TEX_H);
   const g = ctx.createLinearGradient(0, 0, TEX_W, TEX_H);
-  g.addColorStop(0, '#141836'); g.addColorStop(1, '#06070f');
+  g.addColorStop(0, '#131733'); g.addColorStop(1, '#06070f');
   ctx.fillStyle = g; rr(ctx, 0, 0, TEX_W, TEX_H, 30); ctx.fill();
+
   ctx.save(); rr(ctx, 0, 0, TEX_W, TEX_H, 30); ctx.clip();
-  const bg = ctx.createLinearGradient(0, 0, TEX_W, BAND);
-  bg.addColorStop(0, p.accent + '88'); bg.addColorStop(1, '#06070f');
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, TEX_W, BAND);
   if (img) {
-    const s = Math.max(TEX_W / img.width, BAND / img.height);
-    ctx.globalAlpha = 0.9; ctx.drawImage(img, (TEX_W - img.width * s) / 2, (BAND - img.height * s) / 2, img.width * s, img.height * s); ctx.globalAlpha = 1;
-  } else {
-    ctx.strokeStyle = p.accent + '44'; ctx.lineWidth = 1;
-    for (let x = 0; x <= TEX_W; x += 46) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, BAND); ctx.stroke(); }
-    for (let y = 0; y <= BAND; y += 46) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(TEX_W, y); ctx.stroke(); }
-    ctx.font = `900 ${BAND * 0.9}px ${ft.display}`; ctx.fillStyle = p.accent + '40'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.num, TEX_W - 34, BAND * 0.55);
-  }
-  const fade = ctx.createLinearGradient(0, BAND * 0.5, 0, BAND);
-  fade.addColorStop(0, 'rgba(6,7,15,0)'); fade.addColorStop(1, '#06070f');
-  ctx.fillStyle = fade; ctx.fillRect(0, 0, TEX_W, BAND);
-  // scan lines
-  ctx.fillStyle = 'rgba(255,255,255,.025)';
-  for (let y = 0; y < TEX_H; y += 6) ctx.fillRect(0, y, TEX_W, 2);
+    const sc = Math.max(TEX_W / img.width, BAND / img.height);
+    ctx.drawImage(img, (TEX_W - img.width * sc) / 2, (BAND - img.height * sc) / 2, img.width * sc, img.height * sc);
+    const fade = ctx.createLinearGradient(0, BAND * 0.55, 0, BAND);
+    fade.addColorStop(0, 'rgba(6,7,15,0)'); fade.addColorStop(1, '#06070f');
+    ctx.fillStyle = fade; ctx.fillRect(0, 0, TEX_W, BAND);
+  } else paintArt(ctx, p, icon);
+
+  // body: soft accent wash from the bottom + faint scanlines
+  const body = ctx.createLinearGradient(0, BAND, 0, TEX_H);
+  body.addColorStop(0, 'rgba(255,255,255,0.0)'); body.addColorStop(1, p.accent + '22');
+  ctx.fillStyle = body; ctx.fillRect(0, BAND, TEX_W, TEX_H - BAND);
+  ctx.fillStyle = 'rgba(255,255,255,0.022)';
+  for (let y = 0; y < TEX_H; y += 5) ctx.fillRect(0, y, TEX_W, 1.5);
+  // holographic sheen
+  const sheen = ctx.createLinearGradient(0, 0, TEX_W, TEX_H);
+  sheen.addColorStop(0.28, 'rgba(255,255,255,0)'); sheen.addColorStop(0.4, 'rgba(255,255,255,0.09)'); sheen.addColorStop(0.5, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sheen; ctx.fillRect(0, 0, TEX_W, TEX_H);
   ctx.restore();
-  ctx.lineWidth = 5; ctx.strokeStyle = p.accent + 'dd'; rr(ctx, 3, 3, TEX_W - 6, TEX_H - 6, 28); ctx.stroke();
-  // corner ticks
-  ctx.lineWidth = 4; ctx.strokeStyle = '#ffffffaa';
-  [[22, 22, 1, 1], [TEX_W - 22, TEX_H - 22, -1, -1]].forEach(([x, y, sx, sy]) => {
-    ctx.beginPath(); ctx.moveTo(x, y + 34 * sy); ctx.lineTo(x, y); ctx.lineTo(x + 34 * sx, y); ctx.stroke();
-  });
 };
 
 /** layer 1 – title block, floats in front of the face */
 const paintTitle = (c, p, total) => {
   const ctx = c.getContext('2d'); const ft = fonts();
+  ctx.setTransform(K, 0, 0, K, 0, 0);
   ctx.clearRect(0, 0, TEX_W, TEX_H);
-  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-  let y = BAND + 60;
-  if (p.tag) {
-    ctx.font = `26px ${ft.mono}`; ctx.fillStyle = p.accent; ctx.shadowColor = p.accent; ctx.shadowBlur = 8;
-    ctx.fillText(p.tag.toUpperCase().split('').join(' '), 52, y); y += 66;
-  }
-  ctx.shadowColor = p.accent; ctx.shadowBlur = 12;
-  ctx.font = `900 64px ${ft.display}`; ctx.fillStyle = '#ffffff';
-  wrapText(ctx, p.title, TEX_W - 104).slice(0, 2).forEach((l) => { ctx.fillText(l, 52, y); y += 74; });
+  ctx.textBaseline = 'alphabetic';
+
+  // tag pill + counter
+  const tag = (p.tag || 'Project').toUpperCase();
+  ctx.font = `600 22px ${ft.mono}`;
+  const tw = ctx.measureText(tag.split('').join(' ')).width + 34;
+  const ty = BAND - 38;
+  ctx.shadowColor = p.accent; ctx.shadowBlur = 14;
+  ctx.fillStyle = 'rgba(8,10,24,0.85)'; rr(ctx, PAD, ty - 26, tw, 40, 20); ctx.fill();
+  ctx.shadowBlur = 0; ctx.lineWidth = 2; ctx.strokeStyle = p.accent; ctx.stroke();
+  ctx.fillStyle = p.accent; ctx.textAlign = 'left'; ctx.fillText(tag.split('').join(' '), PAD + 17, ty + 1);
+  ctx.textAlign = 'right'; ctx.font = `20px ${ft.mono}`; ctx.fillStyle = '#9aa0c8';
+  ctx.fillText(`${p.num} / ${String(total).padStart(2, '0')}`, TEX_W - PAD, 66);
+
+  // title with glow + accent underline; shrinks to stay on one line, two small lines at the very most
+  ctx.textAlign = 'left';
+  const maxW = TEX_W - PAD * 2;
+  let fs = 56;
+  ctx.font = `900 ${fs}px ${ft.display}`;
+  while (fs > 36 && ctx.measureText(p.title).width > maxW) { fs -= 2; ctx.font = `900 ${fs}px ${ft.display}`; }
+  const lines = wrapText(ctx, p.title, maxW).slice(0, 2);
+  const lh = fs * 1.12;
+  let y = BAND + 46 + (lines.length > 1 ? 0 : 10);
+  ctx.shadowColor = p.accent; ctx.shadowBlur = 20; ctx.fillStyle = '#ffffff';
+  lines.forEach((l) => { ctx.fillText(l, PAD, y); y += lh; });
   ctx.shadowBlur = 0;
-  ctx.font = `24px ${ft.mono}`; ctx.fillStyle = '#9ca0c2';
-  ctx.fillText(p.short.toUpperCase().slice(0, 46), 52, y);
-  ctx.textAlign = 'right'; ctx.font = `22px ${ft.mono}`; ctx.fillStyle = '#7479a0';
-  ctx.fillText(`${p.num} / ${String(total).padStart(2, '0')}`, TEX_W - 52, 48);
+  const ul = ctx.createLinearGradient(PAD, 0, PAD + 220, 0);
+  ul.addColorStop(0, p.accent); ul.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = ul; ctx.fillRect(PAD, y - lh + 14, 220, 3);
+
+  ctx.font = `20px ${ft.mono}`; ctx.fillStyle = '#a4a9cf';
+  let sh = p.short.toUpperCase();
+  while (sh.length > 4 && ctx.measureText(sh).width > maxW) sh = sh.slice(0, -2);
+  ctx.fillText(sh === p.short.toUpperCase() ? sh : sh.trimEnd() + '…', PAD, y - lh + 44);
 };
 
 /** layer 2 – tech chips, floats furthest out */
 const paintChips = (c, p) => {
   const ctx = c.getContext('2d'); const ft = fonts();
+  ctx.setTransform(K, 0, 0, K, 0, 0);
   ctx.clearRect(0, 0, TEX_W, TEX_H);
-  ctx.font = `25px ${ft.mono}`; ctx.textBaseline = 'alphabetic';
-  const cy = TEX_H - 58; let x = 52;
-  if (!p.tech.length) { ctx.fillStyle = '#7479a0'; ctx.fillText('CASE FILE COMING SOON', 52, cy + 4); return; }
+  ctx.font = `600 22px ${ft.mono}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  const cy = TEX_H - 66; let x = PAD;
+  if (!p.tech.length) {
+    ctx.fillStyle = 'rgba(8,10,24,0.8)'; rr(ctx, x, cy - 30, 330, 44, 14); ctx.fill();
+    ctx.strokeStyle = p.accent + '88'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#b9bde0'; ctx.fillText('CASE FILE COMING SOON', x + 18, cy);
+    return;
+  }
   for (const t of p.tech.slice(0, 5)) {
-    const w = ctx.measureText(t).width + 38;
-    if (x + w > TEX_W - 52) break;
-    ctx.shadowColor = p.accent; ctx.shadowBlur = 8;
-    ctx.fillStyle = '#0b0d1fdd'; rr(ctx, x, cy - 32, w, 50, 14); ctx.fill();
-    ctx.shadowBlur = 0; ctx.strokeStyle = p.accent; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = '#eef0ff'; ctx.fillText(t, x + 19, cy + 3);
-    x += w + 14;
+    const w = ctx.measureText(t).width + 34;
+    if (x + w > TEX_W - PAD) break;
+    ctx.shadowColor = p.accent; ctx.shadowBlur = 14;
+    const gr = ctx.createLinearGradient(x, cy - 30, x, cy + 14);
+    gr.addColorStop(0, 'rgba(18,22,48,0.95)'); gr.addColorStop(1, 'rgba(8,10,24,0.95)');
+    ctx.fillStyle = gr; rr(ctx, x, cy - 30, w, 44, 14); ctx.fill();
+    ctx.shadowBlur = 0; ctx.strokeStyle = p.accent; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f1f3ff'; ctx.fillText(t, x + 17, cy);
+    x += w + 12;
   }
 };
 
 const makeTex = () => {
-  const c = document.createElement('canvas'); c.width = TEX_W; c.height = TEX_H;
+  const c = document.createElement('canvas'); c.width = Math.round(TEX_W * K); c.height = Math.round(TEX_H * K);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
   return t;
 };
@@ -136,7 +222,7 @@ const glowTex = (() => {
 /* where a slab sits relative to the focused one */
 const flowTarget = (d) => {
   const a = Math.abs(d), s = Math.sign(d);
-  return { x: a ? s * (4.6 + (a - 1) * 2.1) : 0, z: a ? -(2.4 + (a - 1) * 1.5) : 0, ry: -Math.max(-1, Math.min(1, d)) * 0.62, y: 0 };
+  return { x: a ? s * (6.6 + (a - 1) * 2.5) : 0, z: a ? -(3 + (a - 1) * 1.7) : 0, ry: -Math.max(-1, Math.min(1, d)) * 0.62, y: 0 };
 };
 
 const Panel = ({ project, index, total, focus, layout, onSelect }) => {
@@ -149,14 +235,14 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
   const [hover, setHover] = useState(false);
   const focused = index === focus;
 
-  const radius = Math.max(6.2, (total * (PW + 0.7)) / (Math.PI * 2));
+  const radius = Math.max(7.4, (total * (PW + 1)) / (Math.PI * 2));
   const step = (Math.PI * 2) / total;
 
   const tex = useMemo(() => [makeTex(), makeTex(), makeTex()], []);
   useEffect(() => {
-    let img = null; let dead = false;
+    let img = null, icon = null, dead = false;
     const draw = () => {
-      paintBase(tex[0].image, project, img); paintTitle(tex[1].image, project, total); paintChips(tex[2].image, project);
+      paintBase(tex[0].image, project, img, icon); paintTitle(tex[1].image, project, total); paintChips(tex[2].image, project);
       tex.forEach((t) => { t.needsUpdate = true; });
     };
     draw();
@@ -165,6 +251,14 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
       const im = new Image(); im.crossOrigin = 'anonymous';
       im.onload = () => { img = im; if (!dead) draw(); };
       im.src = project.image;
+    } else if (project.Icon) {
+      try {
+        let svg = renderToStaticMarkup(<project.Icon size={120} color="#ffffff" strokeWidth={1.6} />);
+        if (!svg.includes('xmlns=')) svg = svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+        const im = new Image();
+        im.onload = () => { icon = im; if (!dead) draw(); };
+        im.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      } catch { /* the badge simply stays empty */ }
     }
     return () => { dead = true; };
   }, [tex, project, total]);
@@ -196,7 +290,7 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
       g.rotation.y = THREE.MathUtils.damp(g.rotation.y, try_, k, dt);
     }
     g.position.y = ty + Math.sin(t * 0.8) * 0.1;
-    const sc = THREE.MathUtils.damp(g.scale.x, focused ? 1.08 : hover ? 1.04 : 0.94, 6, dt);
+    const sc = THREE.MathUtils.damp(g.scale.x, focused ? 1.22 : hover ? 0.92 : 0.84, 5, dt);
     g.scale.setScalar(sc);
 
     // focused slab leans toward the cursor – the floating layers shift with it (parallax)
@@ -226,11 +320,11 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
           <planeGeometry args={[PW, PH]} />
           <meshBasicMaterial ref={(m) => { shade.current[0] = m; }} map={tex[0]} toneMapped={false} />
         </mesh>
-        <mesh position={[0, 0, DEPTH / 2 + 0.35]} onClick={click} onPointerOver={over} onPointerOut={() => setHover(false)}>
+        <mesh position={[0, 0, DEPTH / 2 + 0.16]} onClick={click} onPointerOver={over} onPointerOut={() => setHover(false)}>
           <planeGeometry args={[PW, PH]} />
           <meshBasicMaterial ref={(m) => { shade.current[1] = m; }} map={tex[1]} toneMapped={false} transparent depthWrite={false} />
         </mesh>
-        <mesh position={[0, 0, DEPTH / 2 + 0.7]} onClick={click} onPointerOver={over} onPointerOut={() => setHover(false)}>
+        <mesh position={[0, 0, DEPTH / 2 + 0.3]} onClick={click} onPointerOver={over} onPointerOut={() => setHover(false)}>
           <planeGeometry args={[PW, PH]} />
           <meshBasicMaterial ref={(m) => { shade.current[2] = m; }} map={tex[2]} toneMapped={false} transparent depthWrite={false} />
         </mesh>
@@ -239,24 +333,11 @@ const Panel = ({ project, index, total, focus, layout, onSelect }) => {
   );
 };
 
-/** wireframe rings drifting behind everything – pure atmosphere */
-const Rings = ({ layout }) => {
-  const a = useRef(); const b = useRef();
-  useFrame((_, dt) => { a.current.rotation.z += dt * 0.1; a.current.rotation.x += dt * 0.04; b.current.rotation.z -= dt * 0.07; b.current.rotation.y += dt * 0.05; });
-  const z = layout === 'ring' ? -16 : -14;
-  return (
-    <group position={[0, 0.5, z]}>
-      <mesh ref={a}><torusGeometry args={[9, 0.025, 8, 120]} /><meshBasicMaterial color="#6d8bff" transparent opacity={0.35} /></mesh>
-      <mesh ref={b}><torusGeometry args={[12.5, 0.02, 8, 120]} /><meshBasicMaterial color="#c36bff" transparent opacity={0.25} /></mesh>
-    </group>
-  );
-};
-
 const Rig = () => {
   const { camera, pointer, viewport } = useThree();
   useFrame((_, dt) => {
     // narrow screens pull the camera back so the slab still fits
-    const dist = 7 + Math.max(0, 1.5 - viewport.aspect) * 4.5;
+    const dist = 8.8 + Math.max(0, 1.6 - viewport.aspect) * 5.5;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, pointer.x * 1.6, 2.5, dt);
     camera.position.y = THREE.MathUtils.damp(camera.position.y, 0.5 + pointer.y * 0.9, 2.5, dt);
     camera.position.z = THREE.MathUtils.damp(camera.position.z, dist, 2.5, dt);
@@ -267,12 +348,8 @@ const Rig = () => {
 
 const Scene = ({ projects, focus, layout, onSelect }) => (
   <>
-    <color attach="background" args={['#04050c']} />
     <directionalLight position={[2, 3, 6]} intensity={1.4} />
-    <fog attach="fog" args={['#04050c', 12, 38]} />
     <ambientLight intensity={0.7} />
-    <gridHelper args={[70, 70, '#3b4cff', '#1a2160']} position={[0, -2.6, -8]} />
-    <Rings layout={layout} />
     {projects.map((p, i) => (
       <Panel key={p.id} project={p} index={i} total={projects.length} focus={focus} layout={layout} onSelect={onSelect} />
     ))}
@@ -304,7 +381,7 @@ const ProjectSpace3D = ({ projects, focus, onFocus, onOpen, layout = 'flow', lab
         if (Math.abs(dx) > 70) go(dx < 0 ? 1 : -1);
       }}
     >
-      <Canvas frameloop={live ? 'always' : 'never'} camera={{ position: [0, 0.5, 7], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, powerPreference: 'high-performance' }}>
+      <Canvas frameloop={live ? 'always' : 'never'} camera={{ position: [0, 0.5, 8.8], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}>
         <Scene projects={projects} focus={focus} layout={layout} onSelect={select} />
       </Canvas>
 

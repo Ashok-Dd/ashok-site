@@ -136,6 +136,126 @@ const labelTexture = (text, color) => {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 };
 
+
+/* ───────────── serpents coiled around the lock ───────────── */
+/**
+ * A snake that really crawls. The body is the last `Lb` units of a path, sampled every frame:
+ *   coil around the lock (idle)  →  head rises  →  long zig-zag run off the edge of the door.
+ * progress 0 = coiled, 1 = completely gone. A small travelling wave keeps the body wriggling.
+ */
+const makeSnake = () => {
+  const pts = [new THREE.Vector3(-3.3, -2.5, 0.12), new THREE.Vector3(-2.5, -2.05, 0.2), new THREE.Vector3(-1.95, -1.55, 0.26)];
+  const A0 = Math.PI * 1.25, A1 = Math.PI * 2.78, N = 14;
+  for (let k = 0; k <= N; k++) {
+    const a = A0 + ((A1 - A0) * k) / N;
+    const r = 1.46 + Math.sin(k * 0.9) * 0.05;
+    pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0.2 + Math.sin(k * 1.25 + 0.6) * 0.3));
+  }
+  pts.push(new THREE.Vector3(-1.55, 1.55, 0.62), new THREE.Vector3(-1.5, 2.05, 0.95));
+  const headIdle = pts[pts.length - 1].clone();
+  // zig-zag run to the left, past the edge of the door
+  for (let k = 1; k <= 10; k++) pts.push(new THREE.Vector3(-1.5 - k * 1.85, 2.1 + (k % 2 ? 0.95 : -0.95), 0.95));
+
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5);
+  curve.arcLengthDivisions = 1500;
+  const Ltot = curve.getLength();
+  let u0 = 0, best = 1e9;
+  for (let i = 0; i <= 1500; i++) { const d = curve.getPointAt(i / 1500).distanceTo(headIdle); if (d < best) { best = d; u0 = i / 1500; } }
+  const s0 = u0 * Ltot;      // where the head sits while coiled
+  const Lb = s0;             // body length
+
+  const M = 90, R = 14;
+  const pos = new Float32Array((M + 1) * (R + 1) * 3), nor = new Float32Array(pos.length), uv = new Float32Array((M + 1) * (R + 1) * 2);
+  for (let i = 0, o = 0; i <= M; i++) for (let j = 0; j <= R; j++, o += 2) { uv[o] = (i / M) * 46; uv[o + 1] = j / R; }
+  const idx = [];
+  for (let i = 0; i < M; i++) for (let j = 0; j < R; j++) { const a = i * (R + 1) + j, b = (i + 1) * (R + 1) + j; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+
+  const P = Array.from({ length: M + 1 }, () => new THREE.Vector3());
+  const T = Array.from({ length: M + 1 }, () => new THREE.Vector3());
+  const Nn = Array.from({ length: M + 1 }, () => new THREE.Vector3());
+  const tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3(), Z = new THREE.Vector3(0, 0, 1), Zq = new THREE.Vector3(0, 0, 1);
+  const headPos = new THREE.Vector3(), headQ = new THREE.Quaternion();
+
+  const at = (sv, out) => {
+    if (sv >= Ltot) { curve.getPointAt(1, out); out.addScaledVector(curve.getTangentAt(1, tmp2), sv - Ltot); }
+    else curve.getPointAt(THREE.MathUtils.clamp(sv / Ltot, 0, 1), out);
+  };
+
+  const update = (progress, t) => {
+    const sh = s0 + progress * (Ltot - s0 + Lb) + Math.sin(t * 1.4) * 0.05 * (1 - progress);
+    for (let i = 0; i <= M; i++) at(sh - Lb + (Lb * i) / M, P[i]);
+    for (let i = 0; i <= M; i++) {
+      T[i].subVectors(P[Math.min(i + 1, M)], P[Math.max(i - 1, 0)]).normalize();
+      Nn[i].crossVectors(T[i], Z);
+      if (Nn[i].lengthSq() < 1e-6) Nn[i].set(1, 0, 0);
+      Nn[i].normalize();
+    }
+    // side-to-side wriggle, travelling head → tail
+    for (let i = 0; i <= M; i++) {
+      const env = Math.sin(Math.PI * (i / M)) * 0.85 + 0.15;
+      P[i].addScaledVector(Nn[i], Math.sin(i * 0.42 - t * 6) * 0.07 * env);
+    }
+    let o = 0;
+    for (let i = 0; i <= M; i++) {
+      const tt = i / M;
+      const r = tt < 0.22 ? 0.03 + (tt / 0.22) * 0.085 : tt < 0.86 ? 0.115 : 0.115 - ((tt - 0.86) / 0.14) * 0.03;
+      const B = tmp.crossVectors(T[i], Nn[i]);
+      for (let j = 0; j <= R; j++, o += 3) {
+        const a = (j / R) * Math.PI * 2, c = Math.cos(a), si = Math.sin(a);
+        const nx = Nn[i].x * c + B.x * si, ny = Nn[i].y * c + B.y * si, nz = Nn[i].z * c + B.z * si;
+        nor[o] = nx; nor[o + 1] = ny; nor[o + 2] = nz;
+        pos[o] = P[i].x + nx * r; pos[o + 1] = P[i].y + ny * r; pos[o + 2] = P[i].z + nz * r;
+      }
+    }
+    geo.attributes.position.needsUpdate = true; geo.attributes.normal.needsUpdate = true;
+    geo.computeBoundingSphere();
+    headPos.copy(P[M]).addScaledVector(T[M], 0.07);
+    headQ.setFromUnitVectors(Zq, T[M]);
+  };
+  return { geo, update, headPos, headQ };
+};
+
+const scaleTexture = () => {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#c8c8c8'; g.fillRect(0, 0, 128, 128);
+  // diamond scales
+  for (let row = 0; row < 4; row++) for (let col = 0; col < 3; col++) {
+    const cx = col * 42.7 + (row % 2 ? 21 : 0), cy = row * 32 + 16;
+    g.beginPath(); g.moveTo(cx, cy - 16); g.lineTo(cx + 21, cy); g.lineTo(cx, cy + 16); g.lineTo(cx - 21, cy); g.closePath();
+    g.fillStyle = (row + col) % 2 ? '#e6e6e6' : '#b4b4b4'; g.fill();
+    g.strokeStyle = '#4a4a4a'; g.lineWidth = 2.5; g.stroke();
+  }
+  // bright dorsal stripe
+  const grad = g.createLinearGradient(0, 48, 0, 80);
+  grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.5, 'rgba(255,255,255,0.55)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grad; g.fillRect(0, 48, 128, 32);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+};
+
+const SnakeHead = ({ mat, eyeMat, outerRef, swayRef, tongueRef }) => (
+  <group ref={outerRef}>
+    <group ref={swayRef}>
+      <mesh scale={[0.15, 0.105, 0.24]} material={mat}><sphereGeometry args={[1, 20, 14]} /></mesh>
+      <mesh position={[0, -0.02, 0.2]} scale={[0.1, 0.07, 0.13]} material={mat}><sphereGeometry args={[1, 16, 12]} /></mesh>
+      {[-1, 1].map((sx) => (
+        <mesh key={sx} position={[sx * 0.085, 0.055, 0.1]} material={eyeMat}><sphereGeometry args={[0.032, 12, 10]} /></mesh>
+      ))}
+      <group ref={tongueRef} position={[0, -0.02, 0.31]}>
+        <mesh position={[0, 0, 0.09]}><boxGeometry args={[0.012, 0.012, 0.18]} /><meshBasicMaterial color="#ff3b5c" /></mesh>
+        <mesh position={[-0.03, 0, 0.2]} rotation={[0, 0.5, 0]}><boxGeometry args={[0.01, 0.01, 0.1]} /><meshBasicMaterial color="#ff3b5c" /></mesh>
+        <mesh position={[0.03, 0, 0.2]} rotation={[0, -0.5, 0]}><boxGeometry args={[0.01, 0.01, 0.1]} /><meshBasicMaterial color="#ff3b5c" /></mesh>
+      </group>
+    </group>
+  </group>
+);
+
 /* ───────────── the key ───────────── */
 const KeyModel = ({ mat, glow }) => (
   <group>
@@ -172,7 +292,7 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
   const S = useRef({
     mode: 'idle',
     key: new THREE.Vector3(), keyRot: new THREE.Euler(0, 0, -0.25, 'YXZ'), keyAttached: 0, turn: 0,
-    bolt: 0, fall: 0, door: 0, enter: 0, near: 0, shake: 0, led: 0, snap: false,
+    bolt: 0, fall: 0, door: 0, enter: 0, near: 0, shake: 0, led: 0, snap: false, snake: 0,
   });
 
   const aspect = size.width / Math.max(1, size.height);
@@ -208,11 +328,27 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
   const steel = useMemo(() => new THREE.MeshStandardMaterial({ color: '#232733', metalness: 0.8, roughness: 0.45, envMapIntensity: 0.35 }), []);
   const dark = useMemo(() => new THREE.MeshStandardMaterial({ color: '#07080d', metalness: 0.5, roughness: 0.7 }), []);
   const neon = useMemo(() => new THREE.MeshStandardMaterial({ color: '#06120f', emissive: '#1abc9c', emissiveIntensity: 2.2, roughness: 0.6, envMapIntensity: 0 }), []);
+  const gun = useMemo(() => new THREE.MeshStandardMaterial({ color: '#4a526b', metalness: 0.95, roughness: 0.24, envMapIntensity: 1.5 }), []);
+  const gunDark = useMemo(() => new THREE.MeshStandardMaterial({ color: '#1a1e2c', metalness: 0.9, roughness: 0.36, envMapIntensity: 1 }), []);
+  const plate = useMemo(() => new THREE.MeshStandardMaterial({ color: '#0a0d16', metalness: 0.6, roughness: 0.4, envMapIntensity: 0.6 }), []);
+  const keyholeGeo = useMemo(() => {
+    const round = new THREE.Shape(); round.absarc(0, 0.1, 0.15, 0, Math.PI * 2, false);
+    const tail = new THREE.Shape(); tail.moveTo(-0.07, 0.06); tail.lineTo(0.07, 0.06); tail.lineTo(0.12, -0.32); tail.lineTo(-0.12, -0.32); tail.closePath();
+    return new THREE.ExtrudeGeometry([round, tail], { depth: 0.03, bevelEnabled: false });
+  }, []);
+  const tickGeo = useMemo(() => new THREE.BoxGeometry(0.03, 0.12, 0.04), []);
+  const rig = useMemo(() => makeSnake(), []);
+  const headOuter = useRef([]);
+  const scales = useMemo(() => scaleTexture(), []);
+  const snakeMat = useMemo(() => new THREE.MeshStandardMaterial({ map: scales, color: '#4dd9bc', metalness: 0.45, roughness: 0.38, emissive: '#1abc9c', emissiveIntensity: 0.18, envMapIntensity: 0.9, }), [scales]);
+  const eyeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fff3a0', emissive: '#ffe066', emissiveIntensity: 2, toneMapped: false }), []);
+  const snakeG = useRef(); const tongues = useRef([]); const headMeshes = useRef([]);
+  const dialA = useRef(); const dialB = useRef(); const holeGlow = useRef();
   const keyMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#4dd9bc', metalness: 0.95, roughness: 0.24, emissive: '#1abc9c', emissiveIntensity: 0.4, envMapIntensity: 1 }), []);
   const glowTex = useMemo(() => radial('rgba(255,255,255,1)'), []);
   const fogTex = useMemo(() => radial('rgba(255,255,255,0.5)'), []);
   const keyLabelTex = useMemo(() => { void themeKey; return labelTexture('ACCESS KEY  ▸', cssVar('--color-accent-light', '#4dd9bc')); }, [themeKey]);
-  useEffect(() => () => { [matL, matR, edge, steel, dark, neon, keyMat, glowTex, fogTex].forEach((m) => m.dispose()); }, [matL, matR, edge, steel, dark, neon, keyMat, glowTex, fogTex]);
+  useEffect(() => () => { [matL, matR, edge, steel, dark, neon, keyMat, glowTex, fogTex, gun, gunDark, plate, keyholeGeo, tickGeo, rig.geo, scales, snakeMat, eyeMat].forEach((m) => m.dispose()); }, [rig, scales, snakeMat, eyeMat, matL, matR, edge, steel, dark, neon, keyMat, glowTex, fogTex, gun, gunDark, plate, keyholeGeo, tickGeo]);
   useEffect(() => () => keyLabelTex.dispose(), [keyLabelTex]);
 
   const restPos = () => (narrow ? new THREE.Vector3(-W * 0.2, -GH * 0.34, 1.3) : new THREE.Vector3(-W * 0.3, -GH * 0.27, 1.3));
@@ -244,7 +380,8 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
       .call(() => { s.keyAttached = 1; onBurst?.(); })
       .to(s, { led: 1, duration: 0.3 })
       .to(s, { bolt: 1, duration: 0.5, ease: 'power3.out' }, '+=0.1')
-      .to(s, { fall: 1, duration: 0.9, ease: 'power2.in' }, '+=0.12')
+      .to(s, { snake: 1, duration: 2, ease: 'power1.inOut' }, '<')
+      .to(s, { fall: 1, duration: 0.9, ease: 'power2.in' }, '<+0.9')
       .call(() => { onDoorsStart?.(); onBurst?.(); })
       .call(() => slide(1, 2.3, () => { s.mode = 'open'; resolve(); onOpened?.(); }));
   }), [HOLE, onBurst, onStart, onDoorsStart, onOpened, slide]);
@@ -254,6 +391,7 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
     gsap.killTweensOf(s);
     s.mode = 'busy';
     Object.assign(s, { keyAttached: 0, turn: 0, bolt: 0, fall: 0, led: 0, near: 0 });
+    gsap.to(s, { snake: 0, duration: 1.8, delay: 0.2, ease: 'power1.inOut' });   // they slither back in
     s.key.copy(restPos()); s.keyRot.set(0, 0, -0.25);
     s.enter = 0;
     slide(0, 1.7, () => {
@@ -266,7 +404,7 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
   const reset = useMemo(() => () => {
     const s = S.current;
     gsap.killTweensOf(s); gsap.killTweensOf(s.key); gsap.killTweensOf(s.keyRot);
-    Object.assign(s, { mode: 'idle', keyAttached: 0, turn: 0, bolt: 0, fall: 0, door: 0, led: 0, near: 0, shake: 0, enter: 0 });
+    Object.assign(s, { mode: 'idle', keyAttached: 0, turn: 0, bolt: 0, fall: 0, door: 0, led: 0, near: 0, shake: 0, enter: 0, snake: 0 });
     s.key.copy(restPos()); s.keyRot.set(0, 0, -0.25);
     gsap.to(s, { enter: 1, duration: 1.1, ease: 'power3.out' });
     invalidate();
@@ -324,7 +462,7 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
 
   const fogSeeds = useMemo(() => Array.from({ length: 6 }, (_, i) => ({ x: (i / 5 - 0.5) * 1.1, ph: i * 1.7, sc: 0.8 + (i % 3) * 0.35 })), []);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, dt) => {
     const s = S.current;
     const t = clock.elapsedTime;
 
@@ -353,13 +491,28 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
     L.position.set(s.shake ? Math.sin(t * 90) * 0.04 : 0, LOCK_Y - s.fall * (GH * 1.2), LOCK_Z + s.fall * 1.2);
     L.rotation.set(s.fall * 0.9, 0, s.fall * 0.5);
     L.visible = s.fall < 0.995;
+    // dial rings idle-spin, and race when the key comes close
+    const spin = 0.22 + s.near * 2.6 + s.led * 1.4;
+    dialA.current.rotation.z += dt * spin;
+    dialB.current.rotation.z -= dt * spin * 1.6;
+    // serpents crawl along their path (zig-zag run to the edge), tongues flick, eyes glow when the key is near
+    snakeMat.color.copy(colors.current.light).lerp(new THREE.Color('#ffffff'), 0.1);
+    snakeMat.emissive.copy(colors.current.accent);
+    rig.update(s.snake, t);
+    snakeG.current.visible = s.snake < 0.999;
+    headOuter.current.forEach((h) => { if (h) { h.position.copy(rig.headPos); h.quaternion.copy(rig.headQ); } });
+    eyeMat.emissiveIntensity = 1.6 + s.near * 3 + Math.sin(t * 3) * 0.3;
+    tongues.current.forEach((tg, i) => { if (tg) { tg.visible = Math.sin(t * (7 + s.near * 12 + s.snake * 8) + i * 2.4) > 0.55; } });
+    headMeshes.current.forEach((h, i) => { if (h) { h.rotation.y = Math.sin(t * 1.3 + i * 1.7) * 0.18 * (1 - s.near * 0.7) * (1 - s.snake); h.rotation.x = Math.sin(t * 0.9 + i) * 0.06; } });
+    holeGlow.current.material.opacity = 0.22 + Math.sin(t * 2.2) * 0.07 + s.near * 0.55 + s.led * 0.3;
+    holeGlow.current.material.color.copy(colors.current.light);
     boltL.current.position.x = -1.7 + s.bolt * 0.9;
     boltR.current.position.x = 1.7 - s.bolt * 0.9;
     ledMats.current.forEach((m, i) => {
       if (!m) return;
-      const col = s.led > 0.5 ? '#3dff9a' : '#ff5a6a';
+      const col = s.led > 0.5 ? '#2bffa0' : '#ff2b4d';
       m.color.set(col); m.emissive.set(col);
-      m.emissiveIntensity = 1.3 + (i === 1 ? Math.sin(t * 6) * 0.5 : 0);
+      m.emissiveIntensity = 2.4 + (i === 1 ? Math.sin(t * 6) * 0.8 : 0);
     });
 
     // key — themed metal
@@ -403,6 +556,8 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
       <ambientLight intensity={0.1} />
       <pointLight position={[-W * 0.25, GH * 0.25, 8]} intensity={17} color="#ffffff" />
       <pointLight position={[W * 0.3, -GH * 0.2, 6]} intensity={10} color="#ffffff" />
+      <pointLight position={[1.6, 1.8, 3.4]} intensity={14} distance={8} color="#ffffff" />
+      <pointLight position={[-2.2, -1.6, 2.6]} intensity={7} distance={7} color={colors.current.light} />
 
       <mesh ref={spill} position={[0, 0, -0.4]}>
         <planeGeometry args={[1, 1]} />
@@ -414,23 +569,84 @@ const Scene = ({ ctrl, onBurst, onStart, onDoorsStart, onOpened, onClosed, theme
 
       {/* circular access lock bridging the seam */}
       <group ref={lockG} position={[0, LOCK_Y, LOCK_Z]}>
-        <mesh ref={boltL} position={[-1.7, 0, -0.2]} material={steel}><boxGeometry args={[1.9, 0.34, 0.26]} /></mesh>
-        <mesh ref={boltR} position={[1.7, 0, -0.2]} material={steel}><boxGeometry args={[1.9, 0.34, 0.26]} /></mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} material={steel}><cylinderGeometry args={[1.25, 1.25, 0.56, 48]} /></mesh>
-        <mesh position={[0, 0, 0.29]} rotation={[Math.PI / 2, 0, 0]} material={dark}><cylinderGeometry args={[1.05, 1.05, 0.04, 48]} /></mesh>
-        <mesh position={[0, 0, 0.325]} material={neon}><torusGeometry args={[0.82, 0.05, 12, 56]} /></mesh>
-        <mesh position={[0, 0, 0.31]} material={dark}><circleGeometry args={[0.76, 40]} /></mesh>
-        {/* status LEDs */}
-        {[-0.34, 0, 0.34].map((x, i) => (
-          <mesh key={i} position={[x, 0.95, 0.31]}>
-            <boxGeometry args={[0.2, 0.09, 0.02]} />
-            <meshStandardMaterial ref={(m) => { ledMats.current[i] = m; }} color="#ff5a6a" emissive="#ff5a6a" emissiveIntensity={1.3} />
+        {/* locking bolts: heavy bars with accent grooves */}
+        {[[boltL, -1.7], [boltR, 1.7]].map(([r, x], i) => (
+          <group key={i} ref={r} position={[x, 0, -0.2]}>
+            <mesh material={gun}><boxGeometry args={[1.9, 0.4, 0.3]} /></mesh>
+            {[-0.55, 0, 0.55].map((gx) => (
+              <mesh key={gx} position={[gx, 0, 0.16]} material={neon}><boxGeometry args={[0.04, 0.3, 0.012]} /></mesh>
+            ))}
+          </group>
+        ))}
+
+        {/* body + machined bezel */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} material={gunDark}><cylinderGeometry args={[1.3, 1.3, 0.56, 64]} /></mesh>
+        <mesh position={[0, 0, 0.27]} material={gun}><torusGeometry args={[1.2, 0.1, 24, 80]} /></mesh>
+        <mesh position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]} material={plate}><cylinderGeometry args={[1.07, 1.07, 0.06, 64]} /></mesh>
+        <mesh position={[0, 0, 0.31]} material={gun}><torusGeometry args={[1.06, 0.03, 12, 80]} /></mesh>
+
+        {/* screws */}
+        {[45, 135, 225, 315].map((d) => (
+          <mesh key={d} position={[Math.cos((d * Math.PI) / 180) * 1.16, Math.sin((d * Math.PI) / 180) * 1.16, 0.36]} rotation={[Math.PI / 2, 0, 0]} material={gun}>
+            <cylinderGeometry args={[0.055, 0.055, 0.05, 6]} />
           </mesh>
         ))}
-        {/* keyhole */}
-        <mesh position={[0, 0.12, 0.33]}><circleGeometry args={[0.13, 24]} /><meshBasicMaterial color="#000000" /></mesh>
-        <mesh position={[0, -0.08, 0.33]}><boxGeometry args={[0.09, 0.36, 0.01]} /><meshBasicMaterial color="#000000" /></mesh>
-        <mesh position={[0, -1.0, 0.31]} material={neon}><boxGeometry args={[0.9, 0.035, 0.02]} /></mesh>
+
+        {/* outer tick dial – spins */}
+        <group ref={dialA} position={[0, 0, 0.34]}>
+          {Array.from({ length: 48 }, (_, i) => {
+            const a = (i / 48) * Math.PI * 2;
+            const long = i % 4 === 0;
+            return (
+              <mesh key={i} geometry={tickGeo} position={[Math.cos(a) * 0.93, Math.sin(a) * 0.93, 0]} rotation={[0, 0, a - Math.PI / 2]} scale={[long ? 1.4 : 1, long ? 1.2 : 0.7, 1]} material={long ? neon : gun} />
+            );
+          })}
+        </group>
+
+        {/* inner segmented neon arcs – counter-spin */}
+        <group ref={dialB} position={[0, 0, 0.345]}>
+          {[0, 1, 2].map((i) => (
+            <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]} material={neon}>
+              <torusGeometry args={[0.72, 0.035, 10, 36, Math.PI * 0.52]} />
+            </mesh>
+          ))}
+        </group>
+
+        {/* keyhole: backlit plate, glowing rim, black cut-out */}
+        <mesh ref={holeGlow} position={[0, 0, 0.33]}>
+          <circleGeometry args={[0.62, 40]} />
+          <meshBasicMaterial map={glowTex} transparent opacity={0.3} depthWrite={false} blending={THREE.AdditiveBlending} />
+        </mesh>
+        <mesh geometry={keyholeGeo} position={[0, 0, 0.318]} scale={[1.3, 1.22, 1]} material={neon} />
+        <mesh geometry={keyholeGeo} position={[0, 0, 0.336]}><meshBasicMaterial color="#000000" /></mesh>
+
+        {/* status LEDs in machined sockets */}
+        {[-0.36, 0, 0.36].map((x, i) => (
+          <group key={i} position={[x, 0.98, 0.32]}>
+            <mesh material={gunDark}><torusGeometry args={[0.1, 0.03, 10, 24]} /></mesh>
+            <mesh position={[0, 0, 0.01]}>
+              <sphereGeometry args={[0.07, 18, 14]} />
+              <meshStandardMaterial ref={(m) => { ledMats.current[i] = m; }} color="#ff2b4d" emissive="#ff2b4d" emissiveIntensity={2.4} toneMapped={false} />
+            </mesh>
+          </group>
+        ))}
+
+        {/* engraved plate under the keyhole */}
+        <mesh position={[0, -0.9, 0.325]} material={neon}><boxGeometry args={[0.9, 0.03, 0.02]} /></mesh>
+        <mesh position={[0, -0.97, 0.325]} material={neon}><boxGeometry args={[0.45, 0.03, 0.02]} /></mesh>
+      </group>
+
+      {/* two serpents guard the lock; on unlock they slither off in opposite directions */}
+      <group ref={snakeG} position={[0, LOCK_Y, LOCK_Z]}>
+        {[0, 1].map((i) => (
+          <group key={i} rotation={[0, 0, i * Math.PI]}>
+            <mesh geometry={rig.geo} material={snakeMat} frustumCulled={false} />
+            <SnakeHead mat={snakeMat} eyeMat={eyeMat}
+              outerRef={(g) => { headOuter.current[i] = g; }}
+              swayRef={(g) => { headMeshes.current[i] = g; }}
+              tongueRef={(g) => { tongues.current[i] = g; }} />
+          </group>
+        ))}
       </group>
 
       {/* the key */}

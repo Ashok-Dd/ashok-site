@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { lazy, Suspense, useState, useRef, useCallback } from 'react';
 import { Crosshair, Zap, Flame, Terminal, Waves, Sun, Telescope, Play } from 'lucide-react';
 import gsap from 'gsap';
 import SkillShooter from './SkillShooter';
@@ -9,16 +9,19 @@ import SnakeGame from './SnakeGame';
 import CircleGame from './CircleGame';
 import GalaxyGame from './GalaxyGame';
 import { useTheme } from '../context/ThemeContext';
-import useTilt from '../hooks/useTilt';
+import Boundary from '../three/Boundary';
+import { hasWebGL } from '../three/webgl';
+
+const ArcadeStage3D = lazy(() => import('./ArcadeStage3D'));
 
 const GAMES = [
-  { id: 'cyberpunk', name: 'Arena Shooter',  blurb: 'Blast skills out of the arena.',  Icon: Crosshair, Comp: SkillShooter },
-  { id: 'synthwave', name: 'Endless Runner', blurb: 'Dodge bugs on a neon grid.',       Icon: Zap,       Comp: EndlessRunner },
-  { id: 'lava',      name: 'Meteor Strike',  blurb: 'Survive the molten meteor rain.',  Icon: Flame,     Comp: LavaGame },
-  { id: 'forest',    name: 'Snake',          blurb: 'Eat skills, grow your stack.',     Icon: Terminal,  Comp: SnakeGame },
-  { id: 'ocean',     name: 'Circle Draw',    blurb: 'Trace the perfect circle.',        Icon: Waves,     Comp: CircleGame },
-  { id: 'sunset',    name: 'Paper Glider',   blurb: 'Glide through the golden sky.',    Icon: Sun,       Comp: SunsetGame },
-  { id: 'galaxy',    name: 'Asteroid Blast', blurb: 'Clear the field of asteroids.',    Icon: Telescope, Comp: GalaxyGame },
+  { id: 'cyberpunk', color: '#1abc9c', name: 'Arena Shooter',  blurb: 'Blast skills out of the arena.',  Icon: Crosshair, Comp: SkillShooter },
+  { id: 'synthwave', color: '#f72585', name: 'Endless Runner', blurb: 'Dodge bugs on a neon grid.',       Icon: Zap,       Comp: EndlessRunner },
+  { id: 'lava', color: '#ef4444',      name: 'Meteor Strike',  blurb: 'Survive the molten meteor rain.',  Icon: Flame,     Comp: LavaGame },
+  { id: 'forest', color: '#22c55e',    name: 'Snake',          blurb: 'Eat skills, grow your stack.',     Icon: Terminal,  Comp: SnakeGame },
+  { id: 'ocean', color: '#0ea5e9',     name: 'Circle Draw',    blurb: 'Trace the perfect circle.',        Icon: Waves,     Comp: CircleGame },
+  { id: 'sunset', color: '#f97316',    name: 'Paper Glider',   blurb: 'Glide through the golden sky.',    Icon: Sun,       Comp: SunsetGame },
+  { id: 'galaxy', color: '#8b5cf6',    name: 'Asteroid Blast', blurb: 'Clear the field of asteroids.',    Icon: Telescope, Comp: GalaxyGame },
 ];
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -29,7 +32,6 @@ export default function Games() {
   const busy = useRef(false);
   const sectionRef = useRef(null);
   const fxRef = useRef(null);
-  useTilt(sectionRef, '.ar-box', 26);
 
   /** box grows to fill the screen, bursts, then the game opens */
   const play = useCallback((id, box) => {
@@ -120,40 +122,28 @@ export default function Games() {
         <div className="ar-head">
           <p className="ar-eyebrow"><span className="ar-dot" />Take a Break<span className="ar-dot" /></p>
           <h2 className="ar-title">Arcade</h2>
-          <p className="ar-sub">Seven games · pick a box and play</p>
+          <p className="ar-sub">Seven games · pick one and play</p>
           <div className="ar-ruler"><i /><b /><i /></div>
         </div>
 
-        <div className="ar-grid">
-          {GAMES.map(({ id, name, blurb, Icon }, i) => (
-            <div key={id} className="ar-slot">
-              <div
-                className="ar-box"
-                role="button"
-                tabIndex={0}
-                aria-label={`Play ${name}`}
-                onClick={(e) => play(id, e.currentTarget)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(id, e.currentTarget); } }}
-              >
-                {/* front */}
-                <div className="ar-face ar-front">
-                  <span className="ar-spot" aria-hidden="true" />
-                  <span className="ar-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="ar-icon"><Icon size={30} /></span>
-                  <span className="ar-name">{name}</span>
-                  <span className="ar-blurb">{blurb}</span>
-                  <span className="ar-play"><Play size={12} />{theme === id ? 'Your theme · Play' : 'Play'}</span>
-                </div>
-                {/* sides */}
-                <div className="ar-face ar-side ar-right" />
-                <div className="ar-face ar-side ar-left" />
-                <div className="ar-face ar-cap ar-top" />
-                <div className="ar-face ar-cap ar-bottom" />
-                <div className="ar-face ar-back" />
-              </div>
+        {(() => {
+          const fallback = (
+            <div className="ar-list">
+              {GAMES.map(({ id, name, blurb, Icon, color }) => (
+                <button key={id} className="ar-item" style={{ '--c': color }} onClick={(e) => play(id, e.currentTarget)}>
+                  <Icon size={34} /><b>{name}</b><span>{blurb}</span>
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+          return hasWebGL() ? (
+            <Boundary fallback={fallback}>
+              <Suspense fallback={<div style={{ minHeight: 680 }} />}>
+                <ArcadeStage3D games={GAMES} onPlay={play} activeTheme={theme} />
+              </Suspense>
+            </Boundary>
+          ) : fallback;
+        })()}
 
         <style>{`
           .ar-section { position:relative; overflow:hidden; background:var(--color-bg-sunken); color:var(--color-text-primary); padding:110px 24px 110px; }
@@ -177,44 +167,12 @@ export default function Games() {
           .ar-ruler i:last-child { background:linear-gradient(to left,var(--color-accent-border),transparent); }
           .ar-ruler b { width:8px; height:8px; background:var(--color-accent); transform:rotate(45deg); box-shadow:0 0 14px var(--color-accent-glow); }
 
-          .ar-grid { position:relative; max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:44px 40px; perspective:1300px; }
-          .ar-slot { position:relative; flex:0 1 250px; height:270px; animation:arBob 5s ease-in-out infinite; }
-          .ar-slot:nth-child(2n) { animation-delay:-1.6s; } .ar-slot:nth-child(3n) { animation-delay:-3.1s; }
-          .ar-slot::after { content:''; position:absolute; left:12%; right:12%; bottom:-34px; height:22px; border-radius:50%; background:radial-gradient(ellipse, var(--color-accent-glow), transparent 70%); filter:blur(6px); opacity:.6; pointer-events:none; }
-          @keyframes arBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+          .ar-list { position:relative; max-width:1000px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:18px; }
+          .ar-item { display:grid; justify-items:center; gap:8px; padding:28px 18px; cursor:pointer; border-radius:var(--radius-lg); border:1px solid color-mix(in srgb, var(--c) 35%, transparent); background:var(--color-bg-glass); color:var(--c); }
+          .ar-item b { font-family:var(--font-display); color:var(--color-text-primary); } .ar-item span { font-size:.82rem; color:var(--color-text-secondary); }
 
-          /* the 3D box: front face + four sides + back, depth 44px */
-          .ar-box { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; --d:22px;
-            position:relative; width:100%; height:100%; cursor:pointer; outline:none; transform-style:preserve-3d;
-            transform:rotateX(calc(var(--rx) + 9deg)) rotateY(calc(var(--ry) - 20deg));
-            transition:transform .3s ease-out; }
-          .ar-box:focus-visible .ar-front { outline:2px solid var(--color-accent); outline-offset:4px; }
-          .ar-face { position:absolute; backface-visibility:hidden; }
-          .ar-front { inset:0; transform:translateZ(var(--d)); display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:26px 24px 22px;
-            border-radius:6px; border:1px solid var(--color-accent-border); overflow:hidden;
-            background:linear-gradient(150deg,var(--color-bg-elevated),var(--color-bg-primary)); box-shadow:inset 0 0 30px var(--color-accent-subtle); }
-          .ar-box:hover .ar-front { border-color:var(--color-accent); box-shadow:inset 0 0 40px var(--color-accent-muted), 0 0 40px var(--color-accent-muted); }
-          .ar-side { background:linear-gradient(90deg,var(--color-accent-dark),color-mix(in srgb,var(--color-accent-dark) 40%,var(--color-bg-primary))); }
-          .ar-right { top:0; right:calc(var(--d) * -1); width:calc(var(--d) * 2); height:100%; transform:rotateY(90deg); }
-          .ar-left  { top:0; left:calc(var(--d) * -1);  width:calc(var(--d) * 2); height:100%; transform:rotateY(-90deg); filter:brightness(.7); }
-          .ar-cap { background:linear-gradient(180deg,var(--color-accent-light),var(--color-accent)); }
-          .ar-top    { left:0; top:calc(var(--d) * -1);    width:100%; height:calc(var(--d) * 2); transform:rotateX(90deg); }
-          .ar-bottom { left:0; bottom:calc(var(--d) * -1); width:100%; height:calc(var(--d) * 2); transform:rotateX(-90deg); filter:brightness(.55); }
-          .ar-back { inset:0; transform:translateZ(calc(var(--d) * -1)) rotateY(180deg); background:var(--color-bg-sunken); }
-
-          .ar-spot { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
-            background:radial-gradient(300px circle at var(--mx) var(--my), var(--color-accent-muted), transparent 62%); }
-          .ar-box:hover .ar-spot { opacity:1; }
-          .ar-num { position:absolute; right:14px; top:6px; font-family:var(--font-display); font-size:4.4rem; font-weight:900; line-height:1; color:var(--color-accent-faint); pointer-events:none; }
-          .ar-icon { position:relative; width:58px; height:58px; border-radius:var(--radius-lg); display:flex; align-items:center; justify-content:center; margin-bottom:10px; color:var(--color-accent);
-            background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); box-shadow:0 8px 24px var(--color-accent-muted); }
-          .ar-name { position:relative; font-family:var(--font-display); font-size:1.08rem; font-weight:800; color:var(--color-text-primary); }
-          .ar-blurb { position:relative; font-family:var(--font-body); font-size:.82rem; line-height:1.6; color:var(--color-text-secondary); min-height:2.6em; }
-          .ar-play { position:relative; margin-top:auto; display:inline-flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:var(--color-accent);
-            border:1px solid var(--color-accent-border); border-radius:var(--radius-full); padding:5px 13px; background:var(--color-accent-subtle); }
-
-          @media (max-width:640px) { .ar-section { padding:80px 16px 80px; } .ar-slot { flex-basis:100%; max-width:280px; } .ar-box { transform:rotateX(calc(var(--rx) + 7deg)) rotateY(calc(var(--ry) - 12deg)); } }
-          @media (prefers-reduced-motion:reduce) { .ar-box { transition:none; } .ar-slot, .ar-floor::before { animation:none; } }
+          @media (max-width:640px) { .ar-section { padding:80px 16px 80px; } }
+          @media (prefers-reduced-motion:reduce) { .ar-floor::before { animation:none; } }
         `}</style>
       </section>
     </>

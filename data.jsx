@@ -414,7 +414,7 @@ export const experienceData = [
     company: "CoComply AS",
     logo: "/cocomply-logo.webp",
     period: "Present",
-    type: "Full-time",
+    type: "Internship",
     summary:
       "Working at the intersection of engineering and go-to-market at CoComply — building the systems, automations and data flows that help the team find, reach and convert customers.",
     points: [
