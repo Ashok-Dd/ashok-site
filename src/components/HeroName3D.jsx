@@ -91,7 +91,7 @@ const HeroName3D = ({ theme, onCycle }) => {
     <div ref={boxRef} className="hero-k-3d" aria-hidden="true">
       <Canvas
         frameloop="demand"
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         camera={{ fov: 32, near: 0.1, far: 100, position: [0, 0, 12] }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         style={{ position: 'absolute', inset: 0 }}

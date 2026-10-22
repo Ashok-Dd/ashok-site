@@ -117,7 +117,7 @@ const Content = ({ progress, theme }) => {
 const ScrollIntroScene = ({ progress, theme }) => (
   <Canvas
     frameloop="demand"
-    dpr={[1, 2]}
+    dpr={[1, 1.5]}
     camera={{ fov: 40, near: 0.1, far: 200, position: [0, 0, 14] }}
     gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     style={{ position: 'absolute', inset: 0 }}

@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { categoriesData } from '../../data';
-import Skills3D from './Skills3D';
+import { lazy, Suspense } from 'react';
+const Skills3D = lazy(() => import('./Skills3D'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,7 +33,7 @@ export default function Skills() {
         <div className="sk-ruler"><i /><b /><i /></div>
       </div>
 
-      <Skills3D />
+      <Suspense fallback={<div style={{ minHeight: 560 }} />}><Skills3D /></Suspense>
 
       <style>{`
         .sk-section { position:relative; overflow:hidden; background:var(--color-bg-primary); color:var(--color-text-primary); padding:110px 24px 100px; margin-top:-30px; }

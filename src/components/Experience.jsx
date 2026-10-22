@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Briefcase, Sparkles } from 'lucide-react';
+import { Briefcase, Check } from 'lucide-react';
 import { experienceData } from '../../data';
 import useTilt from '../hooks/useTilt';
 
@@ -10,24 +10,27 @@ gsap.registerPlugin(ScrollTrigger);
 const initials = (name) =>
   name.split(/\s+/).filter((w) => w.length > 2).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
-const CompanyLogo = ({ src, company }) => {
+/** a thick spinning coin: logo on both faces, a ridged rim made of stacked discs */
+const Coin = ({ src, company }) => {
   const [failed, setFailed] = useState(false);
+  const face = failed
+    ? <span className="xp-coin-fallback">{initials(company)}</span>
+    : <img src={src} alt={`${company} logo`} onError={() => setFailed(true)} />;
   return (
-    <div className="xp-logo">
-      <div className="xp-logo-core">
-        {failed ? (
-          <span className="xp-logo-fallback">{initials(company)}</span>
-        ) : (
-          <img src={src} alt={`${company} logo`} onError={() => setFailed(true)} />
-        )}
+    <div className="xp-stage">
+      <div className="xp-coin">
+        {Array.from({ length: 13 }, (_, i) => <i key={i} className="xp-rim" style={{ '--z': `${(i - 6) * 2}px` }} />)}
+        <div className="xp-face xp-front">{face}</div>
+        <div className="xp-face xp-back">{face}</div>
       </div>
+      <span className="xp-floor" />
     </div>
   );
 };
 
 const Experience = () => {
   const sectionRef = useRef(null);
-  useTilt(sectionRef, '.xp-card', 7);
+  useTilt(sectionRef, '.xp-card', 6);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -40,8 +43,8 @@ const Experience = () => {
         scrollTrigger: { trigger: '.xp-list', start: 'top 70%', end: 'bottom 60%', scrub: 0.6 },
       });
       gsap.from('.xp-item', {
-        opacity: 0, x: -50, rotateY: -14, transformPerspective: 900, duration: 0.9, stagger: 0.18, ease: 'power3.out',
-        scrollTrigger: { trigger: '.xp-list', start: 'top 80%', once: true },
+        opacity: 0, y: 70, rotateX: -18, transformPerspective: 1000, duration: 1, stagger: 0.2, ease: 'power3.out',
+        scrollTrigger: { trigger: '.xp-list', start: 'top 82%', once: true },
       });
       gsap.to('.xp-float', {
         yPercent: (i) => (i % 2 ? -30 : 30), ease: 'none',
@@ -75,25 +78,20 @@ const Experience = () => {
               <span className="xp-border" aria-hidden="true" />
               <span className="xp-spot" aria-hidden="true" />
 
-              <CompanyLogo src={e.logo} company={e.company} />
+              <aside className="xp-side">
+                <Coin src={e.logo} company={e.company} />
+                <span className="xp-badge xp-badge-live"><span className="xp-pulse" />{e.period}</span>
+                <span className="xp-badge"><Briefcase size={11} />{e.type}</span>
+              </aside>
 
               <div className="xp-body">
-                <div className="xp-top">
-                  <div>
-                    <h3 className="xp-role">{e.role}</h3>
-                    <p className="xp-company">@ {e.company}</p>
-                  </div>
-                  <div className="xp-meta">
-                    <span className="xp-badge xp-badge-live"><span className="xp-pulse" />{e.period}</span>
-                    <span className="xp-badge"><Briefcase size={11} />{e.type}</span>
-                  </div>
-                </div>
-
+                <p className="xp-company">@ {e.company}</p>
+                <h3 className="xp-role">{e.role}</h3>
                 <p className="xp-summary">{e.summary}</p>
 
                 <ul className="xp-points">
-                  {e.points.map((p) => (
-                    <li key={p}><Sparkles size={13} />{p}</li>
+                  {e.points.map((p, i) => (
+                    <li key={p} style={{ '--i': i }}><span><Check size={13} /></span>{p}</li>
                   ))}
                 </ul>
 
@@ -116,7 +114,6 @@ const Experience = () => {
         .xp-blob { position:absolute; width:520px; height:520px; right:-160px; bottom:-120px; border-radius:50%;
           background:radial-gradient(circle, var(--color-accent-muted), transparent 68%); filter:blur(30px); }
 
-
         .xp-head { position:relative; text-align:center; margin-bottom:56px; }
         .xp-eyebrow { display:inline-flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--color-accent); margin-bottom:14px; }
         .xp-dot { width:5px; height:5px; border-radius:50%; background:var(--color-accent); box-shadow:0 0 8px var(--color-accent-glow); animation:xpPulse 2s ease-in-out infinite; }
@@ -131,16 +128,16 @@ const Experience = () => {
         .xp-ruler b { width:8px; height:8px; background:var(--color-accent); transform:rotate(45deg); box-shadow:0 0 14px var(--color-accent-glow); }
 
         /* timeline */
-        .xp-list { position:relative; max-width:960px; margin:0 auto; padding-left:56px; }
+        .xp-list { position:relative; max-width:1020px; margin:0 auto; padding-left:56px; display:grid; gap:40px; }
         .xp-line { position:absolute; left:15px; top:12px; bottom:12px; width:2px; background:var(--color-border); border-radius:2px; }
         .xp-line-fill { position:absolute; inset:0; transform-origin:top; background:linear-gradient(var(--color-accent-light),var(--color-accent)); box-shadow:0 0 14px var(--color-accent-glow); }
-        .xp-item { position:relative; perspective:1100px; }
-        .xp-node { position:absolute; left:-49px; top:38px; width:20px; height:20px; border-radius:50%; background:var(--color-bg-sunken); border:2px solid var(--color-accent); display:flex; align-items:center; justify-content:center; z-index:2; }
+        .xp-item { position:relative; perspective:1200px; }
+        .xp-node { position:absolute; left:-49px; top:46px; width:20px; height:20px; border-radius:50%; background:var(--color-bg-sunken); border:2px solid var(--color-accent); display:flex; align-items:center; justify-content:center; z-index:2; }
         .xp-node span { width:8px; height:8px; border-radius:50%; background:var(--color-accent); animation:xpPulse 2s ease-in-out infinite; }
         @keyframes xpPulse { 0%,100% { box-shadow:0 0 0 0 var(--color-accent-glow); opacity:1; } 50% { box-shadow:0 0 0 9px transparent; opacity:.7; } }
 
         /* card */
-        .xp-card { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; position:relative; display:flex; gap:30px; padding:34px; border-radius:var(--radius-xl);
+        .xp-card { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; position:relative; display:grid; grid-template-columns:230px 1fr; gap:36px; align-items:center; padding:40px 40px 40px 30px; border-radius:var(--radius-xl);
           background:linear-gradient(150deg,var(--color-bg-elevated),var(--color-bg-sunken)); box-shadow:var(--shadow-lg);
           transform:rotateX(var(--rx)) rotateY(var(--ry)); transform-style:preserve-3d; transition:transform .25s ease-out, box-shadow .3s; }
         .xp-card:hover { box-shadow:var(--shadow-lg), 0 0 46px var(--color-accent-muted); }
@@ -151,43 +148,61 @@ const Experience = () => {
         @property --xp-a { syntax:'<angle>'; inherits:false; initial-value:0deg; }
         @keyframes xpSweep { to { --xp-a:360deg; } }
         .xp-spot { position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .3s;
-          background:radial-gradient(420px circle at var(--mx) var(--my), var(--color-accent-muted), transparent 60%); }
+          background:radial-gradient(460px circle at var(--mx) var(--my), var(--color-accent-muted), transparent 60%); }
         .xp-card:hover .xp-spot { opacity:1; }
 
-        /* circular logo */
-        .xp-logo { position:relative; flex:0 0 112px; width:112px; height:112px; transform:translateZ(40px); }
-        .xp-logo-core { position:absolute; inset:14px; border-radius:50%; overflow:hidden; background:var(--color-bg-elevated);
-          box-shadow:0 0 0 2px var(--color-accent-border), 0 10px 30px rgba(0,0,0,.45), 0 0 34px var(--color-accent-muted); display:flex; align-items:center; justify-content:center; }
-        .xp-logo-core img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
-        .xp-logo-fallback { font-family:var(--font-display); font-weight:900; font-size:1.6rem; color:var(--color-accent); }
+        /* left column: spinning coin + status */
+        .xp-side { display:grid; justify-items:center; gap:12px; transform:translateZ(46px); }
+        .xp-stage { position:relative; width:170px; height:190px; perspective:700px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; }
+        .xp-coin { position:relative; width:150px; height:150px; transform-style:preserve-3d; animation:xpSpin 9s linear infinite; }
+        .xp-stage:hover .xp-coin { animation-duration:3s; }
+        @keyframes xpSpin { from { transform:rotateX(-10deg) rotateY(0deg); } to { transform:rotateX(-10deg) rotateY(360deg); } }
+        .xp-rim, .xp-face { position:absolute; inset:0; border-radius:50%; }
+        .xp-rim { transform:translateZ(var(--z)); background:linear-gradient(135deg,var(--color-accent-dark),var(--color-accent)); }
+        .xp-face { display:flex; align-items:center; justify-content:center; overflow:hidden; backface-visibility:hidden; background:var(--color-bg-elevated);
+          box-shadow:inset 0 0 0 5px var(--color-accent), inset 0 0 28px rgba(0,0,0,.35); }
+        .xp-front { transform:translateZ(14px); }
+        .xp-back { transform:rotateY(180deg) translateZ(14px); }
+        .xp-face img { width:100%; height:100%; object-fit:cover; display:block; }
+        .xp-coin-fallback { font-family:var(--font-display); font-weight:900; font-size:2.4rem; color:var(--color-accent); }
+        .xp-floor { position:absolute; left:50%; bottom:0; width:120px; height:20px; margin-left:-60px; border-radius:50%; background:radial-gradient(ellipse, var(--color-accent-glow), transparent 70%); filter:blur(5px); animation:xpShadow 4.5s ease-in-out infinite; }
+        @keyframes xpShadow { 0%,100% { transform:scaleX(1); opacity:.7; } 50% { transform:scaleX(.5); opacity:.35; } }
 
-        .xp-body { position:relative; flex:1; min-width:0; transform:translateZ(18px); }
-        .xp-top { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start; }
-        .xp-role { font-family:var(--font-display); font-size:1.45rem; font-weight:800; margin:0 0 6px; color:var(--color-text-primary); }
-        .xp-company { font-family:var(--font-mono); font-size:.82rem; letter-spacing:.18em; text-transform:uppercase; color:var(--color-accent); margin:0; }
-        .xp-meta { display:flex; gap:8px; flex-wrap:wrap; }
         .xp-badge { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
           color:var(--color-text-secondary); border:1px solid var(--color-border-strong); border-radius:var(--radius-full); padding:5px 12px; }
         .xp-badge-live { color:var(--color-accent); border-color:var(--color-accent-border); background:var(--color-accent-subtle); }
         .xp-pulse { width:6px; height:6px; border-radius:50%; background:var(--color-accent); animation:xpPulse 2s ease-in-out infinite; }
-        .xp-summary { font-family:var(--font-body); font-size:.93rem; line-height:1.75; color:var(--color-text-secondary); margin:18px 0 14px; }
-        .xp-points { margin:0 0 18px; padding:0; list-style:none; display:grid; gap:9px; }
-        .xp-points li { display:flex; gap:10px; align-items:flex-start; font-family:var(--font-body); font-size:.86rem; color:var(--color-text-secondary); }
-        .xp-points li svg { flex-shrink:0; margin-top:3px; color:var(--color-accent); }
+
+        /* right column */
+        .xp-body { position:relative; min-width:0; transform:translateZ(20px); }
+        .xp-company { font-family:var(--font-mono); font-size:.8rem; letter-spacing:.24em; text-transform:uppercase; color:var(--color-accent); margin:0 0 8px; }
+        .xp-role { font-family:var(--font-display); font-size:clamp(1.9rem,4vw,2.8rem); font-weight:900; line-height:1.08; margin:0 0 18px; color:var(--color-text-primary);
+          text-shadow:0 1px 0 var(--color-accent-dark), 0 2px 0 var(--color-accent-dark), 0 3px 0 var(--color-accent-dark), 0 4px 0 var(--color-accent-dark), 0 12px 22px rgba(0,0,0,.5); }
+        .xp-summary { font-family:var(--font-body); font-size:.95rem; line-height:1.8; color:var(--color-text-secondary); margin:0 0 20px; }
+        .xp-points { margin:0 0 20px; padding:0; list-style:none; display:grid; gap:10px; }
+        .xp-points li { display:flex; gap:12px; align-items:center; padding:11px 14px; border-radius:12px; font-family:var(--font-body); font-size:.88rem; color:var(--color-text-primary);
+          background:var(--color-bg-glass); border:1px solid var(--color-border); transform:translateZ(calc(8px + var(--i) * 6px)); transition:border-color .25s, transform .25s; }
+        .xp-points li:hover { border-color:var(--color-accent-border); transform:translateZ(26px) translateX(4px); }
+        .xp-points li span { flex:0 0 24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--color-bg-primary); background:var(--color-accent); box-shadow:0 0 12px var(--color-accent-glow); }
         .xp-tags { display:flex; flex-wrap:wrap; gap:8px; }
         .xp-tags span { font-family:var(--font-mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:var(--color-accent);
-          background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); border-radius:8px; padding:4px 10px; transition:transform .25s, background .25s; }
+          background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); border-radius:8px; padding:5px 11px; transition:transform .25s, background .25s; }
         .xp-tags span:hover { transform:translateY(-3px); background:var(--color-accent-muted); }
 
+        @media (max-width:820px) {
+          .xp-card { grid-template-columns:1fr; gap:22px; padding:30px 22px; justify-items:center; }
+          .xp-body { justify-self:stretch; }
+          .xp-side { grid-auto-flow:column; grid-template-columns:none; justify-items:center; flex-wrap:wrap; }
+          .xp-stage { grid-column:1 / -1; }
+        }
         @media (max-width:700px) {
           .xp-section { padding:80px 16px 72px; }
           .xp-list { padding-left:34px; }
           .xp-line { left:7px; }
           .xp-node { left:-34px; top:30px; }
-          .xp-card { flex-direction:column; padding:24px 20px; gap:20px; }
         }
         @media (prefers-reduced-motion:reduce) {
-          .xp-border, .xp-title, .xp-dot, .xp-node span, .xp-pulse { animation:none; }
+          .xp-border, .xp-title, .xp-dot, .xp-node span, .xp-pulse, .xp-coin, .xp-floor { animation:none; }
           .xp-card { transition:none; }
         }
       `}</style>

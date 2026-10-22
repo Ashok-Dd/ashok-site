@@ -1,810 +1,236 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SiLeetcode } from "react-icons/si";
-import { LEETCODE_DATA, leetcodeProfile } from '../../data'
-import Donut3D from './Donut3D';
-
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SiLeetcode } from 'react-icons/si';
+import { ArrowUpRight, Award, Flame, Target } from 'lucide-react';
+import { LEETCODE_DATA, leetcodeProfile } from '../../data';
+const Donut3D = lazy(() => import('./Donut3D'));
+import useTilt from '../hooks/useTilt';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const LEVELS = [
+  { key: 'easy', label: 'Easy', color: '#2ecc71', glow: '#58d68d' },
+  { key: 'medium', label: 'Medium', color: '#f39c12', glow: '#f7c04a' },
+  { key: 'hard', label: 'Hard', color: '#e74c3c', glow: '#f1948a' },
+];
 
+const pct = (v) => (v / LEETCODE_DATA.total) * 100;
 
-/* ── tiny inline styles that extend index.css without touching it ── */
-const s = {
-  section: {
-    position: "relative",
-    overflow: "hidden",
-    background: "var(--color-bg-sunken)",
-    padding: "110px 24px 90px",
-  },
-
-  /* ── decorative BG layer ── */
-  bgLayer: {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    overflow: "hidden",
-  },
-  bgGrid: {
-    position: "absolute",
-    inset: 0,
-    backgroundImage:
-      "linear-gradient(color-mix(in srgb, var(--color-accent) 4%, transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb, var(--color-accent) 4%, transparent) 1px,transparent 1px)",
-    backgroundSize: "48px 48px",
-  },
-  bgBlob1: {
-    position: "absolute",
-    width: 520,
-    height: 520,
-    top: -140,
-    left: -80,
-    borderRadius: "50%",
-    background:
-      "radial-gradient(circle,color-mix(in srgb, var(--color-accent) 9%, transparent) 0%,transparent 70%)",
-    filter: "blur(100px)",
-  },
-  bgBlob2: {
-    position: "absolute",
-    width: 400,
-    height: 400,
-    bottom: -100,
-    right: -60,
-    borderRadius: "50%",
-    background:
-      "radial-gradient(circle,color-mix(in srgb, var(--color-accent) 6%, transparent) 0%,transparent 70%)",
-    filter: "blur(100px)",
-  },
-  bgScanLine: {
-    position: "absolute",
-    inset: 0,
-    background:
-      "linear-gradient(to bottom,transparent 0%,color-mix(in srgb, var(--color-accent) 2.5%, transparent) 50%,transparent 100%)",
-    backgroundSize: "100% 160px",
-    animation: "lc-scan 10s linear infinite",
-  },
-
-  /* ── corner decoration ── */
-  corner: (pos) => ({
-    position: "absolute",
-    width: 18,
-    height: 18,
-    opacity: 0.35,
-    ...pos,
-  }),
-
-  /* ── section header ── */
-  header: {
-    textAlign: "center",
-    marginBottom: 56,
-    position: "relative",
-    zIndex: 1,
-  },
-  eyebrow: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 8,
-    fontFamily: "var(--font-mono)",
-    fontSize: 10,
-    letterSpacing: "0.42em",
-    textTransform: "uppercase",
-    color: "var(--color-accent)",
-    marginBottom: 14,
-  },
-  eyebrowDot: {
-    width: 6,
-    height: 6,
-    borderRadius: "50%",
-    background: "var(--color-accent)",
-    boxShadow: "0 0 8px color-mix(in srgb, var(--color-accent) 60%, transparent)",
-    flexShrink: 0,
-    animation: "pulse-dot 2s ease-in-out infinite",
-  },
-  titleGrad: {
-    fontFamily: "var(--font-display)",
-    fontSize: "clamp(2rem,5vw,3.4rem)",
-    fontWeight: 900,
-    letterSpacing: "-0.01em",
-    lineHeight: 1.1,
-    background: "linear-gradient(135deg,var(--color-text-primary) 25%,var(--color-accent))",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-    margin: 0,
-  },
-  subtitle: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.7rem",
-    letterSpacing: "0.28em",
-    textTransform: "uppercase",
-    color: "var(--color-text-muted)",
-    marginTop: 10,
-  },
-  ruler: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: 18,
-  },
-  rulerLine: (flip) => ({
-    height: 1,
-    width: 72,
-    background: flip
-      ? "linear-gradient(to left,transparent,color-mix(in srgb, var(--color-accent) 50%, transparent))"
-      : "linear-gradient(to right,transparent,color-mix(in srgb, var(--color-accent) 50%, transparent))",
-  }),
-  rulerGem: {
-    width: 8,
-    height: 8,
-    background: "var(--color-accent)",
-    transform: "rotate(45deg)",
-    boxShadow: "0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent)",
-  },
-
-  /* ── wrapper row ── */
-  wrapper: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
-    gap: 48,
-    position: "relative",
-    zIndex: 1,
-    maxWidth: 1100,
-    margin: "0 auto",
-  },
-
-  /* ── RIGHT CARD ── */
-  card: {
-    position: "relative",
-    width: 400,
-    background: "rgba(37,37,56,0.55)",
-    border: "1px solid color-mix(in srgb, var(--color-accent) 18%, transparent)",
-    borderRadius: 22,
-    padding: "32px 28px",
-    backdropFilter: "blur(18px)",
-    WebkitBackdropFilter: "blur(18px)",
-    boxShadow:
-      "0 0 0 1px color-mix(in srgb, var(--color-accent) 5%, transparent), 0 8px 40px rgba(0,0,0,0.5), 0 0 30px color-mix(in srgb, var(--color-accent) 6%, transparent)",
-    overflow: "hidden",
-  },
-  cardTopBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    background:
-      "linear-gradient(90deg,transparent,var(--color-accent),#4dd9bc,transparent)",
-  },
-  cardBotLine: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    background:
-      "linear-gradient(90deg,transparent,color-mix(in srgb, var(--color-accent) 25%, transparent),transparent)",
-  },
-
-  /* card header row */
-  cardHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 22,
-  },
-  cardBrand: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-  },
-  lcLogo: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    background: "rgba(255,161,22,0.12)",
-    border: "1px solid rgba(255,161,22,0.3)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "1.2rem",
-  },
-  cardTitle: {
-    fontFamily: "var(--font-display)",
-    fontSize: "0.95rem",
-    fontWeight: 700,
-    color: "var(--color-text-primary)",
-    letterSpacing: "0.05em",
-    margin: 0,
-  },
-  cardHandle: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.62rem",
-    color: "var(--color-text-muted)",
-    letterSpacing: "0.06em",
-    marginTop: 2,
-  },
-  rankBadge: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.65rem",
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    padding: "4px 10px",
-    borderRadius: 9999,
-    background: "rgba(255,161,22,0.1)",
-    border: "1px solid rgba(255,161,22,0.3)",
-    color: "#ffa116",
-    whiteSpace: "nowrap",
-  },
-
-  /* total solved ring */
-  ringWrap: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 22,
-  },
-  ringOuter: {
-    position: "relative",
-    width: 110,
-    height: 110,
-  },
-  ringCenter: {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  ringVal: {
-    fontFamily: "var(--font-display)",
-    fontSize: "1.6rem",
-    fontWeight: 900,
-    color: "var(--color-accent)",
-    lineHeight: 1,
-  },
-  ringLabel: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.52rem",
-    letterSpacing: "0.18em",
-    textTransform: "uppercase",
-    color: "var(--color-text-muted)",
-    marginTop: 2,
-  },
-
-  /* stats grid */
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3,1fr)",
-    gap: 10,
-    marginBottom: 20,
-  },
-  statBox: {
-    padding: "11px 8px",
-    background: "rgba(255,255,255,0.025)",
-    border: "1px solid color-mix(in srgb, var(--color-accent) 10%, transparent)",
-    borderRadius: 10,
-    textAlign: "center",
-  },
-  statNum: {
-    fontFamily: "var(--font-display)",
-    fontSize: "1.15rem",
-    fontWeight: 900,
-    lineHeight: 1,
-  },
-  statLbl: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.55rem",
-    letterSpacing: "0.14em",
-    textTransform: "uppercase",
-    color: "var(--color-text-muted)",
-    marginTop: 3,
-  },
-
-  /* diff section label */
-  diffHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  diffLabel: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.6rem",
-    letterSpacing: "0.22em",
-    textTransform: "uppercase",
-    color: "var(--color-text-muted)",
-  },
-
-  /* bar row */
-  barRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 9,
-  },
-  barName: (color) => ({
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.62rem",
-    letterSpacing: "0.1em",
-    color,
-    width: 48,
-    flexShrink: 0,
-  }),
-  barTrack: {
-    flex: 1,
-    height: 5,
-    borderRadius: 9999,
-    background: "rgba(255,255,255,0.06)",
-    overflow: "hidden",
-  },
-  barFill: (grad) => ({
-    height: "100%",
-    width: "0%",
-    borderRadius: 9999,
-    background: grad,
-  }),
-  barCount: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.6rem",
-    color: "var(--color-text-muted)",
-    width: 28,
-    textAlign: "right",
-    flexShrink: 0,
-  },
-
-  /* insight */
-  insight: {
-    marginTop: 16,
-    padding: "10px 14px",
-    background: "color-mix(in srgb, var(--color-accent) 6%, transparent)",
-    border: "1px solid color-mix(in srgb, var(--color-accent) 18%, transparent)",
-    borderRadius: 10,
-    fontFamily: "var(--font-mono)",
-    fontSize: "0.7rem",
-    letterSpacing: "0.05em",
-    color: "var(--color-accent)",
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-  },
-  insightDot: {
-    width: 6,
-    height: 6,
-    borderRadius: "50%",
-    background: "var(--color-accent)",
-    boxShadow: "0 0 6px color-mix(in srgb, var(--color-accent) 70%, transparent)",
-    flexShrink: 0,
-    animation: "pulse-dot 1.8s ease-in-out infinite",
-  },
-
-  /* visit btn */
-  visitBtn: {
-    marginTop: 16,
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 7,
-    padding: "11px 0",
-    background: "transparent",
-    border: "1.5px solid color-mix(in srgb, var(--color-accent) 35%, transparent)",
-    borderRadius: 10,
-    fontFamily: "var(--font-display)",
-    fontSize: "0.72rem",
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: "var(--color-accent)",
-    cursor: "pointer",
-    textDecoration: "none",
-    transition: "all 0.25s ease",
-    position: "relative",
-    overflow: "hidden",
-  },
-
-  /* floating sparkles */
-  spark: (top, right, size, delay) => ({
-    position: "absolute",
-    top,
-    right,
-    width: size,
-    height: size,
-    borderRadius: "50%",
-    background: "var(--color-accent)",
-    animation: `spark-ping 2s ease-in-out ${delay}s infinite`,
-    pointerEvents: "none",
-  }),
+const insight = () => {
+  const { easy, medium, hard } = LEETCODE_DATA;
+  if (hard >= 20) return 'Hard problem solver, battle-hardened';
+  if (medium > easy) return 'Medium specialist, the sweet spot';
+  return 'Consistent grinder, no problem too small';
 };
 
-/* ── Corner SVG helper ── */
-const Corner = ({ pos, flip }) => (
-  <div style={s.corner(pos)}>
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      fill="none"
-      style={{ transform: flip ? "scale(-1,1)" : "none" }}
-    >
-      <path d="M0 18 L0 0 L18 0" stroke="color-mix(in srgb, var(--color-accent) 50%, transparent)" strokeWidth="2" fill="none" />
-    </svg>
-  </div>
-);
-
-/* ── SVG donut ring ── */
-const DonutRing = ({ value, total }) => {
-  const R = 44;
-  const C = 2 * Math.PI * R;
-  const pct = value / total;
-  const dash = C * pct;
-  return (
-    <svg width="110" height="110" viewBox="0 0 110 110" style={{ transform: "rotate(-90deg)" }}>
-      {/* track */}
-      <circle cx="55" cy="55" r={R} fill="none" stroke="color-mix(in srgb, var(--color-accent) 8%, transparent)" strokeWidth="7" />
-      {/* easy */}
-      <circle
-        id="ring-easy"
-        cx="55" cy="55" r={R} fill="none"
-        stroke="#2ecc71" strokeWidth="7"
-        strokeDasharray={`${C * (LEETCODE_DATA.easy / total)} ${C}`}
-        strokeDashoffset="0"
-        strokeLinecap="round"
-        style={{ transition: "stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)" }}
-      />
-      {/* medium — offset past easy */}
-      <circle
-        id="ring-med"
-        cx="55" cy="55" r={R} fill="none"
-        stroke="#f39c12" strokeWidth="7"
-        strokeDasharray={`${C * (LEETCODE_DATA.medium / total)} ${C}`}
-        strokeDashoffset={-(C * (LEETCODE_DATA.easy / total))}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1) 0.2s" }}
-      />
-      {/* hard */}
-      <circle
-        id="ring-hard"
-        cx="55" cy="55" r={R} fill="none"
-        stroke="#e74c3c" strokeWidth="7"
-        strokeDasharray={`${C * (LEETCODE_DATA.hard / total)} ${C}`}
-        strokeDashoffset={-(C * ((LEETCODE_DATA.easy + LEETCODE_DATA.medium) / total))}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1) 0.4s" }}
-      />
-    </svg>
-  );
-};
-
-/* ── Bar row ── */
-const DiffBar = ({ label, value, color, grad, barRef }) => {
-  const pct = ((value / LEETCODE_DATA.total) * 100).toFixed(1);
-  return (
-    <div style={s.barRow}>
-      <span style={s.barName(color)}>{label}</span>
-      <div style={s.barTrack}>
-        <div
-          ref={barRef}
-          className="lc-bar-fill"
-          data-width={`${pct}%`}
-          style={s.barFill(grad)}
-        />
-      </div>
-      <span style={s.barCount}>{value}</span>
-    </div>
-  );
-};
-
-/* ══════════════════════════════════════════
-   MAIN COMPONENT
-══════════════════════════════════════════ */
 const LeetCodeSection = () => {
-  const sectionRef  = useRef(null);
-  const imageRef    = useRef(null);   /* kept for your usage — not touched */
-  const cardRef     = useRef(null);
-  const headerRef   = useRef(null);
-  const totalNumRef = useRef(null);
-  const easyNumRef  = useRef(null);
-  const medNumRef   = useRef(null);
-  const hardNumRef  = useRef(null);
-  const barsRef     = useRef([]);
-  const blob1Ref    = useRef(null);
-  const blob2Ref    = useRef(null);
-  const insightRef  = useRef(null);
-  const btnRef      = useRef(null);
-
-  /* ── hover tilt on card ── */
-  const handleCardMove = (e) => {
-    const rect = cardRef.current.getBoundingClientRect();
-    const cx = (e.clientX - rect.left) / rect.width  - 0.5;
-    const cy = (e.clientY - rect.top)  / rect.height - 0.5;
-    gsap.to(cardRef.current, {
-      rotateY: cx * 8,
-      rotateX: -cy * 5,
-      duration: 0.4,
-      ease: "power1.out",
-      transformPerspective: 900,
-    });
-  };
-  const handleCardLeave = () => {
-    gsap.to(cardRef.current, { rotateY: 0, rotateX: 0, duration: 0.55, ease: "power2.out" });
-  };
-
-  /* ── visit button hover ── */
-  const handleBtnEnter = () => gsap.to(btnRef.current, {
-    background: "color-mix(in srgb, var(--color-accent) 10%, transparent)", scale: 1.02, duration: 0.2
-  });
-  const handleBtnLeave = () => gsap.to(btnRef.current, {
-    background: "transparent", scale: 1, duration: 0.25
-  });
+  const sectionRef = useRef(null);
+  useTilt(sectionRef, '.lc-tile', 14);
+  useTilt(sectionRef, '.lc-panel', 4);
 
   useEffect(() => {
-    /* ── blob ambient drift ── */
-    gsap.to(blob1Ref.current, {
-      y: -28, x: 10, duration: 9, ease: "sine.inOut", repeat: -1, yoyo: true,
-    });
-    gsap.to(blob2Ref.current, {
-      y: 22, x: -12, duration: 12, ease: "sine.inOut", repeat: -1, yoyo: true, delay: 4,
-    });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
+        defaults: { ease: 'power3.out' },
+      });
+      tl.from('.lc-head > *', { opacity: 0, y: 28, duration: 0.8, stagger: 0.1 })
+        .from('.lc-panel', { opacity: 0, y: 70, rotateX: -16, transformPerspective: 1100, duration: 1, stagger: 0.14, clearProps: 'transform' }, '-=0.5')
+        .from('.lc-tile', { opacity: 0, y: 40, scale: 0.9, duration: 0.7, stagger: 0.1, clearProps: 'transform' }, '-=0.6');
 
-    /* ── master scroll-triggered timeline ── */
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-        once: true,
-      },
-      defaults: { ease: "power3.out" },
-    });
-
-    /* header */
-    tl.fromTo(
-      headerRef.current,
-      { opacity: 0, y: -36 },
-      { opacity: 1, y: 0, duration: 0.9 }
-    );
-
-    /* card slides in from right */
-    tl.fromTo(
-      cardRef.current,
-      { opacity: 0, x: 60, rotateY: 14 },
-      { opacity: 1, x: 0, rotateY: 0, duration: 0.85, transformPerspective: 900 },
-      "-=0.5"
-    );
-
-    /* counters */
-    const counterTargets = [
-      { ref: totalNumRef, val: LEETCODE_DATA.total },
-      { ref: easyNumRef,  val: LEETCODE_DATA.easy  },
-      { ref: medNumRef,   val: LEETCODE_DATA.medium },
-      { ref: hardNumRef,  val: LEETCODE_DATA.hard   },
-    ];
-    counterTargets.forEach(({ ref, val }, i) => {
-      tl.fromTo(
-        { v: 0 },
-        { v: val },
-        {
-          duration: 1.8,
-          ease: "power2.out",
-          delay: i * 0.06,
-          onUpdate: function () {
-            if (ref.current) ref.current.textContent = Math.round(this.targets()[0].v);
-          },
-          onComplete: () => { if (ref.current) ref.current.textContent = val; },
-        },
-        "-=1.6"
-      );
-    });
-
-    /* bars */
-    barsRef.current.forEach((bar, i) => {
-      if (!bar) return;
-      tl.fromTo(
-        bar,
-        { width: "0%" },
-        { width: bar.dataset.width, duration: 1.3, ease: "power2.out" },
-        i === 0 ? "-=1.4" : "-=1.1"
-      );
-    });
-
-    /* insight + button pop */
-    tl.fromTo(
-      [insightRef.current, btnRef.current],
-      { opacity: 0, y: 14, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)" },
-      "-=0.3"
-    );
-
-    return () => { ScrollTrigger.getAll().forEach((t) => t.kill()); };
+      gsap.utils.toArray('[data-count]').forEach((el, i) => {
+        const target = Number(el.dataset.count);
+        const o = { v: 0 };
+        tl.to(o, { v: target, duration: 1.8, ease: 'power2.out', onUpdate: () => { el.textContent = Math.round(o.v); } }, 0.5 + i * 0.05);
+      });
+      gsap.utils.toArray('[data-fill]').forEach((el, i) => {
+        tl.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.3, ease: 'power2.out' }, 0.7 + i * 0.08);
+      });
+    }, sectionRef);
+    return () => ctx.revert();
   }, []);
 
-  const getInsight = () => {
-    const { easy, medium, hard } = LEETCODE_DATA;
-    if (hard >= 20) return "Hard problem solver — battle-hardened 🔥";
-    if (medium > easy) return "Medium specialist — the sweet spot 💪";
-    return "Consistent grinder — no problem too small 🚀";
-  };
+  const { total, easy, medium, hard } = LEETCODE_DATA;
+  const values = { easy, medium, hard };
+  const upperShare = Math.round(pct(medium + hard));
 
   return (
-    <>
-      {/* ── keyframe injection ── */}
+    <section id="leetcode-section" ref={sectionRef} className="leetcode-section lc">
+      <div className="lc-bg" aria-hidden="true"><span className="lc-glow lc-glow-1" /><span className="lc-glow lc-glow-2" /></div>
+
+      <div className="lc-head">
+        <p className="lc-eyebrow"><span className="lc-dot" />Battleground · Competitive Coding<span className="lc-dot" /></p>
+        <h2 className="lc-title">LeetCode Arena</h2>
+        <p className="lc-sub">Solved · Ranked · Victorious</p>
+        <div className="lc-ruler"><i /><b /><i /></div>
+      </div>
+
+      <div className="lc-grid">
+        {/* ── profile ── */}
+        <aside className="lc-panel lc-profile">
+          <span className="lc-edge" aria-hidden="true" />
+          <div className="lc-avatar">
+            <span className="lc-ring lc-ring-1" /><span className="lc-ring lc-ring-2" />
+            <div className="lc-photo"><img src={leetcodeProfile.avatarImage} alt="Ashok Bongu" /></div>
+            <span className="lc-logo"><SiLeetcode size={22} color="#ffa116" /></span>
+          </div>
+          <h3 className="lc-name">Ashok Bongu</h3>
+          <p className="lc-handle">{leetcodeProfile.username}</p>
+          <span className="lc-badge"><Award size={13} />{leetcodeProfile.rankBadge}</span>
+
+          <ul className="lc-facts">
+            <li><Target size={14} /><span><b data-count={total}>0</b> problems solved</span></li>
+            <li><Flame size={14} /><span><b>{upperShare}%</b> medium or harder</span></li>
+          </ul>
+
+          <a className="lc-visit" href={leetcodeProfile.profileUrl} target="_blank" rel="noopener noreferrer">
+            <SiLeetcode size={14} />View profile<ArrowUpRight size={14} />
+          </a>
+        </aside>
+
+        {/* ── donut + breakdown ── */}
+        <div className="lc-panel lc-main">
+          <span className="lc-edge" aria-hidden="true" />
+          <div className="lc-donut">
+            <div className="lc-donut-box">
+              <Suspense fallback={null}><Donut3D easy={easy} medium={medium} hard={hard} /></Suspense>
+              <div className="lc-donut-core">
+                <span className="lc-total" data-count={total}>0</span>
+                <span className="lc-total-lbl">Solved</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lc-break">
+            <div className="lc-break-head"><span>Difficulty breakdown</span><span>{total} / 3000+</span></div>
+            {LEVELS.map((l) => (
+              <div key={l.key} className="lc-row" style={{ '--c': l.color, '--g': l.glow }}>
+                <span className="lc-row-name">{l.label}</span>
+                <span className="lc-track"><i data-fill style={{ width: `${pct(values[l.key])}%` }} /></span>
+                <span className="lc-row-val">{values[l.key]}</span>
+              </div>
+            ))}
+            <div className="lc-insight"><span />{insight()}</div>
+          </div>
+        </div>
+
+        {/* ── stat tiles ── */}
+        <div className="lc-tiles">
+          {LEVELS.map((l) => (
+            <div key={l.key} className="lc-tile" style={{ '--c': l.color, '--g': l.glow }}>
+              <span className="lc-tile-share">{pct(values[l.key]).toFixed(1)}%</span>
+              <span className="lc-tile-num" data-count={values[l.key]}>0</span>
+              <span className="lc-tile-lbl">{l.label}</span>
+              <span className="lc-tile-bar"><i data-fill style={{ width: `${pct(values[l.key])}%` }} /></span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <style>{`
-        @keyframes lc-scan {
-          0%   { background-position: 0 -160px; }
-          100% { background-position: 0 100vh; }
+        .lc { position:relative; overflow:hidden; background:var(--color-bg-sunken); color:var(--color-text-primary); padding:110px 24px 100px; }
+        .lc-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden;
+          background:linear-gradient(var(--color-border) 1px, transparent 1px) 0 0/56px 56px, linear-gradient(90deg, var(--color-border) 1px, transparent 1px) 0 0/56px 56px;
+          -webkit-mask:radial-gradient(ellipse 80% 70% at 50% 45%, #000, transparent 80%); mask:radial-gradient(ellipse 80% 70% at 50% 45%, #000, transparent 80%); }
+        .lc-glow { position:absolute; border-radius:50%; filter:blur(60px); }
+        .lc-glow-1 { width:520px; height:520px; left:-120px; top:-60px; background:radial-gradient(circle, var(--color-accent-muted), transparent 70%); }
+        .lc-glow-2 { width:440px; height:440px; right:-100px; bottom:-60px; background:radial-gradient(circle, rgba(255,161,22,.12), transparent 70%); }
+
+        .lc-head { position:relative; text-align:center; margin-bottom:56px; }
+        .lc-eyebrow { display:inline-flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--color-accent); margin:0 0 14px; }
+        .lc-dot { width:5px; height:5px; border-radius:50%; background:var(--color-accent); box-shadow:0 0 8px var(--color-accent-glow); animation:lcPulse 2s ease-in-out infinite; }
+        @keyframes lcPulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+        .lc-title { margin:0 0 10px; font-family:var(--font-display); font-size:clamp(2.2rem,5.5vw,3.8rem); font-weight:900; letter-spacing:.06em;
+          background:linear-gradient(110deg,var(--color-text-primary) 25%,var(--color-accent) 50%,var(--color-text-primary) 75%); background-size:250% 100%;
+          -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:lcShine 6s linear infinite; }
+        @keyframes lcShine { to { background-position:-250% 0; } }
+        .lc-sub { margin:0; font-family:var(--font-mono); font-size:.7rem; letter-spacing:.28em; text-transform:uppercase; color:var(--color-text-muted); }
+        .lc-ruler { display:flex; justify-content:center; align-items:center; gap:14px; margin-top:22px; }
+        .lc-ruler i { width:100px; height:1px; background:linear-gradient(to right,var(--color-accent-border),transparent); }
+        .lc-ruler i:last-child { background:linear-gradient(to left,var(--color-accent-border),transparent); }
+        .lc-ruler b { width:8px; height:8px; background:var(--color-accent); transform:rotate(45deg); box-shadow:0 0 14px var(--color-accent-glow); }
+
+        .lc-grid { position:relative; max-width:1120px; margin:0 auto; display:grid; grid-template-columns:330px 1fr; gap:26px; perspective:1400px; }
+        .lc-tiles { grid-column:2; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; perspective:1000px; }
+
+        /* glass panels */
+        .lc-panel { --rx:0deg; --ry:0deg; position:relative; border-radius:var(--radius-xl); padding:34px 30px; overflow:hidden;
+          background:linear-gradient(150deg, var(--color-bg-elevated), var(--color-bg-sunken)); box-shadow:var(--shadow-lg);
+          transform:rotateX(var(--rx)) rotateY(var(--ry)); transition:transform .25s ease-out, box-shadow .3s; }
+        .lc-panel:hover { box-shadow:var(--shadow-lg), 0 0 46px var(--color-accent-muted); }
+        .lc-edge { position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none;
+          background:conic-gradient(from var(--lc-a,0deg), transparent 0 55%, var(--color-accent) 80%, var(--color-accent-light) 90%, transparent 100%);
+          -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:lcSweep 6s linear infinite; }
+        @property --lc-a { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+        @keyframes lcSweep { to { --lc-a:360deg; } }
+
+        /* profile */
+        .lc-profile { grid-row:1 / span 2; display:flex; flex-direction:column; align-items:center; text-align:center; }
+        .lc-avatar { position:relative; width:210px; height:210px; margin-bottom:22px; animation:lcFloat 6s ease-in-out infinite; }
+        @keyframes lcFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+        .lc-photo { position:absolute; inset:16px; border-radius:50%; overflow:hidden; background:var(--color-bg-elevated); box-shadow:0 0 0 3px var(--color-accent), 0 18px 40px rgba(0,0,0,.5), 0 0 40px var(--color-accent-muted); }
+        .lc-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+        .lc-ring { position:absolute; inset:0; border-radius:50%; border:1px dashed var(--color-accent-border); animation:lcSpin 22s linear infinite; }
+        .lc-ring-2 { inset:-14px; border-style:solid; border-color:var(--color-accent-faint); border-top-color:var(--color-accent); animation-duration:14s; animation-direction:reverse; }
+        @keyframes lcSpin { to { transform:rotate(360deg); } }
+        .lc-logo { position:absolute; right:2px; bottom:10px; width:50px; height:50px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+          background:var(--color-bg-elevated); border:1px solid rgba(255,161,22,.45); box-shadow:0 10px 24px rgba(0,0,0,.5), 0 0 22px rgba(255,161,22,.3); }
+        .lc-name { margin:0; font-family:var(--font-display); font-size:1.5rem; font-weight:900; color:var(--color-text-primary); }
+        .lc-handle { margin:4px 0 14px; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.12em; color:var(--color-text-muted); }
+        .lc-badge { display:inline-flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:#ffa116;
+          padding:6px 14px; border-radius:var(--radius-full); background:rgba(255,161,22,.1); border:1px solid rgba(255,161,22,.35); }
+        .lc-facts { list-style:none; margin:24px 0 24px; padding:20px 0 0; width:100%; display:grid; gap:12px; border-top:1px solid var(--color-border); }
+        .lc-facts li { display:flex; align-items:center; gap:12px; font-family:var(--font-body); font-size:.88rem; color:var(--color-text-secondary); }
+        .lc-facts svg { color:var(--color-accent); flex-shrink:0; }
+        .lc-facts b { color:var(--color-text-primary); font-family:var(--font-display); }
+        .lc-visit { margin-top:auto; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border-radius:14px; text-decoration:none;
+          font-family:var(--font-mono); font-size:.72rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--color-text-on-light);
+          background:linear-gradient(135deg,var(--color-accent),var(--color-accent-light)); box-shadow:var(--shadow-accent); transition:transform .25s, box-shadow .25s; }
+        .lc-visit:hover { transform:translateY(-3px); box-shadow:var(--shadow-glow); }
+
+        /* donut + breakdown */
+        .lc-main { display:grid; grid-template-columns:minmax(220px, 280px) 1fr; gap:34px; align-items:center; }
+        .lc-donut { display:flex; justify-content:center; }
+        .lc-donut-box { position:relative; width:210px; height:210px; }
+        .lc-donut-box > div:first-child { inset:-34px !important; }
+        .lc-donut-core { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+        .lc-total { font-family:var(--font-display); font-weight:900; font-size:3rem; line-height:1; color:var(--color-text-primary); text-shadow:0 0 28px var(--color-accent-glow); }
+        .lc-total-lbl { margin-top:6px; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; color:var(--color-accent); }
+        .lc-break { min-width:0; }
+        .lc-break-head { display:flex; justify-content:space-between; margin-bottom:16px; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:var(--color-text-muted); }
+        .lc-row { display:grid; grid-template-columns:70px 1fr 44px; align-items:center; gap:12px; margin-bottom:14px; }
+        .lc-row-name { font-family:var(--font-mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--c); }
+        .lc-row-val { text-align:right; font-family:var(--font-display); font-weight:800; font-size:.9rem; color:var(--color-text-primary); }
+        .lc-track, .lc-tile-bar { position:relative; display:block; height:8px; border-radius:99px; background:rgba(255,255,255,.07); overflow:hidden; }
+        .lc-track i, .lc-tile-bar i { display:block; height:100%; border-radius:99px; transform-origin:left; background:linear-gradient(90deg,var(--c),var(--g)); box-shadow:0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
+        .lc-insight { margin-top:20px; display:flex; align-items:center; gap:10px; padding:11px 15px; border-radius:12px; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.05em; color:var(--color-accent);
+          background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); }
+        .lc-insight span { width:7px; height:7px; border-radius:50%; background:var(--color-accent); box-shadow:0 0 8px var(--color-accent); animation:lcPulse 1.8s ease-in-out infinite; }
+
+        /* tiles */
+        .lc-tile { --rx:0deg; --ry:0deg; position:relative; display:flex; flex-direction:column; align-items:center; padding:26px 18px 22px; border-radius:var(--radius-lg); text-align:center;
+          background:linear-gradient(160deg, color-mix(in srgb, var(--c) 12%, var(--color-bg-elevated)), var(--color-bg-sunken)); border:1px solid color-mix(in srgb, var(--c) 32%, transparent);
+          box-shadow:0 18px 36px rgba(0,0,0,.35); transform:rotateX(var(--rx)) rotateY(var(--ry)); transform-style:preserve-3d; transition:transform .25s ease-out, box-shadow .3s, border-color .3s; }
+        .lc-tile:hover { border-color:var(--c); box-shadow:0 26px 50px rgba(0,0,0,.5), 0 0 40px color-mix(in srgb, var(--c) 30%, transparent); }
+        .lc-tile-share { position:absolute; top:12px; right:14px; font-family:var(--font-mono); font-size:.6rem; letter-spacing:.1em; color:var(--c); transform:translateZ(20px); }
+        .lc-tile-num { font-family:var(--font-display); font-weight:900; font-size:3rem; line-height:1; color:var(--c); text-shadow:0 0 26px color-mix(in srgb, var(--c) 60%, transparent), 0 3px 0 color-mix(in srgb, var(--c) 40%, #000); transform:translateZ(46px); }
+        .lc-tile-lbl { margin:10px 0 16px; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.3em; text-transform:uppercase; color:var(--color-text-secondary); transform:translateZ(24px); }
+        .lc-tile-bar { width:100%; transform:translateZ(12px); }
+
+        @media (max-width:980px) {
+          .lc-grid { grid-template-columns:1fr; }
+          .lc-tiles { grid-column:1; }
+          .lc-profile { grid-row:auto; }
         }
-        @keyframes pulse-dot {
-          0%,100% { opacity:1; box-shadow:0 0 6px color-mix(in srgb, var(--color-accent) 60%, transparent); }
-          50%      { opacity:.3; box-shadow:none; }
+        @media (max-width:720px) {
+          .lc { padding:80px 16px 72px; }
+          .lc-main { grid-template-columns:1fr; gap:26px; padding:28px 22px; }
+          .lc-tiles { gap:10px; } .lc-tile { padding:20px 8px 16px; } .lc-tile-num { font-size:2rem; } .lc-tile-share { display:none; }
         }
-        @keyframes spark-ping {
-          0%   { transform:scale(1); opacity:.7; }
-          60%  { transform:scale(2.8); opacity:.2; }
-          100% { transform:scale(1); opacity:.7; }
-        }
-        .lc-stat-box:hover {
-          border-color: color-mix(in srgb, var(--color-accent) 30%, transparent) !important;
-          background: color-mix(in srgb, var(--color-accent) 6%, transparent) !important;
-        }
+        @media (prefers-reduced-motion:reduce) { .lc-title, .lc-dot, .lc-edge, .lc-avatar, .lc-ring, .lc-insight span { animation:none; } .lc-panel, .lc-tile { transition:none; } }
       `}</style>
-
-      <section className="leetcode-section" ref={sectionRef} style={s.section}>
-
-        {/* ── BACKGROUND ── */}
-        <div style={s.bgLayer}>
-          <div style={s.bgGrid} />
-          <div ref={blob1Ref} style={s.bgBlob1} />
-          <div ref={blob2Ref} style={s.bgBlob2} />
-          <div style={s.bgScanLine} />
-        </div>
-
-        {/* corner brackets */}
-        <Corner pos={{ top: 20, left: 20 }} />
-        <Corner pos={{ top: 20, right: 20 }} flip />
-        <Corner pos={{ bottom: 20, left: 20, transform: "scaleY(-1)" }} />
-        <Corner pos={{ bottom: 20, right: 20, transform: "scale(-1,1) scaleY(-1)" }} flip />
-
-        {/* ── HEADER ── */}
-        <div ref={headerRef} style={{ ...s.header, opacity: 0 }}>
-          <div style={s.eyebrow}>
-            <span style={s.eyebrowDot} />
-            BATTLEGROUND · COMPETITIVE CODING
-            <span style={{ ...s.eyebrowDot, animationDelay: "0.4s" }} />
-          </div>
-          <h2 style={s.titleGrad}>LeetCode Arena</h2>
-          <p style={s.subtitle}>Solved · Ranked · Victorious</p>
-          <div style={s.ruler}>
-            <div style={s.rulerLine(false)} />
-            <div style={s.rulerGem} />
-            <div style={s.rulerLine(true)} />
-          </div>
-        </div>
-
-        {/* ── MAIN ROW ── */}
-        <div style={s.wrapper}>
-
-          {/* ════ LEFT — YOUR UNTOUCHED AVATAR ════ */}
-          <div className="home-avatar-wrap" style={{ opacity: 1 }} ref={imageRef}>
-            <div className="orbit-ring orbit-ring-1" />
-            <div className="orbit-ring orbit-ring-2" />
-            <div className="avatar-halo" />
-            <div className="avatar-frame">
-              <img src={leetcodeProfile.avatarImage} alt="Ashok Bongu" className="avatar-img" />
-            </div>
-          </div>
-
-          {/* ════ RIGHT — ENHANCED CARD ════ */}
-          <div
-            ref={cardRef}
-            style={{ ...s.card, opacity: 0 }}
-            onMouseMove={handleCardMove}
-            onMouseLeave={handleCardLeave}
-          >
-            {/* decorative top accent bar */}
-            <div style={s.cardTopBar} />
-            <div style={s.cardBotLine} />
-
-            {/* floating sparkles */}
-            <div style={s.spark(-4, "12%", 7, 0)} />
-            <div style={s.spark("auto", "auto", 5, 0.7)} />
-
-            {/* ── card header ── */}
-            <div style={s.cardHeader}>
-              <div style={s.cardBrand}>
-                <div style={s.lcLogo}>
-                  <SiLeetcode size={20} color="#FFA116" />
-                </div>
-                <div>
-                  <p style={s.cardTitle}>LEETCODE</p>
-                  <p style={s.cardHandle}>{leetcodeProfile.username}</p>
-                </div>
-              </div>
-              <span style={s.rankBadge}>{leetcodeProfile.rankBadge}</span>
-            </div>
-
-            {/* ── donut ring + total ── */}
-            <div style={s.ringWrap}>
-              <div style={s.ringOuter}>
-                <Donut3D easy={LEETCODE_DATA.easy} medium={LEETCODE_DATA.medium} hard={LEETCODE_DATA.hard} />
-                <div style={s.ringCenter}>
-                  <span ref={totalNumRef} style={s.ringVal}>0</span>
-                  <span style={s.ringLabel}>Solved</span>
-                </div>
-              </div>
-            </div>
-
-            {/* ── E / M / H stat boxes ── */}
-            <div style={s.statsGrid}>
-              {[
-                { label: "Easy",   ref: easyNumRef, color: "#2ecc71" },
-                { label: "Medium", ref: medNumRef,  color: "#f39c12" },
-                { label: "Hard",   ref: hardNumRef, color: "#e74c3c" },
-              ].map(({ label, ref, color }) => (
-                <div key={label} className="lc-stat-box" style={s.statBox}>
-                  <span ref={ref} style={{ ...s.statNum, color }}>0</span>
-                  <p style={s.statLbl}>{label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* ── difficulty bars ── */}
-            <div style={s.diffHeader}>
-              <span style={s.diffLabel}>Difficulty Breakdown</span>
-              <span style={{ ...s.diffLabel, color: "var(--color-text-secondary)" }}>
-                {LEETCODE_DATA.total} / 3000+
-              </span>
-            </div>
-
-            <DiffBar
-              label="Easy"
-              value={LEETCODE_DATA.easy}
-              color="#2ecc71"
-              grad="linear-gradient(90deg,#2ecc71,#58d68d)"
-              barRef={(el) => (barsRef.current[0] = el)}
-            />
-            <DiffBar
-              label="Medium"
-              value={LEETCODE_DATA.medium}
-              color="#f39c12"
-              grad="linear-gradient(90deg,#f39c12,#f7c04a)"
-              barRef={(el) => (barsRef.current[1] = el)}
-            />
-            <DiffBar
-              label="Hard"
-              value={LEETCODE_DATA.hard}
-              color="#e74c3c"
-              grad="linear-gradient(90deg,#e74c3c,#f1948a)"
-              barRef={(el) => (barsRef.current[2] = el)}
-            />
-
-            {/* ── insight badge ── */}
-            <div ref={insightRef} style={{ ...s.insight, opacity: 0 }}>
-              <span style={s.insightDot} />
-              {getInsight()}
-            </div>
-
-            {/* ── visit button ── */}
-            <a
-              ref={btnRef}
-              href={leetcodeProfile.profileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ ...s.visitBtn, opacity: 0 }}
-              onMouseEnter={handleBtnEnter}
-              onMouseLeave={handleBtnLeave}
-            >
-               <SiLeetcode size={13} color="var(--color-accent)" />
-              VIEW PROFILE ↗
-            </a>
-          </div>
-          {/* ════ end right card ════ */}
-
-        </div>
-      </section>
-    </>
+    </section>
   );
 };
 

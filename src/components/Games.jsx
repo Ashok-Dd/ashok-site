@@ -114,6 +114,7 @@ export default function Games() {
       )}
 
       <section id="arcade" ref={sectionRef} className="ar-section">
+        <div className="ar-floor" aria-hidden="true" />
         <div className="ar-bg" aria-hidden="true" />
 
         <div className="ar-head">
@@ -159,6 +160,12 @@ export default function Games() {
           .ar-bg { position:absolute; inset:0; pointer-events:none;
             background:radial-gradient(ellipse 60% 50% at 50% 0%, var(--color-accent-muted), transparent 70%),
               linear-gradient(var(--color-border) 1px, transparent 1px) 0 0/56px 56px, linear-gradient(90deg, var(--color-border) 1px, transparent 1px) 0 0/56px 56px; opacity:.6; }
+          .ar-floor { position:absolute; left:0; right:0; bottom:0; height:46%; perspective:520px; overflow:hidden; pointer-events:none;
+            -webkit-mask:linear-gradient(to top, #000 20%, transparent); mask:linear-gradient(to top, #000 20%, transparent); }
+          .ar-floor::before { content:''; position:absolute; left:-50%; right:-50%; bottom:0; height:220%; transform-origin:50% 100%; transform:rotateX(74deg);
+            background:linear-gradient(var(--color-accent-border) 1px, transparent 1px) 0 0/64px 64px, linear-gradient(90deg, var(--color-accent-border) 1px, transparent 1px) 0 0/64px 64px;
+            animation:arGrid 3.4s linear infinite; }
+          @keyframes arGrid { to { background-position:0 64px, 0 0; } }
           .ar-head { position:relative; text-align:center; margin-bottom:60px; }
           .ar-eyebrow { display:inline-flex; align-items:center; gap:12px; font-family:var(--font-mono); font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--color-accent); margin-bottom:14px; }
           .ar-dot { width:5px; height:5px; border-radius:50%; background:var(--color-accent); box-shadow:0 0 8px var(--color-accent-glow); }
@@ -171,7 +178,10 @@ export default function Games() {
           .ar-ruler b { width:8px; height:8px; background:var(--color-accent); transform:rotate(45deg); box-shadow:0 0 14px var(--color-accent-glow); }
 
           .ar-grid { position:relative; max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:44px 40px; perspective:1300px; }
-          .ar-slot { flex:0 1 250px; height:270px; }
+          .ar-slot { position:relative; flex:0 1 250px; height:270px; animation:arBob 5s ease-in-out infinite; }
+          .ar-slot:nth-child(2n) { animation-delay:-1.6s; } .ar-slot:nth-child(3n) { animation-delay:-3.1s; }
+          .ar-slot::after { content:''; position:absolute; left:12%; right:12%; bottom:-34px; height:22px; border-radius:50%; background:radial-gradient(ellipse, var(--color-accent-glow), transparent 70%); filter:blur(6px); opacity:.6; pointer-events:none; }
+          @keyframes arBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
 
           /* the 3D box: front face + four sides + back, depth 44px */
           .ar-box { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; --d:22px;
@@ -204,7 +214,7 @@ export default function Games() {
             border:1px solid var(--color-accent-border); border-radius:var(--radius-full); padding:5px 13px; background:var(--color-accent-subtle); }
 
           @media (max-width:640px) { .ar-section { padding:80px 16px 80px; } .ar-slot { flex-basis:100%; max-width:280px; } .ar-box { transform:rotateX(calc(var(--rx) + 7deg)) rotateY(calc(var(--ry) - 12deg)); } }
-          @media (prefers-reduced-motion:reduce) { .ar-box { transition:none; } }
+          @media (prefers-reduced-motion:reduce) { .ar-box { transition:none; } .ar-slot, .ar-floor::before { animation:none; } }
         `}</style>
       </section>
     </>

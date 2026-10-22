@@ -346,7 +346,7 @@ const Skills3D = () => {
         <Boundary>
           <Canvas
             frameloop="demand"
-            dpr={[1, 2]}
+            dpr={[1, 1.5]}
             camera={{ fov: 36, position: [0, 0.3, 14], near: 0.1, far: 80 }}
             gl={{ antialias: true, alpha: true }}
           >

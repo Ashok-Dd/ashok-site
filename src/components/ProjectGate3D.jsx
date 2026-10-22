@@ -504,7 +504,7 @@ const ProjectGate3D = forwardRef(function ProjectGate3D({ onBurst, onStart, onDo
       <Boundary>
         <Canvas
           frameloop="demand"
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           camera={{ fov: 28, position: [0, 0, 20], near: 0.1, far: 80 }}
           gl={{ antialias: true, alpha: true }}
         >

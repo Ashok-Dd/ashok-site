@@ -75,6 +75,7 @@ const Footer = () => {
 
   return (
     <footer className="fx">
+      <div className="fx-floor" aria-hidden="true" />
       {/* ── call to action ── */}
       <div className="fx-cta">
         <p className="fx-kicker"><span />Have a project in mind?</p>
@@ -146,12 +147,18 @@ const Footer = () => {
         .fx::before { content:''; position:absolute; inset:0; pointer-events:none;
           background:radial-gradient(ellipse 60% 50% at 50% 0%, var(--color-accent-muted), transparent 70%), radial-gradient(ellipse 50% 40% at 0% 100%, var(--color-accent-subtle), transparent 70%); }
 
+        .fx-floor { position:absolute; left:0; right:0; top:0; height:560px; perspective:520px; overflow:hidden; pointer-events:none;
+          -webkit-mask:linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent); mask:linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent); }
+        .fx-floor::before { content:''; position:absolute; left:-50%; right:-50%; bottom:0; height:230%; transform-origin:50% 100%; transform:rotateX(74deg);
+          background:linear-gradient(var(--color-accent-border) 1px, transparent 1px) 0 0/64px 64px, linear-gradient(90deg, var(--color-accent-border) 1px, transparent 1px) 0 0/64px 64px;
+          animation:fxGrid 3.2s linear infinite; }
+        @keyframes fxGrid { to { background-position:0 64px, 0 0; } }
         .fx-cta { position:relative; max-width:1160px; margin:0 auto; padding:96px 24px 64px; text-align:center; }
         .fx-kicker { display:inline-flex; align-items:center; gap:12px; margin:0 0 18px; font-family:var(--font-mono); font-size:.68rem; letter-spacing:.38em; text-transform:uppercase; color:var(--color-accent); }
         .fx-kicker span { width:28px; height:1px; background:var(--color-accent); }
-        .fx-big { margin:0 0 34px; font-family:var(--font-display); font-weight:900; font-size:clamp(2.4rem,7vw,5.4rem); line-height:1.05; letter-spacing:.02em; }
+        .fx-big { text-shadow:0 1px 0 var(--color-accent-dark), 0 2px 0 var(--color-accent-dark), 0 3px 0 var(--color-accent-dark), 0 4px 0 var(--color-accent-dark), 0 5px 0 var(--color-accent-dark), 0 16px 26px rgba(0,0,0,.55); margin:0 0 34px; font-family:var(--font-display); font-weight:900; font-size:clamp(2.4rem,7vw,5.4rem); line-height:1.05; letter-spacing:.02em; }
         .fx-big em { font-style:normal; background:linear-gradient(110deg,var(--color-accent) 20%,var(--color-accent-light) 50%,var(--color-accent) 80%); background-size:220% 100%;
-          -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:fxShine 6s linear infinite; }
+          -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:fxShine 6s linear infinite; text-shadow:none; filter:drop-shadow(0 4px 0 var(--color-accent-dark)) drop-shadow(0 14px 20px rgba(0,0,0,.5)); }
         @keyframes fxShine { to { background-position:-220% 0; } }
         .fx-actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
         .fx-mail { display:inline-flex; align-items:center; gap:16px; cursor:pointer; padding:8px 8px 8px 22px; border-radius:var(--radius-full); border:1px solid var(--color-accent-border);
@@ -189,7 +196,9 @@ const Footer = () => {
         .fx-soc a span { font-family:var(--font-body); font-size:.9rem; font-weight:600; color:var(--color-text-primary); }
         .fx-soc a small { font-family:var(--font-mono); font-size:.64rem; letter-spacing:.06em; color:var(--color-text-muted); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .fx-soc a svg:first-child { color:var(--color-accent); } .fx-soc a svg:last-child { opacity:0; transform:translate(-4px,4px); transition:all .25s; color:var(--color-accent); }
-        .fx-soc a:hover { border-color:var(--color-accent-border); background:var(--color-accent-subtle); transform:translateX(4px); }
+        .fx-soc { perspective:700px; }
+        .fx-soc a { transform-origin:0 50%; }
+        .fx-soc a:hover { border-color:var(--color-accent-border); background:var(--color-accent-subtle); transform:translateX(6px) rotateY(-10deg) translateZ(12px); box-shadow:-10px 10px 24px rgba(0,0,0,.35); }
         .fx-soc a:hover svg:last-child { opacity:1; transform:none; }
 
         /* giant interactive wordmark */
@@ -215,7 +224,7 @@ const Footer = () => {
           .fx-mail { font-size:.74rem; padding-left:16px; } .fx-built { order:3; flex-basis:100%; text-align:left; }
           .fx-bottom { padding:16px 16px 22px; }
         }
-        @media (prefers-reduced-motion:reduce) { .fx-track, .fx-big em, .fx-live { animation:none; } .fx-mark span { transition:none; } }
+        @media (prefers-reduced-motion:reduce) { .fx-track, .fx-big em, .fx-live, .fx-floor::before { animation:none; } .fx-mark span { transition:none; } }
       `}</style>
     </footer>
   );

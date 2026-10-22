@@ -412,7 +412,7 @@ export const experienceData = [
     id: "cocomply",
     role: "GTM Engineer",
     company: "CoComply AS",
-    logo: "/cocomply-logo.png",
+    logo: "/cocomply-logo.webp",
     period: "Present",
     type: "Full-time",
     summary:
@@ -552,7 +552,7 @@ export const heroData = {
     { num: "2+", label: "Years Coding" },
     { num: "20+", label: "Tech Mastered" },
   ],
-  profileImage: "/profile-cyber.png",
+  profileImage: "/profile-cyber.webp",
   cvUrl: "/Ashok-Resume.pdf",
   badges: [
     { text: "const ninja = true", pos: "top" },
@@ -593,6 +593,6 @@ export const footerData = {
 export const leetcodeProfile = {
   username: "@b_ashok",
   profileUrl: "https://leetcode.com/u/b_ashok",
-  avatarImage: "/me1.png",
+  avatarImage: "/me1.webp",
   rankBadge: "365 Days Badge",
 };

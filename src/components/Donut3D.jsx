@@ -97,7 +97,7 @@ const Donut3D = ({ easy, medium, hard }) => {
       <Boundary>
         <Canvas
           frameloop="demand"
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           camera={{ fov: 32, position: [0, 0, 5.6] }}
           gl={{ antialias: true, alpha: true }}
         >

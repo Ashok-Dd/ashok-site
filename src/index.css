@@ -1151,7 +1151,7 @@ select {
   width: 500px;
   height: 500px;
   background: radial-gradient(circle, #00f5ff40, transparent);
-  filter: blur(120px);
+  filter: blur(40px);
   top: -100px;
   left: -100px;
   animation: floatBg 10s ease-in-out infinite alternate;
@@ -1669,7 +1669,7 @@ select {
 .ct-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(36px);
 }
 .ct-blob-1 {
   width: 520px;
@@ -2425,7 +2425,7 @@ select {
 .home-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(30px);
 }
 .home-glow-1 {
   width: 500px;
@@ -2924,7 +2924,7 @@ select {
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(36px);
 }
 .proj-glow-tr {
   top: -100px;
@@ -4561,7 +4561,7 @@ select {
     var(--color-accent-light) 290deg,
     transparent 360deg
   );
-  filter: blur(48px);
+  filter: blur(24px);
   opacity: 0.38;
   animation: spinSlow 26s linear infinite;
   will-change: transform;
@@ -4569,7 +4569,7 @@ select {
 }
 .hero-k-halo-2 {
   width: clamp(240px, 30vw, 380px);
-  filter: blur(28px);
+  filter: blur(16px);
   opacity: 0.28;
   animation-duration: 17s;
   animation-direction: reverse;
@@ -4919,3 +4919,11 @@ select {
   opacity: 0.8;
 }
 .hero-k-3dhint svg { color: var(--color-accent); }
+
+
+/* ── performance ─────────────────────────────────────────────── */
+:root { --blur-lg: 10px; --blur-xl: 14px; }
+/* sections scrolled out of view stop animating (set by <Living />) */
+[data-off] *, [data-off] *::before, [data-off] *::after { animation-play-state: paused !important; }
+body { -webkit-tap-highlight-color: transparent; text-rendering: optimizeSpeed; }
+img { content-visibility: auto; }

@@ -1,64 +1,25 @@
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ExternalLink, Github, ArrowRight, Lock, Bell, Clock } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { freelanceData, FREELANCE_PROJECTS } from '../../data';
 import useTilt from '../hooks/useTilt';
+import { hasWebGL } from '../three/webgl';
+import Boundary from '../three/Boundary';
+import { normalizeProject } from '../utils/projects';
+import FloatingProjectCard from './FloatingProjectCard';
+import ProjectDetails from './ProjectDetails';
+const ProjectSpace3D = lazy(() => import('./ProjectSpace3D'));
 
 gsap.registerPlugin(ScrollTrigger);
-
-/* ───────────── 3D device mock-ups (pure CSS, theme-coloured) ───────────── */
-const OpflowMock = () => (
-  <div className="fr-device">
-    <div className="fr-win">
-      <div className="fr-win-bar"><i /><i /><i /><span>admin · queue</span></div>
-      <div className="fr-win-body">
-        <div className="fr-bars">{[46, 72, 38, 88, 60, 94, 52].map((h, i) => <b key={i} style={{ height: `${h}%` }} />)}</div>
-        <div className="fr-lines"><i /><i style={{ width: '70%' }} /><i style={{ width: '85%' }} /></div>
-      </div>
-    </div>
-    <div className="fr-phone">
-      <div className="fr-phone-notch" />
-      <div className="fr-phone-top"><span>OPflow</span><Bell size={12} /></div>
-      <div className="fr-token"><small>NOW SERVING</small><b>#14</b></div>
-      <div className="fr-doc"><i className="fr-av" /><div><u /><u style={{ width: '55%' }} /></div></div>
-      {['09:30', '10:15', '11:00'].map((t) => (
-        <div key={t} className="fr-row"><Clock size={11} /><span>{t}</span><em /></div>
-      ))}
-      <div className="fr-phone-nav"><i /><i className="on" /><i /><i /></div>
-    </div>
-  </div>
-);
-
-const CricketMock = () => (
-  <div className="fr-device">
-    {[-1, 0, 1].map((d) => (
-      <div key={d} className={`fr-pcard fr-pcard-${d + 1}`}>
-        <div className="fr-pcard-top"><b>{['82', '91', '77'][d + 1]}</b><small>OVR</small></div>
-        <div className="fr-pcard-img"><i /></div>
-        {['BAT', 'BOWL', 'FLD'].map((s, i) => (
-          <div key={s} className="fr-stat"><small>{s}</small><span><em style={{ width: `${[88, 64, 76][(i + d + 1) % 3]}%` }} /></span></div>
-        ))}
-      </div>
-    ))}
-    <div className="fr-vs">VS</div>
-  </div>
-);
-
-const ShieldMock = () => (
-  <div className="fr-device">
-    <div className="fr-shield"><Lock size={46} /></div>
-    <div className="fr-classified"><span>CLASSIFIED</span><small>case file coming soon</small></div>
-    <div className="fr-ring fr-ring-1" /><div className="fr-ring fr-ring-2" />
-  </div>
-);
-
-const MOCKS = { opflow: OpflowMock, 'card-cricket': CricketMock, bsafe: ShieldMock };
 
 /* ───────────── section ───────────── */
 const Freelance = () => {
   const sectionRef = useRef(null);
-  useTilt(sectionRef, '.fr-stage', 9);
+  const projects = useMemo(() => FREELANCE_PROJECTS.map(normalizeProject), []);
+  const [webgl] = useState(() => hasWebGL());
+  const [focus, setFocus] = useState(0);
+  const [open, setOpen] = useState(null);
   useTilt(sectionRef, '.fr-step', 14);
 
   useEffect(() => {
@@ -74,11 +35,6 @@ const Freelance = () => {
       gsap.from('.fr-step', {
         opacity: 0, y: 50, rotateX: -22, transformPerspective: 900, duration: 0.9, stagger: 0.14, ease: 'power3.out', clearProps: 'transform',
         scrollTrigger: { trigger: '.fr-process', start: 'top 85%', once: true },
-      });
-      gsap.utils.toArray('.fr-case').forEach((row, i) => {
-        const dir = i % 2 ? 1 : -1;
-        gsap.from(row.querySelector('.fr-info'), { opacity: 0, x: 60 * dir, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: row, start: 'top 80%', once: true } });
-        gsap.from(row.querySelector('.fr-stage'), { opacity: 0, x: -60 * dir, duration: 1.1, ease: 'power3.out', clearProps: 'transform', scrollTrigger: { trigger: row, start: 'top 80%', once: true } });
       });
       gsap.to('.fr-orb', {
         yPercent: (i) => (i % 2 ? -40 : 40), ease: 'none',
@@ -135,45 +91,19 @@ const Freelance = () => {
 
       <p className="fr-process-title fr-cases-title"><span />Case files<span /></p>
 
-      <div className="fr-cases">
-        {FREELANCE_PROJECTS.map((p, i) => {
-          const Mock = MOCKS[p.id];
-          const Icon = p.icon;
-          return (
-            <article key={p.id} className={`fr-case${i % 2 ? ' flip' : ''}`} style={{ '--fr-accent': p.accentColor }}>
-              <div className="fr-info">
-                <span className="fr-num">{String(i + 1).padStart(2, '0')}</span>
-                <div className="fr-title-row">
-                  <span className="fr-icon"><Icon size={22} /></span>
-                  <div>
-                    <h3 className="fr-name">{p.title}</h3>
-                    <p className="fr-short">{p.short}</p>
-                  </div>
-                </div>
-                <p className="fr-desc">{p.description}</p>
-                {p.tech.length > 0 && <div className="fr-tech">{p.tech.map((t) => <span key={t}>{t}</span>)}</div>}
-                {p.parts.length > 0 && (
-                  <div className="fr-parts">
-                    {p.parts.map((part) => (
-                      <div key={part.label} className="fr-part">
-                        <span>{part.label}</span>
-                        <span className="fr-links">
-                          <a href={part.href} target="_blank" rel="noopener noreferrer" aria-label={`${part.label} source`}><Github size={14} /></a>
-                          {part.live && <a href={part.live} target="_blank" rel="noopener noreferrer" aria-label={`${part.label} live`}><ExternalLink size={14} /></a>}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="fr-stage" aria-hidden="true">
-                <div className="fr-stage-glow" />
-                <Mock />
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      {webgl ? (
+        <Boundary fallback={<div className="fp-grid">{projects.map((p, i) => <FloatingProjectCard key={p.id} project={p} index={i} onOpen={setOpen} />)}</div>}>
+          <Suspense fallback={<div className="ps-wrap" />}>
+            <ProjectSpace3D projects={projects} focus={focus} onFocus={setFocus} onOpen={setOpen} />
+          </Suspense>
+        </Boundary>
+      ) : (
+        <div className="fp-grid">
+          {projects.map((p, i) => <FloatingProjectCard key={p.id} project={p} index={i} onOpen={setOpen} />)}
+        </div>
+      )}
+
+      <ProjectDetails project={open} onClose={() => setOpen(null)} />
 
       <div className="fr-cta-wrap">
         <button className="fr-cta" onClick={goContact}>
@@ -239,85 +169,6 @@ const Freelance = () => {
         .fr-step h4 { margin:0 0 6px; font-family:var(--font-display); font-size:1rem; font-weight:800; color:var(--color-text-primary); transform:translateZ(20px); }
         .fr-step p { margin:0; font-family:var(--font-body); font-size:.82rem; line-height:1.65; color:var(--color-text-secondary); transform:translateZ(10px); }
 
-        /* case files */
-        .fr-cases { position:relative; max-width:1120px; margin:0 auto; display:grid; gap:96px; }
-        .fr-case { --fr-accent:var(--color-accent); position:relative; display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
-        .fr-case.flip .fr-info { order:2; }
-        .fr-info { position:relative; }
-        .fr-num { position:absolute; left:-4px; top:-62px; font-family:var(--font-display); font-weight:900; font-size:6.5rem; line-height:1; color:color-mix(in srgb,var(--fr-accent) 11%,transparent); pointer-events:none; }
-        .fr-title-row { display:flex; align-items:center; gap:16px; margin-bottom:18px; }
-        .fr-icon { width:54px; height:54px; border-radius:var(--radius-lg); display:flex; align-items:center; justify-content:center; color:var(--fr-accent); flex-shrink:0;
-          background:color-mix(in srgb,var(--fr-accent) 13%,transparent); border:1px solid color-mix(in srgb,var(--fr-accent) 34%,transparent); box-shadow:0 8px 24px color-mix(in srgb,var(--fr-accent) 24%,transparent); }
-        .fr-name { margin:0; font-family:var(--font-display); font-size:clamp(1.5rem,3vw,2.1rem); font-weight:900; color:var(--color-text-primary); letter-spacing:.03em; }
-        .fr-short { margin:4px 0 0; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:var(--fr-accent); }
-        .fr-desc { margin:0 0 18px; font-family:var(--font-body); font-size:.95rem; line-height:1.8; color:var(--color-text-secondary); }
-        .fr-tech { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
-        .fr-tech span { font-family:var(--font-mono); font-size:.62rem; letter-spacing:.1em; color:var(--color-text-secondary); background:var(--color-bg-glass); border:1px solid var(--color-border); border-radius:8px; padding:4px 11px; transition:all .25s; }
-        .fr-tech span:hover { transform:translateY(-3px); color:var(--fr-accent); border-color:var(--fr-accent); }
-        .fr-parts { display:grid; gap:2px; border-top:1px solid var(--color-border); padding-top:10px; max-width:420px; }
-        .fr-part { display:flex; justify-content:space-between; align-items:center; padding:7px 0; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--color-text-secondary); }
-        .fr-links { display:inline-flex; gap:8px; }
-        .fr-links a { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:9px; color:var(--color-text-secondary); border:1px solid var(--color-border-strong); transition:all .25s; }
-        .fr-links a:hover { color:var(--fr-accent); border-color:var(--fr-accent); background:color-mix(in srgb,var(--fr-accent) 14%,transparent); transform:translateY(-2px); }
-
-        /* device stage */
-        .fr-stage { --rx:0deg; --ry:0deg; position:relative; height:430px; perspective:1300px; display:flex; align-items:center; justify-content:center; }
-        .fr-stage-glow { position:absolute; width:78%; height:78%; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb,var(--fr-accent) 28%,transparent), transparent 68%); filter:blur(10px); }
-        .fr-device { position:relative; width:340px; height:400px; transform-style:preserve-3d; transform:rotateX(calc(var(--rx) + 8deg)) rotateY(calc(var(--ry) - 16deg)); transition:transform .3s ease-out; }
-        .fr-case.flip .fr-device { transform:rotateX(calc(var(--rx) + 8deg)) rotateY(calc(var(--ry) + 16deg)); }
-
-        /* OPflow */
-        .fr-win { position:absolute; left:0; top:24px; width:290px; height:210px; border-radius:14px; border:1px solid color-mix(in srgb,var(--fr-accent) 40%,transparent);
-          background:linear-gradient(160deg,var(--color-bg-elevated),var(--color-bg-sunken)); box-shadow:0 24px 50px rgba(0,0,0,.5); transform:translateZ(-30px); overflow:hidden; }
-        .fr-win-bar { display:flex; align-items:center; gap:6px; padding:10px 12px; border-bottom:1px solid var(--color-border); }
-        .fr-win-bar i { width:8px; height:8px; border-radius:50%; background:var(--color-border-strong); }
-        .fr-win-bar span { margin-left:8px; font-family:var(--font-mono); font-size:.55rem; letter-spacing:.14em; color:var(--color-text-muted); text-transform:uppercase; }
-        .fr-win-body { padding:14px; display:grid; gap:12px; }
-        .fr-bars { display:flex; align-items:flex-end; gap:8px; height:84px; }
-        .fr-bars b { flex:1; border-radius:4px 4px 0 0; background:linear-gradient(180deg,var(--fr-accent),color-mix(in srgb,var(--fr-accent) 25%,transparent)); }
-        .fr-lines { display:grid; gap:7px; } .fr-lines i { height:7px; border-radius:4px; background:var(--color-border-strong); }
-        .fr-phone { position:absolute; right:6px; top:0; width:176px; height:372px; border-radius:30px; padding:34px 14px 14px; display:grid; align-content:start; gap:10px;
-          border:2px solid color-mix(in srgb,var(--fr-accent) 55%,transparent); background:linear-gradient(170deg,var(--color-bg-elevated),var(--color-bg-primary)); box-shadow:0 30px 70px rgba(0,0,0,.6), 0 0 40px color-mix(in srgb,var(--fr-accent) 25%,transparent); transform:translateZ(60px); }
-        .fr-phone-notch { position:absolute; top:10px; left:50%; width:54px; height:12px; border-radius:8px; background:var(--color-bg-sunken); transform:translateX(-50%); }
-        .fr-phone-top { display:flex; justify-content:space-between; align-items:center; font-family:var(--font-display); font-size:.8rem; font-weight:800; color:var(--color-text-primary); }
-        .fr-phone-top svg { color:var(--fr-accent); }
-        .fr-token { display:flex; flex-direction:column; align-items:center; padding:12px; border-radius:14px; background:color-mix(in srgb,var(--fr-accent) 16%,transparent); border:1px solid color-mix(in srgb,var(--fr-accent) 40%,transparent); }
-        .fr-token small { font-family:var(--font-mono); font-size:.5rem; letter-spacing:.2em; color:var(--fr-accent); } .fr-token b { font-family:var(--font-display); font-size:1.7rem; color:var(--color-text-primary); }
-        .fr-doc { display:flex; align-items:center; gap:10px; padding:8px; border-radius:12px; background:var(--color-bg-glass); border:1px solid var(--color-border); }
-        .fr-av { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--fr-accent),var(--color-bg-elevated)); flex-shrink:0; }
-        .fr-doc div { flex:1; display:grid; gap:5px; } .fr-doc u { display:block; height:6px; border-radius:3px; background:var(--color-border-strong); text-decoration:none; }
-        .fr-row { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:var(--color-bg-glass); border:1px solid var(--color-border); font-family:var(--font-mono); font-size:.62rem; color:var(--color-text-secondary); }
-        .fr-row svg { color:var(--fr-accent); } .fr-row em { margin-left:auto; width:34px; height:6px; border-radius:3px; background:color-mix(in srgb,var(--fr-accent) 50%,transparent); }
-        .fr-phone-nav { position:absolute; left:0; right:0; bottom:12px; display:flex; justify-content:center; gap:14px; }
-        .fr-phone-nav i { width:6px; height:6px; border-radius:50%; background:var(--color-border-strong); } .fr-phone-nav i.on { background:var(--fr-accent); box-shadow:0 0 8px var(--fr-accent); }
-
-        /* Card Cricket */
-        .fr-pcard { position:absolute; left:50%; top:50%; width:170px; height:240px; margin:-120px 0 0 -85px; border-radius:16px; padding:12px; display:grid; align-content:start; gap:8px;
-          background:linear-gradient(160deg,var(--color-bg-elevated),var(--color-bg-sunken)); border:2px solid color-mix(in srgb,var(--fr-accent) 60%,transparent);
-          box-shadow:0 24px 50px rgba(0,0,0,.55), 0 0 30px color-mix(in srgb,var(--fr-accent) 20%,transparent); transition:transform .4s; }
-        .fr-pcard-0 { transform:translate3d(-96px,22px,0) rotateZ(-14deg); }
-        .fr-pcard-1 { transform:translate3d(0,-14px,70px); }
-        .fr-pcard-2 { transform:translate3d(96px,22px,0) rotateZ(14deg); }
-        .fr-stage:hover .fr-pcard-0 { transform:translate3d(-118px,30px,0) rotateZ(-18deg); } .fr-stage:hover .fr-pcard-2 { transform:translate3d(118px,30px,0) rotateZ(18deg); }
-        .fr-pcard-top { display:flex; justify-content:space-between; align-items:baseline; } .fr-pcard-top b { font-family:var(--font-display); font-size:1.5rem; color:var(--fr-accent); }
-        .fr-pcard-top small { font-family:var(--font-mono); font-size:.5rem; letter-spacing:.2em; color:var(--color-text-muted); }
-        .fr-pcard-img { height:78px; border-radius:10px; display:flex; align-items:flex-end; justify-content:center; background:linear-gradient(160deg,color-mix(in srgb,var(--fr-accent) 35%,transparent),var(--color-bg-sunken)); overflow:hidden; }
-        .fr-pcard-img i { width:46px; height:58px; border-radius:23px 23px 0 0; background:color-mix(in srgb,var(--fr-accent) 60%,#000); }
-        .fr-stat { display:grid; grid-template-columns:34px 1fr; align-items:center; gap:8px; } .fr-stat small { font-family:var(--font-mono); font-size:.5rem; letter-spacing:.14em; color:var(--color-text-muted); }
-        .fr-stat span { height:6px; border-radius:3px; background:var(--color-border-strong); overflow:hidden; } .fr-stat em { display:block; height:100%; border-radius:3px; background:var(--fr-accent); }
-        .fr-vs { position:absolute; left:50%; top:50%; width:58px; height:58px; margin:-29px 0 0 -29px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:900; color:var(--color-bg-primary);
-          background:linear-gradient(135deg,var(--fr-accent),var(--color-text-primary)); transform:translateZ(130px); box-shadow:0 0 30px color-mix(in srgb,var(--fr-accent) 60%,transparent); }
-
-        /* BSafe */
-        .fr-shield { position:absolute; left:50%; top:50%; width:190px; height:230px; margin:-125px 0 0 -95px; display:flex; align-items:center; justify-content:center; color:var(--color-bg-primary);
-          clip-path:polygon(50% 0, 100% 16%, 100% 58%, 50% 100%, 0 58%, 0 16%); background:linear-gradient(160deg,var(--fr-accent),color-mix(in srgb,var(--fr-accent) 30%,#000)); transform:translateZ(70px); }
-        .fr-classified { position:absolute; left:50%; bottom:28px; transform:translate(-50%,0) translateZ(90px); display:grid; justify-items:center; gap:4px; }
-        .fr-classified span { padding:6px 16px; border:2px solid var(--fr-accent); color:var(--fr-accent); font-family:var(--font-display); font-weight:900; letter-spacing:.3em; font-size:.8rem; transform:rotate(-6deg); }
-        .fr-classified small { font-family:var(--font-mono); font-size:.56rem; letter-spacing:.2em; text-transform:uppercase; color:var(--color-text-muted); }
-        .fr-ring { position:absolute; left:50%; top:50%; border-radius:50%; border:1px dashed color-mix(in srgb,var(--fr-accent) 45%,transparent); transform:translate(-50%,-50%); }
-        .fr-ring-1 { width:270px; height:270px; animation:frSpin 22s linear infinite; } .fr-ring-2 { width:330px; height:330px; animation:frSpin 30s linear infinite reverse; }
-        @keyframes frSpin { to { transform:translate(-50%,-50%) rotate(360deg); } }
-
         .fr-cta-wrap { position:relative; display:flex; justify-content:center; margin-top:96px; }
         .fr-cta { position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; cursor:pointer; padding:16px 34px; border:0; border-radius:14px;
           font-family:var(--font-mono); font-size:.74rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--color-text-on-light);
@@ -328,17 +179,14 @@ const Freelance = () => {
         @keyframes frGleam { 0%,55% { left:-80px; } 100% { left:120%; } }
 
         @media (max-width:980px) {
-          .fr-case { grid-template-columns:1fr; gap:34px; } .fr-case.flip .fr-info { order:0; } .fr-cases { gap:80px; }
           .fr-steps { grid-template-columns:1fr 1fr; } .fr-flow { display:none; }
-          .fr-num { top:-54px; }
         }
         @media (max-width:560px) {
           .fr-section { padding:80px 16px 72px; } .fr-ticker { margin-inline:-16px; } .fr-steps { grid-template-columns:1fr; }
-          .fr-stage { height:380px; } .fr-device { scale:.8; }
         }
         @media (prefers-reduced-motion:reduce) {
-          .fr-orb, .fr-title, .fr-track, .fr-dot, .fr-live, .fr-cta i, .fr-ring { animation:none; }
-          .fr-device, .fr-step, .fr-pcard { transition:none; }
+          .fr-orb, .fr-title, .fr-track, .fr-dot, .fr-live, .fr-cta i { animation:none; }
+          .fr-step { transition:none; }
         }
       `}</style>
     </section>

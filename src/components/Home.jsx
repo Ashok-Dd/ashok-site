@@ -4,20 +4,20 @@ import gsap from 'gsap';
 import { roles, heroData, SOCIALS } from '../../data';
 import { useTheme } from '../context/ThemeContext';
 import Boundary from '../three/Boundary';
-import { hasWebGL } from '../three/ashok3d';
+import { hasWebGL } from '../three/webgl';
 
 const HeroName3D = lazy(() => import('./HeroName3D'));
 
 const HERO_SOCIAL_IDS = ['github', 'linkedin', 'email'];
 
 const THEME_PROFILE = {
-  cyberpunk: '/profile-cyber.png',
-  synthwave: '/profile-pink.png',
-  sunset:    '/profile-orange.png',
-  lava:      '/profile-red.png',
-  forest:    '/profile-green.png',
-  ocean:     '/profile-skyblue.png',
-  galaxy:    '/profile-violet.png',
+  cyberpunk: '/profile-cyber.webp',
+  synthwave: '/profile-pink.webp',
+  sunset:    '/profile-orange.webp',
+  lava:      '/profile-red.webp',
+  forest:    '/profile-green.webp',
+  ocean:     '/profile-skyblue.webp',
+  galaxy:    '/profile-violet.webp',
 };
 
 const THEME_CYCLE = ['cyberpunk', 'synthwave', 'lava', 'forest', 'ocean', 'sunset', 'galaxy'];

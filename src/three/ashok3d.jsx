@@ -14,23 +14,16 @@ export const easeOutBack = (t) => {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 };
 
-export const hasWebGL = () => {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-};
+export { hasWebGL } from './webgl';
 
 export const THEME_PROFILE = {
-  cyberpunk: '/profile-cyber.png',
-  synthwave: '/profile-pink.png',
-  sunset:    '/profile-orange.png',
-  lava:      '/profile-red.png',
-  forest:    '/profile-green.png',
-  ocean:     '/profile-skyblue.png',
-  galaxy:    '/profile-violet.png',
+  cyberpunk: '/profile-cyber.webp',
+  synthwave: '/profile-pink.webp',
+  sunset:    '/profile-orange.webp',
+  lava:      '/profile-red.webp',
+  forest:    '/profile-green.webp',
+  ocean:     '/profile-skyblue.webp',
+  galaxy:    '/profile-violet.webp',
 };
 
 /* ───────────── profile photos: loaded once, up-front, never suspend the scene ───────────── */

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Send, Loader2, CornerDownLeft, ArrowUpRight, MapPin } from 'lucide-react';
+import { Send, Loader2, CornerDownLeft, ArrowUpRight, MapPin, Globe, Briefcase } from 'lucide-react';
 import { SOCIALS, footerData } from '../../data';
 import useTilt from '../hooks/useTilt';
 
@@ -130,13 +130,17 @@ const Contact = () => {
       <div className="cx-head">
         <div className="cx-status">
           <span className="cx-live" />Open for freelance &amp; collabs
-          <span className="cx-sep" /><MapPin size={12} />India · {time} IST
         </div>
         <h2 className="cx-title" aria-label="Let's build something great together">
           <span className="cx-mask"><span className="cx-line">Let&apos;s build</span></span>
           <span className="cx-mask"><span className="cx-line cx-line-grad">something great.</span></span>
         </h2>
         <p className="cx-lead">Got a product, a prototype or a problem? Tell me about it — I&apos;ll come back with a plan.</p>
+        <div className="cx-chips">
+          <span><MapPin size={13} />India · {time} IST</span>
+          <span><Globe size={13} />Remote-friendly</span>
+          <span><Briefcase size={13} />Freelance &amp; full-time</span>
+        </div>
       </div>
 
       <div className="cx-grid">
@@ -178,33 +182,43 @@ const Contact = () => {
               </button>
             </div>
           )}
+          <div className="cx-term-foot">
+            <span>channel: {channel}</span>
+            <span>{form.message.length} chars</span>
+            <span className="cx-ready"><i />{status === 'loading' ? 'sending' : status === 'success' ? 'sent' : 'ready'}</span>
+          </div>
         </form>
 
-        {/* ── 3D channel boxes ── */}
-        <div className="cx-channels">
-          {channels.map(({ id, label, sub, href, Icon }) => (
-            <div key={id} className="cx-slot">
-              <a className="cx-box" href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer" aria-label={`${label}: ${sub}`}>
-                <span className="cx-face cx-front">
-                  <span className="cx-spot" aria-hidden="true" />
-                  <span className="cx-ico"><Icon size={22} /></span>
-                  <span className="cx-lbl">{label}</span>
-                  <span className="cx-sub">{sub}</span>
-                  <ArrowUpRight size={16} className="cx-go" />
-                </span>
-                <span className="cx-face cx-side cx-r" />
-                <span className="cx-face cx-side cx-l" />
-                <span className="cx-face cx-cap cx-t" />
-                <span className="cx-face cx-cap cx-b" />
-                <span className="cx-face cx-back" />
-              </a>
-            </div>
-          ))}
+        {/* ── 3D channel slabs ── */}
+        <div className="cx-side">
+          <p className="cx-side-title"><span />Or reach me directly<span /></p>
+          <div className="cx-channels">
+            {channels.map(({ id, label, sub, href, Icon }) => (
+              <div key={id} className="cx-slot">
+                <a className="cx-box" href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noopener noreferrer" aria-label={`${label}: ${sub}`}>
+                  <span className="cx-face cx-front">
+                    <span className="cx-spot" aria-hidden="true" />
+                    <span className="cx-ico"><Icon size={22} /></span>
+                    <span className="cx-txt">
+                      <span className="cx-lbl">{label}</span>
+                      <span className="cx-sub">{sub}</span>
+                    </span>
+                    <ArrowUpRight size={18} className="cx-go" />
+                  </span>
+                  <span className="cx-face cx-side-f cx-r" />
+                  <span className="cx-face cx-side-f cx-l" />
+                  <span className="cx-face cx-cap cx-t" />
+                  <span className="cx-face cx-cap cx-b" />
+                  <span className="cx-face cx-back" />
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <style>{`
-        .cx { position:relative; overflow:hidden; background:var(--color-bg-sunken); color:var(--color-text-primary); padding:120px 24px 110px; }
+        .cx { position:relative; isolation:isolate; overflow:hidden; background:var(--color-bg-sunken); color:var(--color-text-primary); padding:120px 24px 110px; }
         .cx-bg { position:absolute; inset:0; pointer-events:none;
           background:radial-gradient(ellipse 60% 45% at 50% 0%, var(--color-accent-muted), transparent 70%),
             radial-gradient(ellipse 40% 40% at 100% 100%, var(--color-accent-subtle), transparent 70%),
@@ -219,7 +233,9 @@ const Contact = () => {
         .cx-sep { width:1px; height:12px; background:var(--color-accent-border); }
         .cx-title { margin:28px 0 22px; font-family:var(--font-display); font-weight:900; line-height:1.02; letter-spacing:.02em; font-size:clamp(2.6rem, 8.2vw, 6.4rem); }
         .cx-mask { display:block; overflow:hidden; padding:.06em 0; }
-        .cx-line { display:inline-block; color:var(--color-text-primary); }
+        .cx-title { perspective:900px; }
+        .cx-line { display:inline-block; color:var(--color-text-primary); text-shadow:0 1px 0 var(--color-accent-dark), 0 2px 0 var(--color-accent-dark), 0 3px 0 var(--color-accent-dark), 0 4px 0 var(--color-accent-dark), 0 5px 0 var(--color-accent-dark), 0 14px 26px rgba(0,0,0,.55); }
+        .cx-line-grad { text-shadow:none; filter:drop-shadow(0 4px 0 var(--color-accent-dark)) drop-shadow(0 12px 18px rgba(0,0,0,.5)); }
         .cx-line-grad { background:linear-gradient(110deg,var(--color-accent) 20%,var(--color-accent-light) 45%,var(--color-accent) 70%); background-size:220% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:cxShine 6s linear infinite; }
         @keyframes cxShine { to { background-position:-220% 0; } }
         .cx-lead { max-width:560px; margin:0 auto; font-family:var(--font-body); font-size:1rem; line-height:1.75; color:var(--color-text-secondary); }
@@ -259,25 +275,38 @@ const Contact = () => {
         .cx-spin { animation:cxSpin 1s linear infinite; } @keyframes cxSpin { to { transform:rotate(360deg); } }
         .cx-ok-line { color:var(--color-success) !important; font-weight:700; }
 
-        /* 3D channel boxes */
-        .cx-channels { display:grid; grid-template-columns:1fr 1fr; gap:34px 26px; padding:8px 14px 0; perspective:1200px; }
-        .cx-slot { height:132px; }
-        .cx-slot:nth-child(5) { grid-column:1 / -1; max-width:calc(50% - 13px); }
-        .cx-box { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; --d:13px; position:relative; display:block; width:100%; height:100%; text-decoration:none; color:inherit; outline:none;
-          transform-style:preserve-3d; transform:rotateX(calc(var(--rx) + 8deg)) rotateY(calc(var(--ry) - 16deg)); transition:transform .3s ease-out; }
+        .cx-term-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 22px; border-top:1px solid var(--color-border); background:var(--color-bg-glass);
+          font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--color-text-muted); }
+        .cx-ready { display:inline-flex; align-items:center; gap:7px; color:var(--color-success); }
+        .cx-ready i { width:7px; height:7px; border-radius:50%; background:var(--color-success); animation:cxLive 1.8s ease-out infinite; }
+        .cx-chips { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:26px; }
+        .cx-chips span { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:var(--radius-full); border:1px solid var(--color-border-strong); background:var(--color-bg-glass);
+          font-family:var(--font-mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; color:var(--color-text-secondary); }
+        .cx-chips svg { color:var(--color-accent); }
+
+        /* 3D channel slabs */
+        .cx-side-title { display:flex; align-items:center; justify-content:center; gap:14px; margin:0 0 26px; font-family:var(--font-mono); font-size:.64rem; letter-spacing:.34em; text-transform:uppercase; color:var(--color-accent); }
+        .cx-side-title span { width:34px; height:1px; background:var(--color-accent-border); }
+        .cx-channels { display:grid; gap:24px; padding:0 18px; perspective:1200px; }
+        .cx-slot { height:86px; animation:cxBob 5.5s ease-in-out infinite; }
+        .cx-slot:nth-child(2n) { animation-delay:-1.8s; } .cx-slot:nth-child(3n) { animation-delay:-3.4s; }
+        @keyframes cxBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+        .cx-box { --rx:0deg; --ry:0deg; --mx:50%; --my:50%; --d:14px; position:relative; display:block; width:100%; height:100%; text-decoration:none; color:inherit; outline:none;
+          transform-style:preserve-3d; transform:rotateX(calc(var(--rx) + 6deg)) rotateY(calc(var(--ry) - 10deg)); transition:transform .3s ease-out; }
         .cx-box:focus-visible .cx-front { outline:2px solid var(--color-accent); outline-offset:3px; }
         .cx-face { position:absolute; backface-visibility:hidden; display:block; }
-        .cx-front { inset:0; transform:translateZ(var(--d)); border-radius:5px; border:1px solid var(--color-accent-border); overflow:hidden; padding:16px 16px 14px;
-          background:linear-gradient(150deg,var(--color-bg-elevated),var(--color-bg-primary)); box-shadow:inset 0 0 26px var(--color-accent-subtle); }
+        .cx-front { inset:0; transform:translateZ(var(--d)); display:flex; align-items:center; gap:16px; border-radius:6px; border:1px solid var(--color-accent-border); overflow:hidden; padding:0 20px;
+          background:linear-gradient(150deg,var(--color-bg-elevated),var(--color-bg-primary)); box-shadow:inset 0 0 26px var(--color-accent-subtle); transition:border-color .3s, box-shadow .3s; }
         .cx-box:hover .cx-front { border-color:var(--color-accent); box-shadow:inset 0 0 36px var(--color-accent-muted), 0 0 34px var(--color-accent-muted); }
-        .cx-spot { position:absolute; inset:0; opacity:0; transition:opacity .3s; background:radial-gradient(240px circle at var(--mx) var(--my), var(--color-accent-muted), transparent 62%); }
+        .cx-spot { position:absolute; inset:0; opacity:0; transition:opacity .3s; background:radial-gradient(260px circle at var(--mx) var(--my), var(--color-accent-muted), transparent 62%); }
         .cx-box:hover .cx-spot { opacity:1; }
-        .cx-ico { position:relative; display:flex; width:38px; height:38px; align-items:center; justify-content:center; border-radius:11px; color:var(--color-accent); background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); margin-bottom:10px; }
-        .cx-lbl { position:relative; display:block; font-family:var(--font-display); font-size:.92rem; font-weight:800; color:var(--color-text-primary); }
-        .cx-sub { position:relative; display:block; margin-top:3px; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.06em; color:var(--color-text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .cx-go { position:absolute; right:12px; top:12px; color:var(--color-accent); opacity:.55; transition:transform .25s, opacity .25s; }
-        .cx-box:hover .cx-go { opacity:1; transform:translate(3px,-3px); }
-        .cx-side { background:linear-gradient(90deg,var(--color-accent-dark),color-mix(in srgb,var(--color-accent-dark) 40%,var(--color-bg-primary))); }
+        .cx-ico { position:relative; flex:0 0 46px; display:flex; height:46px; align-items:center; justify-content:center; border-radius:13px; color:var(--color-accent); background:var(--color-accent-subtle); border:1px solid var(--color-accent-border); }
+        .cx-txt { position:relative; min-width:0; flex:1; display:grid; gap:3px; }
+        .cx-lbl { display:block; font-family:var(--font-display); font-size:1rem; font-weight:800; color:var(--color-text-primary); }
+        .cx-sub { display:block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.06em; color:var(--color-text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .cx-go { position:relative; flex-shrink:0; color:var(--color-accent); opacity:.55; transition:transform .25s, opacity .25s; }
+        .cx-box:hover .cx-go { opacity:1; transform:translate(4px,-4px); }
+        .cx-side-f { background:linear-gradient(90deg,var(--color-accent-dark),color-mix(in srgb,var(--color-accent-dark) 40%,var(--color-bg-primary))); }
         .cx-r { top:0; right:calc(var(--d) * -1); width:calc(var(--d) * 2); height:100%; transform:rotateY(90deg); }
         .cx-l { top:0; left:calc(var(--d) * -1); width:calc(var(--d) * 2); height:100%; transform:rotateY(-90deg); filter:brightness(.7); }
         .cx-cap { background:linear-gradient(180deg,var(--color-accent-light),var(--color-accent)); }
@@ -289,9 +318,9 @@ const Contact = () => {
         @media (max-width:560px) {
           .cx { padding:84px 16px 80px; }
           .cx-term-body { padding:20px 16px 22px; } .cx-row { grid-template-columns:1fr; gap:4px; }
-          .cx-channels { gap:30px 16px; padding:6px 6px 0; } .cx-slot { height:128px; } .cx-slot:nth-child(5) { max-width:calc(50% - 8px); }
+          .cx-channels { padding:0 8px; } .cx-slot { height:80px; } .cx-term-foot { padding:10px 14px; } .cx-term-foot span:nth-child(2) { display:none; }
         }
-        @media (prefers-reduced-motion:reduce) { .cx-line-grad, .cx-live, .cx-spin { animation:none; } .cx-box, .cx-term { transition:none; } }
+        @media (prefers-reduced-motion:reduce) { .cx-line-grad, .cx-live, .cx-spin, .cx-slot { animation:none; } .cx-box, .cx-term { transition:none; } }
       `}</style>
     </section>
   );

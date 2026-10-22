@@ -478,7 +478,6 @@ function SkillShooter({ onExit }) {
       onClick={() => { if (isPlay) shoot(); }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
         @keyframes ssGlitch{0%{opacity:0;clip-path:inset(60% 0 40% 0)}25%{opacity:1;clip-path:inset(20% 0 30% 0)}55%{clip-path:inset(5% 0 8% 0)}100%{clip-path:inset(0 0 0 0)}}
         @keyframes ssFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
         @keyframes ssPulse{0%,100%{opacity:1}50%{opacity:.35}}
